@@ -1,21 +1,29 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 
-export default function App() {
+/* //Import firebase and firebaseConfig and initialize firebase
+import { firebaseConfig } from './src/database/firebaseConfig';
+import { initializeApp, getApp, getApps } from 'firebase/app';
+initializeApp(firebaseConfig)
+ */
+
+//Import Screens
+import LoadingScreen from './src/screens/LoadingScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import NavigationBar from './src/components/NavigationBar';
+
+export default function App(props) {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AppNavigator />
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const AppSwitchNavigator = createSwitchNavigator({
+  LoadingScreen:LoadingScreen,
+  LoginScreen:LoginScreen,
+  AppScreen:NavigationBar
+})
+
+const AppNavigator = createAppContainer(AppSwitchNavigator);

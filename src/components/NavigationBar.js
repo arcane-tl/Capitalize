@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Button } from 'react-native';
+import { Text, View, Dimensions } from 'react-native';
 
 // Navigation components
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,20 +7,27 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Get route
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 // IonicIcons
 import IonicIcon from 'react-native-vector-icons/Ionicons';
 
 // Import screens
+import Test from '../screens/TestScreen';
 import Home from '../screens/HomeScreen';
 import Events from '../screens/EventsScreen';
 import Dashboard from '../screens/DashboardScreen';
 import Assets from '../screens/AssetsScreen';
 import Settings from '../screens/SettingsScreen';
 
-const fullScreenWidth = Dimensions.get('window').width;
+// Import Firebase
+import { signOut, getAuth } from '@firebase/auth';
 
+// Import AddAssetModal
+import { AddAssetModal } from '../components/AddAssetModal';
+
+const auth = getAuth();
+const fullScreenWidth = Dimensions.get('window').width;
 const Stack = createNativeStackNavigator();
 
 function HomeStackScreen() {
@@ -32,7 +38,8 @@ function HomeStackScreen() {
         component={Home}
         options={{
           headerTitle: (props) => <TopHeader {...props} />,
-          headerLeft: (props) => <TopRightButton {...props} />,
+          headerLeft: (props) => <TopLeftButton {...props} />,
+          headerRight: (props) => <SignOutButton {...props} />,
         }}
       />
     </Stack.Navigator>
@@ -47,7 +54,8 @@ function AssetsStackScreen() {
         component={Assets}
         options={{
           headerTitle: (props) => <TopHeader {...props} />,
-          headerLeft: (props) => <TopRightButton {...props} />,
+          headerLeft: (props) => <TopLeftButton {...props} />,
+          headerRight: (props) => <AddAssetButton {...props} />,
         }}
       />
     </Stack.Navigator>
@@ -62,7 +70,21 @@ function EventsStackScreen() {
         component={Events}
         options={{
           headerTitle: (props) => <TopHeader {...props} />,
-          headerLeft: (props) => <TopRightButton {...props} />,
+          headerLeft: (props) => <TopLeftButton {...props} />,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function TestStackScreen() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="StackTest"
+        component={Test}
+        options={{
+          headerTitle: (props) => <TopHeader {...props} />,
         }}
       />
     </Stack.Navigator>
@@ -77,7 +99,7 @@ function DashboardStackScreen() {
         component={Dashboard}
         options={{
           headerTitle: (props) => <TopHeader {...props} />,
-          headerLeft: (props) => <TopRightButton {...props} />,
+          headerLeft: (props) => <TopLeftButton {...props} />,
         }}
       />
     </Stack.Navigator>
@@ -92,7 +114,7 @@ function SettingsStackScreen() {
         component={Settings}
         options={{
           headerTitle: (props) => <TopHeader {...props} />,
-          headerLeft: (props) => <TopRightButton {...props} />,
+          headerLeft: (props) => <TopLeftButton {...props} />,
         }}
       />
     </Stack.Navigator>
@@ -108,13 +130,41 @@ function TopHeader() {
   );
 }
 
-function TopRightButton() {
+function TopLeftButton() {
   return (
     <IonicIcon
             name = "menu"
             size = {38}
             color = "black"
-            onPress = {() => alert('This is a menu!')}
+            onPress = {() => alert('Open a menu!')}
+    />
+  );
+}
+
+function SignOutButton() {
+  return (
+    <IonicIcon
+            name = "log-out-outline"
+            size = {38}
+            color = "black"
+            onPress = {
+              () => {
+                console.log('Signing user out.');
+                signOut(auth)
+                  .catch(() => {console.log('Error on function SignOutButton')});
+              }
+            }
+    />
+  );
+}
+
+function AddAssetButton() {
+  return (
+    <IonicIcon
+      name = "add"
+      size = {38}
+      color = "black"
+      onPress = {() => alert('Open form to add new item!')}
     />
   );
 }

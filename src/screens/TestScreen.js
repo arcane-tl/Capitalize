@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Modal, Pressable } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-const Dashboard = (props) => {
+const Test = (props) => {
   return (
     <View style={styles.container}>
-      <Text>Dashboard Screen</Text>
+      <Text>Test Screen</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Dashboard;
+export default Test;

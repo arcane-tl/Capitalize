@@ -5,5 +5,6 @@ export const firebaseConfig = {
   storageBucket: "capitalize-39317.appspot.com",
   messagingSenderId: "23029306910",
   appId: "1:23029306910:web:d94aa707fa359e02bf000f",
-  measurementId: "G-78VY7QJX6M"
+  measurementId: "G-78VY7QJX6M",
+  databaseURL: "https://capitalize-39317-default-rtdb.europe-west1.firebasedatabase.app/"
 };

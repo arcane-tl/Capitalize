@@ -1,8 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
+import { updateData, readData, addData } from '../components/FirebaseApi';
 
 const Events = (props) => {
+  //var readTest = readData();
+  //console.log('DATA: ', readTest);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const doSomething = () => {
+        console.log('Focused Events!');
+      };
+
+      doSomething();
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <Text>Events Screen</Text>

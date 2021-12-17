@@ -7,6 +7,15 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 initializeApp(firebaseConfig)
 
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
+//import { addData } from '../components/FirebaseApi';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 const auth = getAuth();
 
@@ -20,6 +29,7 @@ class LoadingScreen extends Component {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log('user logged in: moving to navigation menu')
+        //HERE IS POSSIBLE TO ADD USER DATA TO DATABASE!
         this.props.navigation.navigate('AppScreen');
       } else {
         console.log('user not logged in: moving to login screen')
@@ -39,11 +49,3 @@ class LoadingScreen extends Component {
 };
 
 export default LoadingScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

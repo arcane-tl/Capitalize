@@ -16,7 +16,15 @@ const styles = {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  title: {
+    textAlignment: 'center',
+    fontSize: 60,
+    marginTop: 280,
+    marginBottom: 50,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontFamily: 'Times New Roman',
   }
 };
 
@@ -101,6 +109,7 @@ class LoginScreen extends Component {
   render () {
     return (
       <View style={styles.container}>
+        <Text style={styles.title} >Capitalize!</Text>
         <TouchableOpacity
           onPress={() => this.signInWithGoogleAsync()}
           style={styles.container}

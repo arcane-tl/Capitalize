@@ -27,6 +27,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Capitalize is an application to manage and track your assets from your mobile phone.",
+    "githubUrl": "https://github.com/arcane-tl/Capitalize"
   }
 }

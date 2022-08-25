@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 const Settings = (props) => {
   return (
     <View style={styles.container}>
-      <Text>Settings Screen</Text>
+      <Text>Settings page</Text>
       <StatusBar style="auto" />
     </View>
   );

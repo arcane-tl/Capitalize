@@ -1,10 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, Dimensions } from 'react-native';
-import * as Google from 'expo-google-app-auth'
-import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
+import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
-const styles = {
+WebBrowser.maybeCompleteAuthSession();
+
+const styles = StyleSheet.create({
   googleLoginBtn: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -25,28 +28,71 @@ const styles = {
     fontStyle: 'italic',
     fontWeight: 'bold',
     fontFamily: 'Times New Roman',
+  },
+  image: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
+    width: 100,
+    height: 100,
+    borderRadius: 40,
+    marginBottom: 10,
   }
-};
+});
 
-const auth = getAuth();
+export default function LoginScreen() {
+  const [accessToken, setAccessToken] = React.useState();
+  const [userInfo, setUserInfo] = React.useState();
+  const [message, setMessage] = React.useState();
 
-class LoginScreen extends Component {
-  isUserEqual = (googleUser, firebaseUser) => {
-    console.log("CHECKING IF USER IS FOUND IN FIREBASE.");
+  //Google authentication
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: '23029306910-4n4353t32l0qv2bij26acb1nrv20i5rh.apps.googleusercontent.com',
+    expoClientId: '23029306910-v0mm2vf45b8ll19tc6g89fbb6i0iftgb.apps.googleusercontent.com',
+    webClientId: '23029306910-v0mm2vf45b8ll19tc6g89fbb6i0iftgb.apps.googleusercontent.com',
+    scopes: ['profile', 'email'],
+    useProxy: true,
+  });
+
+  //Firebase authentication
+  const auth = getAuth();
+
+  React.useEffect(() => {
+    setMessage(JSON.stringify(response));
+    if (response?.type === "success") {
+      console.log('GOOGLE SIGN-IN SUCCESS!');
+      setAccessToken(response.authentication.accessToken);
+      onSignIn(response);
+    } else {
+      console.log('GOOGLE SIGN-IN FAILURE!');
+    }
+  }, [response]);
+
+  async function getUserData() {
+    let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+      headers: { Authorization: `Bearer ${accessToken}`}
+    });
+
+    userInfoResponse.json().then(data => {
+      setUserInfo(data);
+    });
+  }
+
+  isUserEqual = (googleUser, firebaseUser) =>{
+    console.log('CHECKING IF FIREBASE USER AND GOOGLE USER MATCH!');
+    console.log('googleUser: ', googleUser);
+    console.log('firebaseUser: ', firebaseUser);
     if (firebaseUser) {
       const providerData = firebaseUser.providerData;
-      console.log(firebaseUser.providerData)
-      console.log(googleUser.user.id)
       for (let i = 0; i < providerData.length; i++) {
         if (providerData[i].providerId === GoogleAuthProvider.PROVIDER_ID &&
             providerData[i].uid === googleUser.user.id) {
-          // We don't need to reauth the Firebase connection.
-          console.log("USER FOUND IN FIREBASE!");
+          console.log('MATCH!');
           return true;
         }
       }
     }
-    console.log("USER NOT FOUND IN FIREBASE!");
+    console.log('NOT A MATCH');
     return false;
   }
 
@@ -56,7 +102,7 @@ class LoginScreen extends Component {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       unsubscribe();
       // Check if we are already signed-in Firebase with the correct user.
-      if (!this.isUserEqual(googleUser, firebaseUser)) {
+      if (!isUserEqual(googleUser, firebaseUser)) {
         console.log('UNABLE TO FIND GOOGLEUSER FROM FIREBASE USERS: ', googleUser.email);
         // Build Firebase credential with the Google ID token.
         const credential = GoogleAuthProvider.credential(
@@ -84,44 +130,36 @@ class LoginScreen extends Component {
     });
   };
 
-  signInWithGoogleAsync = async () => {
-    try {
-      const result = await Google.logInAsync({
-        //androidClientId: YOUR_CLIENT_ID_HERE,
-        //behavior: 'web',
-        iosClientId: '23029306910-4n4353t32l0qv2bij26acb1nrv20i5rh.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
-      });
-
-      if (result.type === 'success') {
-        console.log('GOOGLE SIGN-IN SUCCESS: ', result.user.email);
-        this.onSignIn(result);
-        return result.accessToken;
-      } else {
-        console.log('GOOGLE SIGN-IN FAILURE!');
-        return { cancelled: true };
-      }
-    } catch (e) {
-      return { error: true };
+  showUserInfo = () => {
+    if (userInfo) {
+      return (
+        <View style={styles.container}>
+          <Image source={{uri: userInfo.picture}}
+            style={styles.image} />
+          <Text>Welcome {userInfo.name}</Text>
+          <Text>{userInfo.email}</Text>
+        </View>
+      );
     }
   }
 
-  render () {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title} >Capitalize!</Text>
-        <TouchableOpacity
-          onPress={() => this.signInWithGoogleAsync()}
-          style={styles.container}
-          activeOpacity={0.5} >
-          <Image source={require('../images/google_signin_btn.png')}
-            style={styles.googleLoginBtn}
-          />
-        </TouchableOpacity>
-        <StatusBar style="auto" />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title} >Capitalize!</Text>
+      <TouchableOpacity
+        onPress = {
+          accessToken ? getUserData : () => {
+            promptAsync({showInRecents: true})
+          }
+        }
+        style={styles.container}
+        activeOpacity={0.5} >
+        <Image source={require('../images/google_signin_btn.png')}
+          style={styles.googleLoginBtn}
+        />
+      </TouchableOpacity>
+      {showUserInfo()}
+      <StatusBar style="auto" />
+    </View>
+  );
 }
-
-export default LoginScreen;

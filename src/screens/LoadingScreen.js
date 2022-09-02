@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 
 import { firebaseConfig } from '../database/firebaseConfig';
 import { initializeApp, getApp, getApps } from 'firebase/app';
-initializeApp(firebaseConfig)
+initializeApp(firebaseConfig);
 
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
 //import { addData } from '../components/FirebaseApi';

@@ -1,0 +1,7 @@
+� The following packages were not updated. You should check the READMEs for those repositories to determine what version is compatible with your new set of packages:
+@react-navigation/bottom-tabs, @react-navigation/native, @react-navigation/native-stack, @react-navigation/stack, expo-google-sign-in, firebase, grep, react-native-firebase-auth, react-native-modal, react-native-vector-icons, react-navigation
+
+Please refer to the release notes for information on any further required steps to update and information about breaking changes:
+https://blog.expo.dev/expo-sdk-46-c2a1655f63f7
+
+main:"node_modules/expo/AppEntry.js"

@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "ExpoTestApp",
-    "slug": "ExpoTestApp",
+    "name": "Capitalize",
+    "slug": "capitalize",
+    "scheme": "capitalize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -34,6 +35,8 @@
         }
       ]
     ],
+    "description": "Capitalize is an application to manage and track your assets from your mobile phone.",
+    "githubUrl": "https://github.com/arcane-tl/Capitalize",
     "experiments": {
       "typedRoutes": true
     }

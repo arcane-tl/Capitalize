@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 
+import 'dotenv/config';
 import { firebaseConfig } from '../database/firebaseConfig';
 import { initializeApp } from 'firebase/app';
 initializeApp(firebaseConfig);

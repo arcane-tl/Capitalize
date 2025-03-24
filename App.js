@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import 'dotenv/config';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';

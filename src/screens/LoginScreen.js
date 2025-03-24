@@ -6,6 +6,8 @@ import * as WebBrowser from 'expo-web-browser';
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 WebBrowser.maybeCompleteAuthSession();
+const redirectUri = AuthSession.makeRedirectUri();
+console.log('redirectUri:', redirectUri);
 
 const styles = StyleSheet.create({
   googleLoginBtn: {
@@ -49,20 +51,27 @@ export default function LoginScreen() {
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: '23029306910-4n4353t32l0qv2bij26acb1nrv20i5rh.apps.googleusercontent.com',
     expoClientId: '23029306910-v0mm2vf45b8ll19tc6g89fbb6i0iftgb.apps.googleusercontent.com',
-    webClientId: '23029306910-v0mm2vf45b8ll19tc6g89fbb6i0iftgb.apps.googleusercontent.com',
+    webClientId: '23029306910-fuf077kqr0oujhjeqo5acjhfk9v2rm8r.apps.googleusercontent.com',
+    redirectUri,
     scopes: ['profile', 'email'],
-    useProxy: true,
-  });
+    },
+    discovery
+  );
 
   //Firebase authentication
   const auth = getAuth();
 
   React.useEffect(() => {
     setMessage(JSON.stringify(response));
+    if (request) {
+      console.log('Request redirectUri:', request.redirectUri);
+    }
     if (response?.type === "success") {
       console.log('GOOGLE SIGN-IN SUCCESS!');
       setAccessToken(response.authentication.accessToken);
       onSignIn(response);
+    } else if (response?.type === 'error') {
+      console.log('GOOGLE SIGN-IN ERROR:', response.error, response.errorDescription);
     } else {
       console.log('GOOGLE SIGN-IN FAILURE!');
     }

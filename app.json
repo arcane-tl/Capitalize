@@ -1,15 +1,16 @@
 {
   "expo": {
     "name": "Capitalize",
-    "slug": "capitalize",
+    "slug": "Capitalize",
+    "owner": "ttl79",
     "scheme": "capitalize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "capitalize",
       "supportsTablet": true
     },
     "android": {

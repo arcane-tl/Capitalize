@@ -6,8 +6,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 WebBrowser.maybeCompleteAuthSession();
-const redirectUri = AuthSession.makeRedirectUri();
-console.log('redirectUri:', redirectUri);
 
 const styles = StyleSheet.create({
   googleLoginBtn: {

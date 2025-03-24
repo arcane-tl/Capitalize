@@ -6,11 +6,13 @@ import { useRouter } from 'expo-router';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 // Replace these with your Google client IDs from Firebase Console
-const GOOGLE_CLIENT_ID_WEB = 'your-web-client-id-from-firebase';
-const GOOGLE_CLIENT_ID_IOS = 'your-ios-client-id-from-firebase';
+const GOOGLE_CLIENT_ID_WEB = '23029306910-fuf077kqr0oujhjeqo5acjhfk9v2rm8r.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID_IOS = '23029306910-4n4353t32l0qv2bij26acb1nrv20i5rh.apps.googleusercontent.com';
 const GOOGLE_CLIENT_ID_ANDROID = 'your-android-client-id-from-firebase';
 
 WebBrowser.maybeCompleteAuthSession(); // Handle redirect after auth
+const redirectUri = AuthSession.makeRedirectUri();
+console.log('redirectUri:', redirectUri);
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -19,9 +21,12 @@ export default function LoginScreen() {
     clientId: GOOGLE_CLIENT_ID_WEB, // Web client ID
     iosClientId: GOOGLE_CLIENT_ID_IOS,
     androidClientId: GOOGLE_CLIENT_ID_ANDROID,
+    redirectUri,
+    scopes: ['profile', 'email'],
   });
 
   useEffect(() => {
+    setMessage(JSON.stringify(response));
     if (response?.type === 'success') {
       const { id_token } = response.params;
       const credential = GoogleAuthProvider.credential(id_token);

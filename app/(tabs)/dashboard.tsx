@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { globalStyles } from '../../src/css/styles'; // Adjust path
+import { globalStyles } from '../../components/css/styles';
 
 export default function DashboardScreen() {
   return (

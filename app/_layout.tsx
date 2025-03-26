@@ -1,10 +1,10 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../src/database/firebaseConfig';
+import { auth } from '../components/database/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, StatusBar } from 'react-native';
-import { globalStyles } from '../src/css/styles';
+import { globalStyles } from '../components/css/styles';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function RootLayout() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoading(false);
       const isAuthenticated = !!user;
-      const isInLogin = segments[0] === 'login';
+      const isInLogin = segments[0]?.toString() === 'login';
 
       if (isAuthenticated && isInLogin) {
         router.replace('/(tabs)/home');

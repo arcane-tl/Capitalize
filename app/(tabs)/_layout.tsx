@@ -1,11 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Text, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { globalStyles } from '../../src/css/styles';
+import { globalStyles } from '../../components/css/styles';
 
 export default function TabsLayout() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={globalStyles.safeArea}>
       <StatusBar barStyle="dark-content" />
       <Tabs
         screenOptions={{

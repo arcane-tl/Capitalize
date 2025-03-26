@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const globalStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f9f9f9', // Matches container background
+    backgroundColor: '#fff', // Matches container background
   },
   container: {
     flex: 1,

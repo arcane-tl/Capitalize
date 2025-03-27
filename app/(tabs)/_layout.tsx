@@ -1,24 +1,22 @@
 import { Tabs } from 'expo-router';
-import { Text, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
 
 export default function TabsLayout() {
   return (
-    <SafeAreaView style={globalStyles.safeArea}>
-      <StatusBar barStyle="dark-content" />
+    <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: '#4285f4',
           tabBarInactiveTintColor: '#666',
-          tabBarStyle: globalStyles.tabBar,
+          tabBarStyle: [globalStyles.tabBar, { position: 'absolute', bottom: 0, left: 0, right: 0 }],
         }}
       >
         <Tabs.Screen
           name="home"
           options={{
             title: 'Home',
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({ color }) => (
               <Text style={[globalStyles.tabIcon, { color }]}>🏠</Text>
             ),
@@ -61,6 +59,6 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
-    </SafeAreaView>
+    </View>
   );
 }

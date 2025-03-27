@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../components/database/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, StatusBar } from 'react-native';
+import { Text, View, StatusBar } from 'react-native';
 import { globalStyles } from '../components/css/styles';
 
 export default function RootLayout() {
@@ -36,12 +36,12 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView style={globalStyles.safeArea}>
+    <View style={globalStyles.safeArea}>
       <StatusBar barStyle="dark-content" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-    </SafeAreaView>
+    </View>
   );
 }

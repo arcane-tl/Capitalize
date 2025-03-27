@@ -8,9 +8,11 @@ export const globalStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 20, // Padding only on left and right
+    paddingTop: 10,       // Smaller top padding, as SafeAreaView handles the top inset
+    paddingBottom: 10,    // Smaller bottom padding to avoid tab bar overlap
     alignItems: 'center',
-    padding: 20,
+    justifyContent: 'center',
     backgroundColor: '#f9f9f9', // Optional: light background for consistency
   },
   title: {

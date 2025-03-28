@@ -7,6 +7,8 @@ import { globalStyles } from '../components/css/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import RegisterUser from '../components/RegisterUser';
+import { useUserStore } from '../constants/userStore';
+import { fetchUserData } from '../components/firebaseAPI';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -16,6 +18,9 @@ export default function LoginScreen() {
   const [isRegisterModalVisible, setRegisterModalVisible] = useState<boolean>(false);
 
   const router = useRouter();
+
+  // Access Zustand store's setUser action
+  const setUser = useUserStore((state) => state.setUser);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -27,7 +32,15 @@ export default function LoginScreen() {
     setStatusMessage('Signing in...');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Fetch user data using fetchUserData
+      const userData = await fetchUserData(uid);
+
+      // Update Zustand store with user data
+      setUser({ uid, ...userData });
+
       setStatusMessage('Login successful! Redirecting...');
       router.replace('/(tabs)/home');
     } catch (error: any) {

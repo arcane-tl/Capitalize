@@ -9,17 +9,21 @@ const db = getDatabase(database);
  */
 
 /**
- * Check if a user exists in the Realtime Database
+ * Fetch user data from the Realtime Database
  * @param uid - The user's unique ID
- * @returns A boolean indicating whether the user exists
+ * @returns The user data as an object
  */
-export const checkUserExists = async (uid: string): Promise<boolean> => {
+export const fetchUserData = async (uid: string): Promise<any> => {
   try {
     const userRef = ref(db, `users/${uid}`);
     const snapshot = await get(userRef);
-    return snapshot.exists(); // Returns true if user data exists, false otherwise
+    if (snapshot.exists()) {
+      return snapshot.val(); // Return the user data
+    } else {
+      throw new Error('User data not found');
+    }
   } catch (error) {
-    console.error('Error checking if user exists:', error);
+    console.error('Error fetching user data:', error);
     throw error;
   }
 };

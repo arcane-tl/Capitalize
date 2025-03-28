@@ -1,28 +1,18 @@
-import 'react-native-gesture-handler';
 import React from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { UserProvider } from './components/UserContext';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Import Screens
-import LoadingScreen from './src/screens/LoadingScreen';
-import LoginScreen from './src/screens/LoginScreen';
-import NavigationBar from './src/components/NavigationBar';
-// import Test from './src/screens/TestScreen';
+const Stack = createNativeStackNavigator();
 
-const Stack = createStackNavigator();
-
-export default function App(props) {
+export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="LoadingScreen" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-          <Stack.Screen name="AppScreen" component={NavigationBar} />
-          {/* <Stack.Screen name="Test" component={Test} /> */}
+        <Stack.Navigator>
+          {/* Your screens go here */}
         </Stack.Navigator>
       </NavigationContainer>
-    </GestureHandlerRootView>
+    </UserProvider>
   );
-};
+}

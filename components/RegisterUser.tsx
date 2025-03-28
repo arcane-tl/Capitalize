@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './database/firebaseConfig';
@@ -8,39 +8,44 @@ import { addUser } from './firebaseAPI';
 interface RegisterUserProps {
   visible: boolean;
   onClose: () => void;
+  initialEmail?: string; // New prop for pre-filling email
+  initialPassword?: string; // New prop for pre-filling password
 }
 
-export default function RegisterUser({ visible, onClose }: RegisterUserProps) {
+export default function RegisterUser({ visible, onClose, initialEmail = '', initialPassword = '' }: RegisterUserProps) {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [mobile, setMobile] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>(initialEmail); // Initialize with initialEmail
+  const [password, setPassword] = useState<string>(initialPassword); // Initialize with initialPassword
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setEmail(initialEmail); // Update email when initialEmail changes
+    setPassword(initialPassword); // Update password when initialPassword changes
+  }, [initialEmail, initialPassword]);
 
   const handleRegister = async () => {
     if (!firstName || !lastName || !mobile || !email || !password) {
       Alert.alert('Error', 'All fields are required.');
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
-      // Register user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid; // Get the user's unique ID from Firebase
-  
-      // Add user info to the Firebase Realtime Database
+      const uid = userCredential.user.uid;
+
       const userData = {
         firstName,
         lastName,
         mobile,
         email,
       };
-      await addUser(uid, userData); // Use the addUser function from firebaseAPI.tsx
-  
+      await addUser(uid, userData);
+
       Alert.alert('Success', 'Registration successful!');
       onClose();
       router.replace('/(tabs)/home');
@@ -55,7 +60,7 @@ export default function RegisterUser({ visible, onClose }: RegisterUserProps) {
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.container}>
         <Text style={styles.title}>Register</Text>
-        
+
         <TextInput
           style={styles.input}
           placeholder="First Name"
@@ -150,14 +155,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   cancelButton: {
-    backgroundColor: '#e74c3c', // Red background for the Cancel button
+    backgroundColor: '#e74c3c',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
   },
   cancelButtonText: {
-    color: '#fff', // White text for better contrast
+    color: '#fff',
     fontSize: 16,
   },
 });

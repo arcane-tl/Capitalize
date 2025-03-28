@@ -95,6 +95,8 @@ export default function LoginScreen() {
       <RegisterUser
         visible={isRegisterModalVisible}
         onClose={() => setRegisterModalVisible(false)}
+        initialEmail={email} // Pass email from LoginScreen
+        initialPassword={password} // Pass password from LoginScreen
       />
     </SafeAreaView>
   );

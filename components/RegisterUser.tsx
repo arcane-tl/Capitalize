@@ -46,9 +46,9 @@ export default function RegisterUser({ visible, onClose, initialEmail = '', init
       };
       await addUser(uid, userData);
 
-      Alert.alert('Success', 'Registration successful!');
+      Alert.alert('Success', 'Registration successful! Please sign in to continue.');
       onClose();
-      router.replace('/(tabs)/home');
+      router.replace('/');
     } catch (error: any) {
       Alert.alert('Registration Failed', error.message);
     } finally {

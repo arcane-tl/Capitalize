@@ -20,7 +20,7 @@ export default function RootLayout() {
       if (isAuthenticated && isInLogin) {
         router.replace('/(tabs)/home');
       } else if (!isAuthenticated && !isInLogin) {
-        router.replace('/index');
+        router.replace('/');
       }
     });
 
@@ -36,12 +36,10 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={globalStyles.safeArea}>
-      <StatusBar barStyle="dark-content" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </View>
+      <View style={globalStyles.safeArea}>
+        <StatusBar barStyle="dark-content" />
+        <Stack screenOptions={{ headerShown: false }}>
+        </Stack>
+      </View>
   );
 }

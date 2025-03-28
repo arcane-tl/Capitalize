@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { globalStyles } from '../components/css/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
-import RegisterUser from '../components/RegisterUser'; // Import the new component
+import RegisterUser from '../components/RegisterUser';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -19,7 +19,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setStatusMessage('Please enter both email and password.');
+      Alert.alert('Please enter both email and password.');
       return;
     }
 
@@ -32,7 +32,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)/home');
     } catch (error: any) {
       setIsLoading(false);
-      setStatusMessage(`Error: ${error.message}`);
+      Alert.alert(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

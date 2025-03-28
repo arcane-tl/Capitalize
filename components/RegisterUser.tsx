@@ -3,6 +3,7 @@ import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } fro
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './database/firebaseConfig';
 import { useRouter } from 'expo-router';
+import { addUser } from './firebaseAPI';
 
 interface RegisterUserProps {
   visible: boolean;
@@ -23,16 +24,23 @@ export default function RegisterUser({ visible, onClose }: RegisterUserProps) {
       Alert.alert('Error', 'All fields are required.');
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
-      // Register user in Firebase
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      // Add user info to the app database (replace with your database logic)
-      // Example: await database.ref('users').push({ firstName, lastName, mobile, email });
-
+      // Register user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid; // Get the user's unique ID from Firebase
+  
+      // Add user info to the Firebase Realtime Database
+      const userData = {
+        firstName,
+        lastName,
+        mobile,
+        email,
+      };
+      await addUser(uid, userData); // Use the addUser function from firebaseAPI.tsx
+  
       Alert.alert('Success', 'Registration successful!');
       onClose();
       router.replace('/(tabs)/home');

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
+import ScreenWithLogout from '../../components/ScreenWithLogout';
 
 export default function HomeScreen() {
   return (

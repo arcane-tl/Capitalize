@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
-import { StatusBar, Text, View } from 'react-native';
+import { TouchableOpacity, StatusBar, Text, View } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
+import { useRouter } from 'expo-router';
 
 export default function TabsLayout() {
   return (
@@ -9,9 +10,21 @@ export default function TabsLayout() {
       <View style={{ flex: 1 }} edges={['top']}>
         <Tabs
           screenOptions={{
+            headerShown: true, // Show headers
+            headerRight: () => {
+              const router = useRouter();
+              const handleLogout = () => {
+                router.replace('/');
+              };
+              return (
+                <TouchableOpacity onPress={handleLogout} style={{ marginRight: 15 }}>
+                  <Text style={{ fontSize: 24, color: '#4285f4' }}>{'⏏️'}</Text>
+                </TouchableOpacity>
+              );
+            },
             tabBarActiveTintColor: '#4285f4',
             tabBarInactiveTintColor: '#666',
-            tabBarStyle: globalStyles.tabBar, // Remove absolute positioning
+            tabBarStyle: globalStyles.tabBar,
           }}
         >
           <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ color }) => 

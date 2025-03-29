@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { auth } from '../components/database/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import RegisterUser from '../components/RegisterUser';
 import { useUserStore } from '../constants/userStore';
+import { useUserPreferences } from '../constants/userPreferences'; // Import theme store
 import { fetchUserData } from '../components/firebaseAPI';
 
 export default function LoginScreen() {
@@ -18,9 +19,11 @@ export default function LoginScreen() {
   const [isRegisterModalVisible, setRegisterModalVisible] = useState<boolean>(false);
 
   const router = useRouter();
-
-  // Access Zustand store's setUser action
   const setUser = useUserStore((state) => state.setUser);
+
+  // Access the theme preference
+  const { theme } = useUserPreferences();
+  const isDarkMode = theme === 'dark';
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -52,14 +55,29 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={globalStyles.container}>
-      <StatusBar barStyle="dark-content" />
-      <Text style={globalStyles.title}>Login to Capitalize</Text>
+    <SafeAreaView
+      style={[
+        globalStyles.container,
+        isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+      ]}
+    >
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <Text
+        style={[
+          globalStyles.title,
+          isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+        ]}
+      >
+        Login to Capitalize
+      </Text>
 
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          isDarkMode ? globalStyles.darkInput : globalStyles.lightInput,
+        ]}
         placeholder="Email"
-        placeholderTextColor="#888"
+        placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -67,9 +85,12 @@ export default function LoginScreen() {
         editable={!isLoading}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          isDarkMode ? globalStyles.darkInput : globalStyles.lightInput,
+        ]}
         placeholder="Password"
-        placeholderTextColor="#888"
+        placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -78,27 +99,27 @@ export default function LoginScreen() {
       />
 
       <TouchableOpacity
-        style={[styles.button, isLoading && styles.buttonDisabled]}
+        style={[globalStyles.button, isLoading && globalStyles.buttonDisabled]}
         onPress={handleLogin}
         disabled={isLoading}
       >
-        <Text style={styles.buttonText}>
+        <Text style={globalStyles.buttonText}>
           {isLoading ? 'Processing...' : 'Sign In'}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.registerButton, { marginTop: 10 }]}
+        style={[globalStyles.registerButton, { marginTop: 10 }]}
         onPress={() => setRegisterModalVisible(true)}
       >
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={globalStyles.buttonText}>Register</Text>
       </TouchableOpacity>
 
       {statusMessage ? (
         <Text
           style={[
-            styles.status,
-            statusMessage.includes('successful') ? styles.success : styles.error,
+            globalStyles.status,
+            statusMessage.includes('successful') ? globalStyles.success : globalStyles.error,
           ]}
         >
           {statusMessage}
@@ -114,48 +135,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#4285f4', // Blue color for the Sign In button
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#a1c2fa',
-    opacity: 0.7,
-  },
-  registerButton: {
-    backgroundColor: '#34a853', // Green color for the Register button
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  status: {
-    marginTop: 20,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  success: {
-    color: '#2ecc71',
-  },
-  error: {
-    color: '#e74c3c',
-  },
-});

@@ -1,17 +1,45 @@
-import { Tabs } from 'expo-router';
-import { TouchableOpacity, StatusBar, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
+import { Tabs, useRouter } from 'expo-router';
+import { TouchableOpacity, StatusBar, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../../components/css/styles';
-import { useRouter } from 'expo-router';
+import { useUserPreferences } from '../../constants/userPreferences';
 
 export default function TabsLayout() {
+  const { theme } = useUserPreferences();
+  const isDarkMode = theme === 'dark';
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <View style={{ flex: 1 }} edges={['top']}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <View
+        style={[
+          isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+          { flex: 1 },
+        ]}
+      >
         <Tabs
           screenOptions={{
-            headerShown: true, // Show headers
+            ...(isDarkMode
+              ? globalStyles.darkTabScreenOptions
+              : globalStyles.lightTabScreenOptions),
+            tabBarShowLabel: false,
+            tabBarStyle: {
+              marginTop: 10, // Add margin to the top
+              height: 85, // Adjust height for better spacing
+              justifyContent: 'center', // Center icons vertically
+              alignItems: 'center', // Center icons horizontally
+              backgroundColor: isDarkMode
+                ? globalStyles.darkContainer.backgroundColor
+                : globalStyles.lightContainer.backgroundColor,
+              borderTopWidth: 0, // Remove border for a cleaner look
+            },
+            headerStyle: {
+              height: 110, // Increase the height of the header area
+              backgroundColor: isDarkMode
+                ? globalStyles.darkContainer.backgroundColor
+                : globalStyles.lightContainer.backgroundColor,
+              borderBottomWidth: 0, // Remove border for a cleaner look
+            },
             headerLeft: () => {
               const router = useRouter();
               const handleProfile = () => {
@@ -19,7 +47,11 @@ export default function TabsLayout() {
               };
               return (
                 <TouchableOpacity onPress={handleProfile} style={{ marginLeft: 15 }}>
-                  <Ionicons name="person-outline" size={24} color="#4285f4" />
+                  <Ionicons
+                    name="person-outline"
+                    size={24}
+                    color={isDarkMode ? '#fff' : '#4285f4'}
+                  />
                 </TouchableOpacity>
               );
             },
@@ -30,48 +62,66 @@ export default function TabsLayout() {
               };
               return (
                 <TouchableOpacity onPress={handleLogout} style={{ marginRight: 15 }}>
-                  <Ionicons name="log-out-outline" size={24} color="#4285f4" />
+                  <Ionicons
+                    name="log-out-outline"
+                    size={24}
+                    color={isDarkMode ? '#fff' : '#4285f4'}
+                  />
                 </TouchableOpacity>
               );
             },
-            tabBarActiveTintColor: '#4285f4',
-            tabBarInactiveTintColor: '#666',
-            tabBarStyle: globalStyles.tabBar,
           }}
         >
           <Tabs.Screen
             name="home"
             options={{
               title: 'Home',
-              tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={24} color={color} />,
+              tabBarIcon: ({ color }) => (
+                <Ionicons
+                  name="home-outline"
+                  size={24}
+                  color={isDarkMode ? '#fff' : '#4285f4'}
+                />
+              ),
             }}
           />
           <Tabs.Screen
             name="dashboard"
             options={{
               title: 'Dashboard',
-              tabBarIcon: ({ color }) => <Ionicons name="stats-chart-outline" size={24} color={color} />,
+              tabBarIcon: ({ color }) => (
+                <Ionicons
+                  name="stats-chart-outline"
+                  size={24}
+                  color={isDarkMode ? '#fff' : '#4285f4'}
+                />
+              ),
             }}
           />
           <Tabs.Screen
             name="assets"
             options={{
               title: 'Assets',
-              tabBarIcon: ({ color }) => <Ionicons name="wallet-outline" size={24} color={color} />,
+              tabBarIcon: ({ color }) => (
+                <Ionicons
+                  name="wallet-outline"
+                  size={24}
+                  color={isDarkMode ? '#fff' : '#4285f4'}
+                />
+              ),
             }}
           />
           <Tabs.Screen
             name="events"
             options={{
               title: 'Events',
-              tabBarIcon: ({ color }) => <Ionicons name="calendar-outline" size={24} color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="settings"
-            options={{
-              title: 'Settings',
-              tabBarIcon: ({ color }) => <Ionicons name="settings-outline" size={24} color={color} />,
+              tabBarIcon: ({ color }) => (
+                <Ionicons
+                  name="calendar-outline"
+                  size={24}
+                  color={isDarkMode ? '#fff' : '#4285f4'}
+                />
+              ),
             }}
           />
         </Tabs>

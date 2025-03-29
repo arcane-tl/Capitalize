@@ -52,7 +52,7 @@ export default function TabsLayout() {
                   <Ionicons
                     name="person-outline"
                     size={24}
-                    color={isDarkMode ? '#fff' : '#4285f4'}
+                    color={isDarkMode ? '#fff' : '#88888'}
                   />
                 </TouchableOpacity>
               );
@@ -67,7 +67,7 @@ export default function TabsLayout() {
                   <Ionicons
                     name="log-out-outline"
                     size={24}
-                    color={isDarkMode ? '#fff' : '#4285f4'}
+                    color={isDarkMode ? '#fff' : '#88888'}
                   />
                 </TouchableOpacity>
               );
@@ -78,11 +78,11 @@ export default function TabsLayout() {
             name="home"
             options={{
               title: 'Home',
-              tabBarIcon: ({ color }) => (
+              tabBarIcon: ({ focused }) => (
                 <Ionicons
                   name="home-outline"
                   size={24}
-                  color={isDarkMode ? '#fff' : '#4285f4'}
+                  color={focused ? (isDarkMode ? '#4285f4' : '#4285f4') : (isDarkMode ? '#fff' : '#88888')}
                 />
               ),
             }}
@@ -91,11 +91,11 @@ export default function TabsLayout() {
             name="dashboard"
             options={{
               title: 'Dashboard',
-              tabBarIcon: ({ color }) => (
+              tabBarIcon: ({ focused }) => (
                 <Ionicons
                   name="stats-chart-outline"
                   size={24}
-                  color={isDarkMode ? '#fff' : '#4285f4'}
+                  color={focused ? (isDarkMode ? '#4285f4' : '#4285f4') : (isDarkMode ? '#fff' : '#88888')}
                 />
               ),
             }}
@@ -104,11 +104,11 @@ export default function TabsLayout() {
             name="assets"
             options={{
               title: 'Assets',
-              tabBarIcon: ({ color }) => (
+              tabBarIcon: ({ focused }) => (
                 <Ionicons
                   name="wallet-outline"
                   size={24}
-                  color={isDarkMode ? '#fff' : '#4285f4'}
+                  color={focused ? (isDarkMode ? '#4285f4' : '#4285f4') : (isDarkMode ? '#fff' : '#88888')}
                 />
               ),
             }}
@@ -117,11 +117,11 @@ export default function TabsLayout() {
             name="events"
             options={{
               title: 'Events',
-              tabBarIcon: ({ color }) => (
+              tabBarIcon: ({ focused }) => (
                 <Ionicons
                   name="calendar-outline"
                   size={24}
-                  color={isDarkMode ? '#fff' : '#4285f4'}
+                  color={focused ? (isDarkMode ? '#4285f4' : '#4285f4') : (isDarkMode ? '#fff' : '#88888')}
                 />
               ),
             }}

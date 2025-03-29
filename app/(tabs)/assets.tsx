@@ -1,22 +1,19 @@
 import React from 'react';
 import { Text, View, ViewStyle, TextStyle } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
-import { useUserStore } from '../../constants/userStore';
 import { useUserPreferences } from '../../constants/userPreferences';
 
 export default function AssetsScreen() {
-  const user = useUserStore((state) => state.user);
   const { theme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
 
   return (
     <View
-      style={[
-        globalStyles.container as ViewStyle,
+      style={
         isDarkMode
-          ? (globalStyles.darkContainer as ViewStyle)
-          : (globalStyles.lightContainer as ViewStyle),
-      ]}
+          ? (globalStyles.darkContent as ViewStyle)
+          : (globalStyles.lightContent as ViewStyle)
+      }
     >
       <Text
         style={

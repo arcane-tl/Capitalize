@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, Switch } from 'react-native';
+import { Text, View, StyleSheet, Switch, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
 import { globalStyles } from '../components/css/styles';
 import { useUserPreferences } from '../constants/userPreferences'; // Import the theme store
 
@@ -14,14 +14,18 @@ export default function SettingsScreen() {
   return (
     <View
       style={[
-        globalStyles.container,
-        isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+        globalStyles.container as ViewStyle, // Explicitly cast to ViewStyle
+        isDarkMode
+          ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
+          : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
       ]}
     >
       <Text
         style={[
-          globalStyles.text,
-          isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+          globalStyles.text as TextStyle, // Explicitly cast to TextStyle
+          isDarkMode
+            ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
+            : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
         ]}
       >
         Theme
@@ -29,8 +33,10 @@ export default function SettingsScreen() {
       <View style={styles.switchContainer}>
         <Text
           style={[
-            globalStyles.text,
-            isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+            globalStyles.text as TextStyle, // Explicitly cast to TextStyle
+            isDarkMode
+              ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
+              : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
           ]}
         >
           {isDarkMode ? 'Dark Mode' : 'Light Mode'}
@@ -49,5 +55,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
     paddingHorizontal: 10,
-  },
+  } as ViewStyle,
 });

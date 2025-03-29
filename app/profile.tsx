@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, Switch } from 'react-native';
+import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
 import { globalStyles } from '../components/css/styles';
@@ -33,8 +33,8 @@ export default function ProfileScreen() {
           headerTitle: '',
           headerStyle: {
             backgroundColor: isDarkMode
-              ? globalStyles.darkContainer.backgroundColor
-              : globalStyles.lightContainer.backgroundColor,
+              ? (globalStyles.darkContainer.backgroundColor as string)
+              : (globalStyles.lightContainer.backgroundColor as string),
           },
           headerRight: () => (
             <TouchableOpacity onPress={goBack} style={{ marginRight: 20 }}>
@@ -49,7 +49,9 @@ export default function ProfileScreen() {
       />
       <View
         style={[
-          isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+          isDarkMode
+            ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
+            : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
           {
             flex: 1,
             flexDirection: 'column',
@@ -58,7 +60,7 @@ export default function ProfileScreen() {
           },
         ]}
       >
-        <View style={[globalStyles.container]}>
+        <View style={[globalStyles.container as ViewStyle]}>
           <TouchableOpacity
             onPress={navigateToSettings}
             style={{
@@ -75,7 +77,9 @@ export default function ProfileScreen() {
             />
             <Text
               style={[
-                isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+                isDarkMode
+                  ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
+                  : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
                 { marginLeft: 10 },
               ]}
             >
@@ -100,7 +104,9 @@ export default function ProfileScreen() {
             />
             <Text
               style={[
-                isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+                isDarkMode
+                  ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
+                  : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
                 { marginLeft: 10 },
               ]}
             >
@@ -120,7 +126,7 @@ export default function ProfileScreen() {
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
               }}
             >
               <View
@@ -132,7 +138,6 @@ export default function ProfileScreen() {
                   alignItems: 'center',
                 }}
               >
-
                 {/* Dark Mode Toggle */}
                 <View
                   style={{
@@ -143,8 +148,8 @@ export default function ProfileScreen() {
                   <Text
                     style={[
                       isDarkMode
-                        ? globalStyles.darkText
-                        : globalStyles.lightText,
+                        ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
+                        : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
                       { marginRight: 10 },
                     ]}
                   >

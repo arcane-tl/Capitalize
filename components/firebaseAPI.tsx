@@ -1,8 +1,8 @@
-import { getDatabase, ref, set, update, remove, push, get } from 'firebase/database';
+import { ref, set, update, remove, push, get } from 'firebase/database';
 import { database } from './database/firebaseConfig';
 
 // Initialize the Realtime Database instance
-const db = getDatabase(database);
+const db = database;
 
 /**
  * User-related functions

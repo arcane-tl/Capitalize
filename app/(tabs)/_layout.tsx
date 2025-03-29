@@ -1,5 +1,5 @@
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity, StatusBar, View } from 'react-native';
+import { TouchableOpacity, StatusBar, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../../components/css/styles';
 import { useUserPreferences } from '../../constants/userPreferences';
@@ -13,7 +13,9 @@ export default function TabsLayout() {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <View
         style={[
-          isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+          isDarkMode
+            ? (globalStyles.darkContainer as ViewStyle)
+            : (globalStyles.lightContainer as ViewStyle),
           { flex: 1 },
         ]}
       >

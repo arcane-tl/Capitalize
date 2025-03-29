@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
+import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
 import { globalStyles } from '../components/css/styles';
@@ -11,10 +11,7 @@ export default function ProfileScreen() {
   const isDarkMode = theme === 'dark';
 
   const [modalVisible, setModalVisible] = useState(false);
-
-  const navigateToSettings = () => {
-    router.push('/settings');
-  };
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false); // State for settings modal
 
   const goBack = () => {
     router.replace('/home');
@@ -50,8 +47,8 @@ export default function ProfileScreen() {
       <View
         style={[
           isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
-            : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
+            ? (globalStyles.darkContainer as ViewStyle)
+            : (globalStyles.lightContainer as ViewStyle),
           {
             flex: 1,
             flexDirection: 'column',
@@ -61,8 +58,9 @@ export default function ProfileScreen() {
         ]}
       >
         <View style={[globalStyles.container as ViewStyle]}>
+          {/* Open Settings Modal */}
           <TouchableOpacity
-            onPress={navigateToSettings}
+            onPress={() => setSettingsModalVisible(true)}
             style={{
               flexDirection: 'row',
               alignSelf: 'flex-start',
@@ -78,8 +76,8 @@ export default function ProfileScreen() {
             <Text
               style={[
                 isDarkMode
-                  ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
-                  : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
+                  ? (globalStyles.darkText as TextStyle)
+                  : (globalStyles.lightText as TextStyle),
                 { marginLeft: 10 },
               ]}
             >
@@ -105,8 +103,8 @@ export default function ProfileScreen() {
             <Text
               style={[
                 isDarkMode
-                  ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
-                  : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
+                  ? (globalStyles.darkText as TextStyle)
+                  : (globalStyles.lightText as TextStyle),
                 { marginLeft: 10 },
               ]}
             >
@@ -148,8 +146,8 @@ export default function ProfileScreen() {
                   <Text
                     style={[
                       isDarkMode
-                        ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
-                        : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
+                        ? (globalStyles.darkText as TextStyle)
+                        : (globalStyles.lightText as TextStyle),
                       { marginRight: 10 },
                     ]}
                   >
@@ -165,6 +163,58 @@ export default function ProfileScreen() {
 
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
+                  style={{ marginTop: 20 }}
+                >
+                  <Text
+                    style={{
+                      color: isDarkMode ? '#fff' : '#4285f4',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Close
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* Settings Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={settingsModalVisible}
+            onRequestClose={() => setSettingsModalVisible(false)}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              <View
+                style={{
+                  width: 300,
+                  backgroundColor: isDarkMode ? '#333' : '#fff',
+                  borderRadius: 10,
+                  padding: 20,
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={[
+                    isDarkMode
+                      ? (globalStyles.darkText as TextStyle)
+                      : (globalStyles.lightText as TextStyle),
+                    { marginBottom: 20 },
+                  ]}
+                >
+                  Settings Modal Content
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => setSettingsModalVisible(false)}
                   style={{ marginTop: 20 }}
                 >
                   <Text

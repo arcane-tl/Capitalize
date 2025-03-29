@@ -14,7 +14,6 @@ export default function RootLayout() {
 
   // Access user preferences and system theme
   const { theme: userTheme } = useUserPreferences();
-  const systemTheme = Appearance.getColorScheme();
   const isDarkMode = userTheme === 'dark';
 
   useEffect(() => {

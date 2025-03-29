@@ -1,5 +1,6 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
+// Define global styles
 export const globalStyles = StyleSheet.create({
   // View-specific styles
   safeArea: {
@@ -113,32 +114,31 @@ export const globalStyles = StyleSheet.create({
   lightText: {
     color: '#000000', // Black text for light mode
   } as TextStyle,
-
-  // Tab screen options styles for light mode
-  lightTabScreenOptions: {
-    headerStyle: {
-      backgroundColor: '#fff', // Light mode header background
-    },
-    headerTintColor: '#000', // Light mode header text color
-    tabBarStyle: {
-      backgroundColor: '#fff', // Light mode tab bar background
-      borderTopColor: '#ccc', // Light mode tab bar border
-    },
-    tabBarActiveTintColor: '#4285f4',
-    tabBarInactiveTintColor: '#666',
-  },
-
-  // Tab screen options styles for dark mode
-  darkTabScreenOptions: {
-    headerStyle: {
-      backgroundColor: '#000', // Dark mode header background
-    },
-    headerTintColor: '#fff', // Dark mode header text color
-    tabBarStyle: {
-      backgroundColor: '#000', // Dark mode tab bar background
-      borderTopColor: '#333', // Dark mode tab bar border
-    },
-    tabBarActiveTintColor: '#4285f4',
-    tabBarInactiveTintColor: '#888',
-  },
 });
+
+// Define tab screen options as plain objects
+export const lightTabScreenOptions = {
+  headerStyle: {
+    backgroundColor: '#fff', // Light mode header background
+  },
+  headerTintColor: '#000', // Light mode header text color
+  tabBarStyle: {
+    backgroundColor: '#fff', // Light mode tab bar background
+    borderTopColor: '#ccc', // Light mode tab bar border
+  },
+  tabBarActiveTintColor: '#4285f4',
+  tabBarInactiveTintColor: '#666',
+};
+
+export const darkTabScreenOptions = {
+  headerStyle: {
+    backgroundColor: '#000', // Dark mode header background
+  },
+  headerTintColor: '#fff', // Dark mode header text color
+  tabBarStyle: {
+    backgroundColor: '#000', // Dark mode tab bar background
+    borderTopColor: '#333', // Dark mode tab bar border
+  },
+  tabBarActiveTintColor: '#4285f4',
+  tabBarInactiveTintColor: '#888',
+};

@@ -1,11 +1,9 @@
 import React from 'react';
 import { ScrollView, Text, ViewStyle, TextStyle } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
-import { useUserStore } from '../../constants/userStore';
 import { useUserPreferences } from '../../constants/userPreferences';
 
 export default function DashboardScreen() {
-  const user = useUserStore((state) => state.user);
   const { theme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
 

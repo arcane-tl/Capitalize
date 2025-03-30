@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../components/database/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, View, StatusBar, Appearance, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
+import { Text, View, StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { globalStyles } from '../components/css/styles';
 import { useUserPreferences } from '../constants/userPreferences';
 
@@ -36,17 +36,17 @@ export default function RootLayout() {
     return (
       <SafeAreaView
         style={[
-          globalStyles.safeArea as ViewStyle, // Explicitly cast to ViewStyle
+          globalStyles.safeArea as ViewStyle,
           isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
-            : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
+            ? (globalStyles.darkContainer as ViewStyle)
+            : (globalStyles.lightContainer as ViewStyle),
         ]}
       >
         <Text
           style={
             isDarkMode
-              ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
-              : (globalStyles.lightText as TextStyle) // Explicitly cast to TextStyle
+              ? (globalStyles.darkText as TextStyle)
+              : (globalStyles.lightText as TextStyle)
           }
         >
           Loading...
@@ -58,10 +58,10 @@ export default function RootLayout() {
   return (
     <View
       style={[
-        globalStyles.safeArea as ViewStyle, // Explicitly cast to ViewStyle
+        globalStyles.safeArea as ViewStyle,
         isDarkMode
-          ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
-          : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
+          ? (globalStyles.darkContainer as ViewStyle)
+          : (globalStyles.lightContainer as ViewStyle),
       ]}
     >
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />

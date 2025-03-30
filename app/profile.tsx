@@ -1,25 +1,121 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle } from 'react-native';
+import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle, FlexAlignType } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
-import { globalStyles } from '../components/css/styles';
+import { globalStyles, profileStyles, colors } from '../components/css/styles';
 import { useUserPreferences } from '../constants/userPreferences';
+
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
+const IconButton = ({
+  iconName,
+  text,
+  onPress,
+  isDarkMode,
+  style,
+}: {
+  iconName: IoniconsName;
+  text: string;
+  onPress: () => void;
+  isDarkMode: boolean;
+  style?: ViewStyle;
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[
+      profileStyles.buttonContainer,
+      style,
+      {
+        backgroundColor: isDarkMode
+          ? colors.darkBackground
+          : colors.lightBackground,
+      },
+    ]}
+  >
+    <Ionicons
+      name={iconName}
+      size={24}
+      color={isDarkMode ? colors.darkIconOutline : colors.lightIconOutline}
+    />
+    <Text
+      style={[
+        profileStyles.buttonText,
+        { color: isDarkMode ? colors.darkText : colors.lightText },
+      ]}
+    >
+      {text}
+    </Text>
+  </TouchableOpacity>
+);
+
+const CustomModal = ({
+  visible,
+  onClose,
+  children,
+  isDarkMode,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  isDarkMode: boolean;
+}) => (
+  <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
+    <View style={profileStyles.modalContainer}>
+      <View
+        style={[
+          profileStyles.modalContent,
+          { backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground },
+        ]}
+      >
+        {children}
+        <TouchableOpacity onPress={onClose}>
+          <Text
+            style={[
+              profileStyles.modalCloseText,
+              { color: isDarkMode ? colors.darkText : colors.lightText },
+            ]}
+          >
+            Close
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+);
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { theme, setTheme } = useUserPreferences(); // Access and update the theme preference
+  const { theme, setTheme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [settingsModalVisible, setSettingsModalVisible] = useState(false); // State for settings modal
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
-  const goBack = () => {
-    router.replace('/home');
-  };
+  const goBack = () => router.replace('/home');
+  const handleLogout = () => router.replace('/');
+  const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
 
-  const toggleDarkMode = (value: boolean) => {
-    setTheme(value ? 'dark' : 'light'); // Toggle between dark and light themes
-  };
+  // Button configuration array
+  const buttons = [
+    {
+      iconName: 'settings-outline' as IoniconsName,
+      text: 'Profile Settings',
+      onPress: () => setSettingsModalVisible(true),
+      style: { alignSelf: 'flex-start', marginTop: 40, marginBottom: 40, } as ViewStyle,
+    },
+    {
+      iconName: 'moon-outline' as IoniconsName,
+      text: 'Theme',
+      onPress: () => setModalVisible(true),
+      style: { alignSelf: 'flex-start', marginTop: 0, } as ViewStyle,
+    },
+    {
+      iconName: 'log-out-outline' as IoniconsName,
+      text: 'Logout',
+      onPress: handleLogout,
+      style: { alignSelf: 'center', marginTop: 'auto', marginBottom: 80, } as ViewStyle,
+    },
+  ];
 
   return (
     <>
@@ -29,16 +125,14 @@ export default function ProfileScreen() {
           headerBackVisible: false,
           headerTitle: '',
           headerStyle: {
-            backgroundColor: isDarkMode
-              ? (globalStyles.darkContainer.backgroundColor as string)
-              : (globalStyles.lightContainer.backgroundColor as string),
+            backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground,
           },
           headerRight: () => (
             <TouchableOpacity onPress={goBack} style={{ marginRight: 20 }}>
               <Ionicons
                 name="chevron-forward-outline"
                 size={24}
-                color={isDarkMode ? '#fff' : '#4285f4'}
+                color={isDarkMode ? colors.darkIconOutline : colors.lightIconOutline}
               />
             </TouchableOpacity>
           ),
@@ -46,189 +140,61 @@ export default function ProfileScreen() {
       />
       <View
         style={[
-          isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle)
-            : (globalStyles.lightContainer as ViewStyle),
+          isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
           {
             flex: 1,
             flexDirection: 'column',
             justifyContent: 'flex-start',
-            alignItems: 'flex-start',
+            alignItems: 'stretch',
           },
         ]}
       >
-        <View style={[globalStyles.container as ViewStyle]}>
-          {/* Open Settings Modal */}
-          <TouchableOpacity
-            onPress={() => setSettingsModalVisible(true)}
-            style={{
-              flexDirection: 'row',
-              alignSelf: 'flex-start',
-              marginBottom: 20,
-              alignItems: 'center',
-            }}
-          >
-            <Ionicons
-              name="settings-outline"
-              size={24}
-              color={isDarkMode ? '#fff' : '#4285f4'}
+        <View style={globalStyles.profileContainer}>
+          {buttons.map((button, index) => (
+            <IconButton
+              key={index}
+              iconName={button.iconName}
+              text={button.text}
+              onPress={button.onPress}
+              isDarkMode={isDarkMode}
+              style={button.style}
             />
-            <Text
-              style={[
-                isDarkMode
-                  ? (globalStyles.darkText as TextStyle)
-                  : (globalStyles.lightText as TextStyle),
-                { marginLeft: 10 },
-              ]}
-            >
-              Profile Settings
-            </Text>
-          </TouchableOpacity>
+          ))}
 
-          {/* Theme Selection Button */}
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            style={{
-              flexDirection: 'row',
-              alignSelf: 'flex-start',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <Ionicons
-              name="moon-outline"
-              size={24}
-              color={isDarkMode ? '#fff' : '#4285f4'}
-            />
-            <Text
-              style={[
-                isDarkMode
-                  ? (globalStyles.darkText as TextStyle)
-                  : (globalStyles.lightText as TextStyle),
-                { marginLeft: 10 },
-              ]}
-            >
-              Theme
-            </Text>
-          </TouchableOpacity>
-
-          {/* Theme Selection Modal */}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              <View
-                style={{
-                  width: 300,
-                  backgroundColor: isDarkMode ? '#333' : '#fff',
-                  borderRadius: 10,
-                  padding: 20,
-                  alignItems: 'center',
-                }}
+          {/* Modals */}
+          <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} isDarkMode={isDarkMode}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text
+                style={[
+                  { marginRight: 10 },
+                  { color: isDarkMode ? colors.darkText : colors.lightText },
+                ]}
               >
-                {/* Dark Mode Toggle */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text
-                    style={[
-                      isDarkMode
-                        ? (globalStyles.darkText as TextStyle)
-                        : (globalStyles.lightText as TextStyle),
-                      { marginRight: 10 },
-                    ]}
-                  >
-                    Dark Mode
-                  </Text>
-                  <Switch
-                    value={isDarkMode}
-                    onValueChange={toggleDarkMode}
-                    thumbColor={isDarkMode ? '#fff' : '#4285f4'}
-                    trackColor={{ false: '#ccc', true: '#555' }}
-                  />
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={{ marginTop: 20 }}
-                >
-                  <Text
-                    style={{
-                      color: isDarkMode ? '#fff' : '#4285f4',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Close
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                Dark Mode
+              </Text>
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleDarkMode}
+                thumbColor={isDarkMode ? colors.darkText : colors.lightText}
+                trackColor={{ false: colors.borderColorLight, true: colors.borderColorDark }}
+              />
             </View>
-          </Modal>
+          </CustomModal>
 
-          {/* Settings Modal */}
-          <Modal
-            animationType="slide"
-            transparent={true}
+          <CustomModal
             visible={settingsModalVisible}
-            onRequestClose={() => setSettingsModalVisible(false)}
+            onClose={() => setSettingsModalVisible(false)}
+            isDarkMode={isDarkMode}
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              }}
+            <Text
+              style={[
+                { marginBottom: 20 },
+                isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+              ]}
             >
-              <View
-                style={{
-                  width: 300,
-                  backgroundColor: isDarkMode ? '#333' : '#fff',
-                  borderRadius: 10,
-                  padding: 20,
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={[
-                    isDarkMode
-                      ? (globalStyles.darkText as TextStyle)
-                      : (globalStyles.lightText as TextStyle),
-                    { marginBottom: 20 },
-                  ]}
-                >
-                  Settings Modal Content
-                </Text>
-
-                <TouchableOpacity
-                  onPress={() => setSettingsModalVisible(false)}
-                  style={{ marginTop: 20 }}
-                >
-                  <Text
-                    style={{
-                      color: isDarkMode ? '#fff' : '#4285f4',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Close
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+              Settings Modal Content
+            </Text>
+          </CustomModal>
         </View>
       </View>
     </>

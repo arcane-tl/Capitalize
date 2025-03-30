@@ -1,42 +1,60 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
+// Define a centralized color palette
+export const colors = {
+  lightBackground: 'rgba(255, 255, 255, 1)',
+  darkBackground: 'rgba(0, 0, 0, 1)',
+  lightText: 'rgba(0, 0, 0, 1)',
+  darkText: 'rgba(255, 255, 255, 1)',
+  primary: 'rgba(66, 133, 244, 1)',
+  secondary: 'rgba(52, 168, 83, 1)',
+  borderColorLight: 'rgba(204, 204, 204, 1)',
+  borderColorDark: 'rgba(85, 85, 85, 1)',
+  lightIconOutline: 'rgba(0, 0, 0, 1)',
+  darkIconOutline: 'rgba(255, 255, 255, 1)',
+};
+
 // Define global styles
 export const globalStyles = StyleSheet.create({
   // View-specific styles
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff', // Default background for light mode
+    backgroundColor: 'rgba(255, 255, 255, 1)',
   } as ViewStyle,
-  container: {
+  loginContainer: {
     flex: 1,
-    alignItems: 'center', // Center horizontally
-    justifyContent: 'center', // Center vertically
-    paddingHorizontal: 20, // Add padding for content
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  } as ViewStyle,
+  profileContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
   } as ViewStyle,
   darkContainer: {
     flex: 1,
-    backgroundColor: '#000000' as string, // Explicitly cast to string
+    backgroundColor: 'rgba(0, 0, 0, 1)',
   } as ViewStyle,
   lightContainer: {
     flex: 1,
-    backgroundColor: '#ffffff' as string, // Explicitly cast to string
+    backgroundColor: 'rgba(255, 255, 255, 1)',
   } as ViewStyle,
   darkContent: {
     flex: 1,
-    backgroundColor: '#000000', // Darker background for content in dark mode
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     alignItems: 'center',
     justifyContent: 'center',
   } as ViewStyle,
   lightContent: {
     flex: 1,
-    backgroundColor: '#f9f9f9', // Lighter background for content in light mode
+    backgroundColor: 'rgba(249, 249, 249, 1)',
     alignItems: 'center',
     justifyContent: 'center',
   } as ViewStyle,
   tabBar: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderTopColor: 'rgba(204, 204, 204, 1)',
   } as ViewStyle,
 
   // Input styles
@@ -49,30 +67,30 @@ export const globalStyles = StyleSheet.create({
     fontSize: 16,
   } as TextStyle,
   lightInput: {
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    color: '#000',
+    borderColor: 'rgba(204, 204, 204, 1)',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    color: 'rgba(0, 0, 0, 1)',
   } as TextStyle,
   darkInput: {
-    borderColor: '#555',
-    backgroundColor: '#222',
-    color: '#fff',
+    borderColor: 'rgba(85, 85, 85, 1)',
+    backgroundColor: 'rgba(34, 34, 34, 1)',
+    color: 'rgba(255, 255, 255, 1)',
   } as TextStyle,
 
   // Button styles
   button: {
-    backgroundColor: '#4285f4',
+    backgroundColor: 'rgba(66, 133, 244, 1)',
     padding: 10,
     borderRadius: 5,
     width: '100%',
     alignItems: 'center',
   } as ViewStyle,
   buttonDisabled: {
-    backgroundColor: '#a1c2fa',
+    backgroundColor: 'rgba(161, 194, 250, 1)',
     opacity: 0.7,
   } as ViewStyle,
   registerButton: {
-    backgroundColor: '#34a853',
+    backgroundColor: 'rgba(52, 168, 83, 1)',
     padding: 10,
     borderRadius: 5,
     width: '100%',
@@ -80,7 +98,7 @@ export const globalStyles = StyleSheet.create({
   } as ViewStyle,
   buttonText: {
     fontSize: 16,
-    color: '#fff',
+    color: 'rgba(255, 255, 255, 1)',
     textAlign: 'center',
   } as TextStyle,
 
@@ -91,10 +109,10 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
   } as TextStyle,
   success: {
-    color: '#2ecc71',
+    color: 'rgba(46, 204, 113, 1)',
   } as TextStyle,
   error: {
-    color: '#e74c3c',
+    color: 'rgba(231, 76, 60, 1)',
   } as TextStyle,
 
   // Text-specific styles
@@ -102,43 +120,71 @@ export const globalStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333', // Darker text for readability
+    color: 'rgba(51, 51, 51, 1)',
   } as TextStyle,
   text: {
     fontSize: 16,
-    color: '#666', // Softer color for secondary text
+    color: 'rgba(102, 102, 102, 1)',
   } as TextStyle,
   darkText: {
-    color: '#ffffff', // White text for dark mode
+    color: 'rgba(255, 255, 255, 1)',
   } as TextStyle,
   lightText: {
-    color: '#000000', // Black text for light mode
+    color: 'rgba(0, 0, 0, 1)',
   } as TextStyle,
 });
 
 // Define tab screen options as plain objects
 export const lightTabScreenOptions = {
   headerStyle: {
-    backgroundColor: '#fff', // Light mode header background
+    backgroundColor: 'rgba(255, 255, 255, 1)',
   },
-  headerTintColor: '#000', // Light mode header text color
+  headerTintColor: 'rgba(0, 0, 0, 1)',
   tabBarStyle: {
-    backgroundColor: '#fff', // Light mode tab bar background
-    borderTopColor: '#ccc', // Light mode tab bar border
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderTopColor: 'rgba(204, 204, 204, 1)',
   },
-  tabBarActiveTintColor: '#4285f4',
-  tabBarInactiveTintColor: '#666',
+  tabBarActiveTintColor: 'rgba(66, 133, 244, 1)',
+  tabBarInactiveTintColor: 'rgba(102, 102, 102, 1)',
 };
 
 export const darkTabScreenOptions = {
   headerStyle: {
-    backgroundColor: '#000', // Dark mode header background
+    backgroundColor: 'rgba(0, 0, 0, 1)',
   },
-  headerTintColor: '#fff', // Dark mode header text color
+  headerTintColor: 'rgba(255, 255, 255, 1)',
   tabBarStyle: {
-    backgroundColor: '#000', // Dark mode tab bar background
-    borderTopColor: '#333', // Dark mode tab bar border
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    borderTopColor: 'rgba(51, 51, 51, 1)',
   },
-  tabBarActiveTintColor: '#4285f4',
-  tabBarInactiveTintColor: '#888',
+  tabBarActiveTintColor: 'rgba(66, 133, 244, 1)',
+  tabBarInactiveTintColor: 'rgba(136, 136, 136, 1)',
 };
+
+export const profileStyles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+  } as ViewStyle,
+  buttonText: {
+    marginLeft: 10,
+  } as TextStyle,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(55, 55, 55, 0.6)',
+  } as ViewStyle,
+  modalContent: {
+    width: 300,
+    borderRadius: 10,
+    padding: 20,
+    opacity: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  } as ViewStyle,
+  modalCloseText: {
+    marginTop: 20,
+    fontWeight: 'bold',
+  } as TextStyle,
+});

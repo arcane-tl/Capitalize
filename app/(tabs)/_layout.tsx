@@ -20,7 +20,7 @@ const HeaderIcon = ({
   onPress,
   isDarkMode,
 }: {
-  name: keyof typeof Ionicons.glyphMap; // Restrict name to valid Ionicons names
+  name: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
   isDarkMode: boolean;
 }) => (
@@ -74,19 +74,6 @@ export default function TabsLayout() {
                 <HeaderIcon
                   name="person-outline"
                   onPress={handleProfile}
-                  isDarkMode={isDarkMode}
-                />
-              );
-            },
-            headerRight: () => {
-              const router = useRouter();
-              const handleLogout = () => {
-                router.replace('/');
-              };
-              return (
-                <HeaderIcon
-                  name="log-out-outline"
-                  onPress={handleLogout}
                   isDarkMode={isDarkMode}
                 />
               );

@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
   StatusBar,
-} from 'react-native'; // Added ViewStyle and TextStyle
+} from 'react-native';
 import { auth } from '../components/database/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
@@ -15,7 +15,7 @@ import { globalStyles } from '../components/css/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RegisterUser from '../components/RegisterUser';
 import { useUserStore } from '../constants/userStore';
-import { useUserPreferences } from '../constants/userPreferences'; // Import theme store
+import { useUserPreferences } from '../constants/userPreferences';
 import { fetchUserData } from '../components/firebaseAPI';
 
 export default function LoginScreen() {
@@ -64,19 +64,19 @@ export default function LoginScreen() {
   return (
     <SafeAreaView
       style={[
-        globalStyles.container as ViewStyle, // Explicitly cast to ViewStyle
+        globalStyles.loginContainer as ViewStyle,
         isDarkMode
-          ? (globalStyles.darkContainer as ViewStyle) // Explicitly cast to ViewStyle
-          : (globalStyles.lightContainer as ViewStyle), // Explicitly cast to ViewStyle
+          ? (globalStyles.darkContainer as ViewStyle)
+          : (globalStyles.lightContainer as ViewStyle),
       ]}
     >
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Text
         style={[
-          globalStyles.title as TextStyle, // Explicitly cast to TextStyle
+          globalStyles.title as TextStyle,
           isDarkMode
-            ? (globalStyles.darkText as TextStyle) // Explicitly cast to TextStyle
-            : (globalStyles.lightText as TextStyle), // Explicitly cast to TextStyle
+            ? (globalStyles.darkText as TextStyle)
+            : (globalStyles.lightText as TextStyle),
         ]}
       >
         Login to Capitalize
@@ -84,10 +84,10 @@ export default function LoginScreen() {
 
       <TextInput
         style={[
-          globalStyles.input as TextStyle, // Explicitly cast to ViewStyle
+          globalStyles.input as TextStyle,
           isDarkMode
-            ? (globalStyles.darkInput as TextStyle) // Explicitly cast to ViewStyle
-            : (globalStyles.lightInput as TextStyle), // Explicitly cast to ViewStyle
+            ? (globalStyles.darkInput as TextStyle)
+            : (globalStyles.lightInput as TextStyle),
         ]}
         placeholder="Email"
         placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
@@ -99,10 +99,10 @@ export default function LoginScreen() {
       />
       <TextInput
         style={[
-          globalStyles.input as TextStyle, // Explicitly cast to ViewStyle
+          globalStyles.input as TextStyle,
           isDarkMode
-            ? (globalStyles.darkInput as TextStyle) // Explicitly cast to ViewStyle
-            : (globalStyles.lightInput as TextStyle), // Explicitly cast to ViewStyle
+            ? (globalStyles.darkInput as TextStyle)
+            : (globalStyles.lightInput as TextStyle),
         ]}
         placeholder="Password"
         placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
@@ -115,25 +115,25 @@ export default function LoginScreen() {
 
       <TouchableOpacity
         style={[
-          globalStyles.button as ViewStyle, // Explicitly cast to ViewStyle
-          isLoading && (globalStyles.buttonDisabled as ViewStyle), // Explicitly cast to ViewStyle
+          globalStyles.button as ViewStyle,
+          isLoading && (globalStyles.buttonDisabled as ViewStyle),
         ]}
         onPress={handleLogin}
         disabled={isLoading}
       >
-        <Text style={globalStyles.buttonText as TextStyle}> {/* Explicitly cast to TextStyle */}
+        <Text style={globalStyles.buttonText as TextStyle}>
           {isLoading ? 'Processing...' : 'Sign In'}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[
-          globalStyles.registerButton as ViewStyle, // Explicitly cast to ViewStyle
+          globalStyles.registerButton as ViewStyle,
           { marginTop: 10 },
         ]}
         onPress={() => setRegisterModalVisible(true)}
       >
-        <Text style={globalStyles.buttonText as TextStyle}> {/* Explicitly cast to TextStyle */}
+        <Text style={globalStyles.buttonText as TextStyle}>
           Register
         </Text>
       </TouchableOpacity>
@@ -141,10 +141,10 @@ export default function LoginScreen() {
       {statusMessage ? (
         <Text
           style={[
-            globalStyles.status as TextStyle, // Explicitly cast to TextStyle
+            globalStyles.status as TextStyle,
             statusMessage.includes('successful')
-              ? (globalStyles.success as TextStyle) // Explicitly cast to TextStyle
-              : (globalStyles.error as TextStyle), // Explicitly cast to TextStyle
+              ? (globalStyles.success as TextStyle)
+              : (globalStyles.error as TextStyle),
           ]}
         >
           {statusMessage}
@@ -154,8 +154,8 @@ export default function LoginScreen() {
       <RegisterUser
         visible={isRegisterModalVisible}
         onClose={() => setRegisterModalVisible(false)}
-        initialEmail={email} // Pass email from LoginScreen
-        initialPassword={password} // Pass password from LoginScreen
+        initialEmail={email}
+        initialPassword={password}
       />
     </SafeAreaView>
   );

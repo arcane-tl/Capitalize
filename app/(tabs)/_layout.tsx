@@ -1,8 +1,10 @@
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity, StatusBar, View, ViewStyle } from 'react-native';
+import { TouchableOpacity, StatusBar, View, ViewStyle, StatusBarStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { globalStyles, darkTabScreenOptions, lightTabScreenOptions } from '../../components/css/styles';
+import { globalStyles, darkTabScreenOptions, lightTabScreenOptions, colors, customBarStyles } from '../../components/css/styles';
 import { useUserPreferences } from '../../constants/userPreferences';
+import { getStyle } from '@/components/themeUtils';
+import { get } from 'firebase/database';
 
 // Helper function to determine icon properties
 const getIconProps = (focused: boolean, isDarkMode: boolean) => {
@@ -18,29 +20,26 @@ const getIconProps = (focused: boolean, isDarkMode: boolean) => {
 const HeaderIcon = ({
   name,
   onPress,
-  isDarkMode,
 }: {
   name: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
-  isDarkMode: boolean;
 }) => (
   <TouchableOpacity onPress={onPress} style={{ marginHorizontal: 15 }}>
-    <Ionicons name={name} size={24} color={isDarkMode ? '#fff' : '#88888'} />
+    <Ionicons name={name} size={24} color={getStyle('IconOutline', colors)} />
   </TouchableOpacity>
 );
 
 export default function TabsLayout() {
   const { theme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
+  const customBarStyle = getStyle('StatusBar', customBarStyles);
 
   return (
     <>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle={customBarStyle as StatusBarStyle} />
       <View
         style={[
-          isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle)
-            : (globalStyles.lightContainer as ViewStyle),
+          getStyle('Container', globalStyles) as ViewStyle,
           { flex: 1 },
         ]}
       >
@@ -74,7 +73,6 @@ export default function TabsLayout() {
                 <HeaderIcon
                   name="person-outline"
                   onPress={handleProfile}
-                  isDarkMode={isDarkMode}
                 />
               );
             },

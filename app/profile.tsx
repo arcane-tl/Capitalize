@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
+import { Text, TextStyle, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
 import { globalStyles, profileStyles, colors } from '../components/css/styles';
 import { useUserPreferences } from '../constants/userPreferences';
 import { getAuth, signOut } from 'firebase/auth';
 import { addAuditLogEntry } from '../components/firebaseAPI';
+import { getStyle } from '@/components/themeUtils';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -28,21 +29,19 @@ const IconButton = ({
       profileStyles.buttonContainer,
       style,
       {
-        backgroundColor: isDarkMode
-          ? colors.darkBackground
-          : colors.lightBackground,
+        backgroundColor: getStyle('Background', colors),
       },
     ]}
   >
     <Ionicons
       name={iconName}
       size={24}
-      color={isDarkMode ? colors.darkIconOutline : colors.lightIconOutline}
+      color={getStyle('IconOutline', colors)}
     />
     <Text
       style={[
         profileStyles.buttonText,
-        { color: isDarkMode ? colors.darkText : colors.lightText },
+        { color: getStyle('IconOutline', colors) },
       ]}
     >
       {text}
@@ -66,7 +65,7 @@ const CustomModal = ({
       <View
         style={[
           profileStyles.modalContent,
-          { backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground },
+          { backgroundColor: getStyle('Background', colors) },
         ]}
       >
         {children}
@@ -74,7 +73,7 @@ const CustomModal = ({
           <Text
             style={[
               profileStyles.modalCloseText,
-              { color: isDarkMode ? colors.darkText : colors.lightText },
+              { color: getStyle('IconOutline', colors) },
             ]}
           >
             Close
@@ -132,7 +131,9 @@ export default function ProfileScreen() {
       Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
     }
   };
-
+  
+  const iconColor = getStyle('IconOutline', colors);
+  
   // Button configuration array
   const buttons = [
     {
@@ -163,14 +164,14 @@ export default function ProfileScreen() {
           headerBackVisible: false,
           headerTitle: '',
           headerStyle: {
-            backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground,
+            backgroundColor: getStyle('Background', colors),
           },
           headerRight: () => (
             <TouchableOpacity onPress={goBack} style={{ marginRight: 20 }}>
               <Ionicons
                 name="chevron-forward-outline"
                 size={24}
-                color={isDarkMode ? colors.darkIconOutline : colors.lightIconOutline}
+                color={iconColor}
               />
             </TouchableOpacity>
           ),
@@ -178,7 +179,7 @@ export default function ProfileScreen() {
       />
       <View
         style={[
-          isDarkMode ? globalStyles.darkContainer : globalStyles.lightContainer,
+          getStyle('Container', globalStyles) as ViewStyle,
           {
             flex: 1,
             flexDirection: 'column',
@@ -205,7 +206,7 @@ export default function ProfileScreen() {
               <Text
                 style={[
                   { marginRight: 10 },
-                  { color: isDarkMode ? colors.darkText : colors.lightText },
+                  { color: getStyle('Text', colors) },
                 ]}
               >
                 Dark Mode
@@ -213,8 +214,8 @@ export default function ProfileScreen() {
               <Switch
                 value={isDarkMode}
                 onValueChange={toggleDarkMode}
-                thumbColor={isDarkMode ? colors.darkText : colors.lightText}
-                trackColor={{ false: colors.borderColorLight, true: colors.borderColorDark }}
+                thumbColor={getStyle('IconOutline', colors)}
+                trackColor={{ false: colors.lightBorderColor, true: colors.darkBorderColor }}
               />
             </View>
           </CustomModal>
@@ -227,7 +228,7 @@ export default function ProfileScreen() {
             <Text
               style={[
                 { marginBottom: 20 },
-                isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+                getStyle('Text', globalStyles) as TextStyle,
               ]}
             >
               Settings Modal Content

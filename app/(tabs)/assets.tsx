@@ -1,25 +1,19 @@
 import React from 'react';
 import { Text, View, ViewStyle, TextStyle } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
-import { useUserPreferences } from '../../constants/userPreferences';
+import { getStyle } from '@/components/themeUtils';
+import { get } from 'firebase/database';
 
 export default function AssetsScreen() {
-  const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
-
   return (
     <View
       style={
-        isDarkMode
-          ? (globalStyles.darkContent as ViewStyle)
-          : (globalStyles.lightContent as ViewStyle)
+        getStyle('Content', globalStyles) as ViewStyle
       }
     >
       <Text
         style={
-          isDarkMode
-            ? (globalStyles.darkText as TextStyle)
-            : (globalStyles.lightText as TextStyle)
+          getStyle('Text', globalStyles) as TextStyle
         }
       >
         Your assets content goes here.

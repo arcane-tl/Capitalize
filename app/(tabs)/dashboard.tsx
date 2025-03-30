@@ -1,24 +1,17 @@
 import React from 'react';
 import { ScrollView, Text, ViewStyle, TextStyle } from 'react-native';
 import { globalStyles } from '../../components/css/styles';
-import { useUserPreferences } from '../../constants/userPreferences';
+import { getStyle } from '@/components/themeUtils';
 
 export default function DashboardScreen() {
-  const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
-
   return (
     <ScrollView
       style={[
-        isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle)
-            : (globalStyles.lightContainer as ViewStyle),
+        getStyle('Container', globalStyles) as ViewStyle,
     ]}>
       <Text
         style={
-          isDarkMode
-            ? (globalStyles.darkText as TextStyle)
-            : (globalStyles.lightText as TextStyle)
+          getStyle('Text', globalStyles) as TextStyle
         }
       >
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et 

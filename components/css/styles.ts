@@ -8,10 +8,17 @@ export const colors = {
   darkText: 'rgba(255, 255, 255, 1)',
   primary: 'rgba(66, 133, 244, 1)',
   secondary: 'rgba(52, 168, 83, 1)',
-  borderColorLight: 'rgba(204, 204, 204, 1)',
-  borderColorDark: 'rgba(85, 85, 85, 1)',
+  lightBorderColor: 'rgba(204, 204, 204, 1)',
+  darkBorderColor: 'rgba(85, 85, 85, 1)',
   lightIconOutline: 'rgba(0, 0, 0, 1)',
   darkIconOutline: 'rgba(255, 255, 255, 1)',
+  lightPlaceholderText: 'rgba(136, 136, 136, 1)',
+  darkPlaceholderText: 'rgba(170, 170, 170, 1)',
+};
+
+export const customBarStyles = {
+  lightStatusBar: 'dark-content',
+  darkStatusBar: 'light-content',
 };
 
 // Define global styles
@@ -20,6 +27,12 @@ export const globalStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 1)',
+  } as ViewStyle,
+  screenContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   } as ViewStyle,
   loginContainer: {
     flex: 1,

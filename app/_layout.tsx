@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../components/database/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, View, StatusBar, ViewStyle, TextStyle } from 'react-native';
-import { globalStyles } from '../components/css/styles';
-import { useUserPreferences } from '../constants/userPreferences';
+import { Text, View, StatusBar, ViewStyle, TextStyle, StatusBarStyle } from 'react-native';
+import { globalStyles, colors, customBarStyles } from '../components/css/styles';
+import { getStyle } from '@/components/themeUtils';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -13,8 +13,10 @@ export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Access user preferences and system theme
-  const { theme: userTheme } = useUserPreferences();
-  const isDarkMode = userTheme === 'dark';
+  const textStyle = getStyle('Text', globalStyles);
+  const containerStyle = getStyle('Container', globalStyles);
+  const customBarStyle = getStyle('StatusBar', customBarStyles);
+  const customBackgroundColor = getStyle('Background', colors);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -37,16 +39,12 @@ export default function RootLayout() {
       <SafeAreaView
         style={[
           globalStyles.safeArea as ViewStyle,
-          isDarkMode
-            ? (globalStyles.darkContainer as ViewStyle)
-            : (globalStyles.lightContainer as ViewStyle),
+          containerStyle as ViewStyle,
         ]}
       >
         <Text
           style={
-            isDarkMode
-              ? (globalStyles.darkText as TextStyle)
-              : (globalStyles.lightText as TextStyle)
+            textStyle as TextStyle
           }
         >
           Loading...
@@ -59,20 +57,18 @@ export default function RootLayout() {
     <View
       style={[
         globalStyles.safeArea as ViewStyle,
-        isDarkMode
-          ? (globalStyles.darkContainer as ViewStyle)
-          : (globalStyles.lightContainer as ViewStyle),
+        containerStyle as ViewStyle,
       ]}
     >
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: isDarkMode ? '#000' : '#fff',
-          },
-        }}
-      />
+      <StatusBar barStyle={customBarStyle as StatusBarStyle} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: customBackgroundColor,
+            },
+          }}
+        />
     </View>
   );
 }

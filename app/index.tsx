@@ -11,13 +11,14 @@ import {
 import { auth } from '../components/database/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { globalStyles } from '../components/css/styles';
+import { globalStyles, colors } from '../components/css/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RegisterUser from '../components/RegisterUser';
 import { useUserStore } from '../constants/userStore';
 import { useUserPreferences } from '../constants/userPreferences';
 import { fetchUserData } from '../components/firebaseAPI';
 import { addAuditLogEntry } from '../components/firebaseAPI';
+import { getStyle } from '@/components/themeUtils';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -40,10 +41,10 @@ export default function LoginScreen() {
     }
   
     setIsLoading(true);
-    setStatusMessage('Signing in...');
+    setStatusMessage('Logging in...');
   
-    const signinLogEntry = {
-      name: 'SignIn',
+    const loginLogEntry = {
+      name: 'Login',
       time: Date.now(),
       status: '',
     };
@@ -59,18 +60,18 @@ export default function LoginScreen() {
       setUser({ uid, ...userData });
   
       // Log the sign-in event in the audit log
-      signinLogEntry.status = 'success';
-      await addAuditLogEntry(uid, signinLogEntry);
+      loginLogEntry.status = 'success';
+      await addAuditLogEntry(uid, loginLogEntry);
   
       setStatusMessage('Login successful! Redirecting...');
       router.replace('/(tabs)/home');
     } catch (error: any) {
       // Log the failed sign-in attempt in the audit log
-      signinLogEntry.status = 'failure';
+      loginLogEntry.status = 'failure';
   
       if (auth.currentUser) {
         const uid = auth.currentUser.uid;
-        await addAuditLogEntry(uid, signinLogEntry);
+        await addAuditLogEntry(uid, loginLogEntry);
       }
   
       setStatusMessage(`Error: ${error.message}`);
@@ -84,18 +85,14 @@ export default function LoginScreen() {
     <SafeAreaView
       style={[
         globalStyles.loginContainer as ViewStyle,
-        isDarkMode
-          ? (globalStyles.darkContainer as ViewStyle)
-          : (globalStyles.lightContainer as ViewStyle),
+        getStyle('Container', globalStyles) as ViewStyle,
       ]}
     >
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Text
         style={[
           globalStyles.title as TextStyle,
-          isDarkMode
-            ? (globalStyles.darkText as TextStyle)
-            : (globalStyles.lightText as TextStyle),
+          getStyle('Text', globalStyles) as TextStyle,
         ]}
       >
         Login to Capitalize
@@ -104,27 +101,23 @@ export default function LoginScreen() {
       <TextInput
         style={[
           globalStyles.input as TextStyle,
-          isDarkMode
-            ? (globalStyles.darkInput as TextStyle)
-            : (globalStyles.lightInput as TextStyle),
+          getStyle('Input', globalStyles) as TextStyle,
         ]}
         placeholder="Email"
-        placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
-        value={email}
-        onChangeText={setEmail}
+        placeholderTextColor={ getStyle('PlaceholderText', colors) }
+        value={ email }
+        onChangeText={ setEmail }
         keyboardType="email-address"
         autoCapitalize="none"
-        editable={!isLoading}
+        editable={ !isLoading }
       />
       <TextInput
         style={[
           globalStyles.input as TextStyle,
-          isDarkMode
-            ? (globalStyles.darkInput as TextStyle)
-            : (globalStyles.lightInput as TextStyle),
+          getStyle('Input', globalStyles) as TextStyle,
         ]}
         placeholder="Password"
-        placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
+        placeholderTextColor={ getStyle('PlaceholderText', colors) }
         value={password}
         onChangeText={setPassword}
         secureTextEntry

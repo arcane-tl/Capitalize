@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, TextStyle, FlexAlignType } from 'react-native';
+import { Text, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
 import { globalStyles, profileStyles, colors } from '../components/css/styles';
 import { useUserPreferences } from '../constants/userPreferences';
+import { getAuth, signOut } from 'firebase/auth';
+import { addAuditLogEntry } from '../components/firebaseAPI';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -92,8 +94,44 @@ export default function ProfileScreen() {
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
   const goBack = () => router.replace('/home');
-  const handleLogout = () => router.replace('/');
   const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (!user) {
+      console.error('No user is currently logged in.');
+      return;
+    }
+  
+    const uid = user.uid;
+    const logoutLogEntry = {
+      name: 'Logout',
+      time: Date.now(),
+      status: '',
+    };
+  
+    try {
+      // Attempt to log the logout event with a "success" status
+      logoutLogEntry.status = 'success';
+      await addAuditLogEntry(uid, logoutLogEntry);
+  
+      // Sign out the user
+      await signOut(auth);
+  
+      // Redirect to the login screen
+      router.replace('/');
+    } catch (error: any) {
+      // Log the logout event with a "failure" status
+      logoutLogEntry.status = 'failure';
+
+      await addAuditLogEntry(uid, logoutLogEntry);
+  
+      console.error('Error during logout:', error);
+      Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
+    }
+  };
 
   // Button configuration array
   const buttons = [

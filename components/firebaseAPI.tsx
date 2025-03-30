@@ -345,3 +345,21 @@ export const revokeAssetAccess = async (uid: string, assetId: string) => {
     throw error;
   }
 };
+
+/**
+ * Add an entry to the audit log under the user's data
+ * @param uid - The user's unique ID
+ * @param logEntry - The log entry data (e.g., { name: 'Logout', time: 'timestamp', status: 'success' })
+ * @returns The Firebase-generated key for the log entry
+ */
+export const addAuditLogEntry = async (uid: string, logEntry: any): Promise<string | null> => {
+  try {
+    const auditLogRef = ref(db, `users/${uid}/auditLog`);
+    const newLogRef = push(auditLogRef); // Create a new entry in the audit log
+    await set(newLogRef, logEntry); // Save the log entry data
+    return newLogRef.key; // Return the Firebase-generated key
+  } catch (error) {
+    console.error('Error adding audit log entry:', error);
+    throw error;
+  }
+};

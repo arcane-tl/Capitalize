@@ -17,6 +17,7 @@ import RegisterUser from '../components/RegisterUser';
 import { useUserStore } from '../constants/userStore';
 import { useUserPreferences } from '../constants/userPreferences';
 import { fetchUserData } from '../components/firebaseAPI';
+import { addAuditLogEntry } from '../components/firebaseAPI';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -37,27 +38,45 @@ export default function LoginScreen() {
       Alert.alert('Please enter both email and password.');
       return;
     }
-
+  
     setIsLoading(true);
     setStatusMessage('Signing in...');
-
+  
+    const signinLogEntry = {
+      name: 'SignIn',
+      time: Date.now(),
+      status: '',
+    };
+  
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-
+  
       // Fetch user data using fetchUserData
       const userData = await fetchUserData(uid);
-
+  
       // Update Zustand store with user data
       setUser({ uid, ...userData });
-
+  
+      // Log the sign-in event in the audit log
+      signinLogEntry.status = 'success';
+      await addAuditLogEntry(uid, signinLogEntry);
+  
       setStatusMessage('Login successful! Redirecting...');
       router.replace('/(tabs)/home');
     } catch (error: any) {
-      setIsLoading(false);
-      Alert.alert(`Error: ${error.message}`);
+      // Log the failed sign-in attempt in the audit log
+      signinLogEntry.status = 'failure';
+  
+      if (auth.currentUser) {
+        const uid = auth.currentUser.uid;
+        await addAuditLogEntry(uid, signinLogEntry);
+      }
+  
+      setStatusMessage(`Error: ${error.message}`);
+      Alert.alert('Login Failed', error.message);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Ensure loading state is reset in all cases
     }
   };
 

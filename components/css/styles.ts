@@ -145,7 +145,7 @@ export const globalStyles = StyleSheet.create({
 
   // Text-specific styles
   title: {
-    fontSize: 80,
+    fontSize: 75,
     fontWeight: 'bold',
     fontFamily: 'Lobster',
     marginBottom: 20,

@@ -1,5 +1,6 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
 import { database } from './database/firebaseConfig';
+import storage from 'firebase/storage';
 
 // Initialize the Realtime Database instance
 const db = database;

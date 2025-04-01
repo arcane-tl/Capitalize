@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -6,7 +6,6 @@ import {
   Alert,
   ViewStyle,
   TextStyle,
-  StatusBar,
 } from 'react-native';
 import { auth } from '../components/database/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -19,6 +18,7 @@ import { useUserPreferences } from '../constants/userPreferences';
 import { fetchUserData } from '../components/firebaseAPI';
 import { addAuditLogEntry } from '../components/firebaseAPI';
 import { getStyle } from '@/components/themeUtils';
+import * as Font from 'expo-font';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -29,10 +29,21 @@ export default function LoginScreen() {
 
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        Lobster: require('../assets/fonts/Lobster-Regular.ttf'),
+      });
+      setFontsLoaded(true);
+    }
+
+    loadFonts();
+  }, []);
 
   // Access the theme preference
   const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -41,7 +52,6 @@ export default function LoginScreen() {
     }
   
     setIsLoading(true);
-    setStatusMessage('Logging in...');
   
     const loginLogEntry = {
       name: 'Login',
@@ -63,7 +73,6 @@ export default function LoginScreen() {
       loginLogEntry.status = 'success';
       await addAuditLogEntry(uid, loginLogEntry);
   
-      setStatusMessage('Login successful! Redirecting...');
       router.replace('/(tabs)/home');
     } catch (error: any) {
       // Log the failed sign-in attempt in the audit log
@@ -74,7 +83,6 @@ export default function LoginScreen() {
         await addAuditLogEntry(uid, loginLogEntry);
       }
   
-      setStatusMessage(`Error: ${error.message}`);
       Alert.alert('Login Failed', error.message);
     } finally {
       setIsLoading(false); // Ensure loading state is reset in all cases
@@ -88,20 +96,21 @@ export default function LoginScreen() {
         getStyle('Container', globalStyles) as ViewStyle,
       ]}
     >
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+
       <Text
         style={[
           globalStyles.title as TextStyle,
           getStyle('Text', globalStyles) as TextStyle,
         ]}
       >
-        Login to Capitalize
+        Capitalize
       </Text>
 
       <TextInput
         style={[
           globalStyles.input as TextStyle,
           getStyle('Input', globalStyles) as TextStyle,
+          { marginTop: 40 },
         ]}
         placeholder="Email"
         placeholderTextColor={ getStyle('PlaceholderText', colors) }
@@ -127,7 +136,7 @@ export default function LoginScreen() {
 
       <TouchableOpacity
         style={[
-          globalStyles.button as ViewStyle,
+          globalStyles.signInButton as ViewStyle,
           isLoading && (globalStyles.buttonDisabled as ViewStyle),
         ]}
         onPress={handleLogin}
@@ -145,8 +154,8 @@ export default function LoginScreen() {
         ]}
         onPress={() => setRegisterModalVisible(true)}
       >
-        <Text style={globalStyles.buttonText as TextStyle}>
-          Register
+        <Text style={globalStyles.registerButtonText as TextStyle}>
+          Create account
         </Text>
       </TouchableOpacity>
 

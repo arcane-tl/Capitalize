@@ -1,10 +1,12 @@
+import React, { useState } from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity, StatusBar, View, ViewStyle, StatusBarStyle } from 'react-native';
+import { TouchableOpacity, StatusBar, View, ViewStyle, StatusBarStyle, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { globalStyles, darkTabScreenOptions, lightTabScreenOptions, colors, customBarStyles } from '../../components/css/styles';
+import { globalStyles, colors, customBarStyles } from '../../components/css/styles';
+import { darkTabScreenOptions, lightTabScreenOptions } from '../../components/css/customStyles';
 import { useUserPreferences } from '../../constants/userPreferences';
 import { getStyle } from '@/components/themeUtils';
-import { get } from 'firebase/database';
+import AddAssetModal from '../modals/addAsset';
 
 // Helper function to determine icon properties
 const getIconProps = (focused: boolean, isDarkMode: boolean) => {
@@ -33,6 +35,11 @@ export default function TabsLayout() {
   const { theme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
   const customBarStyle = getStyle('StatusBar', customBarStyles);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => setModalVisible(true);
+  const closeModal = () => setModalVisible(false);
 
   return (
     <>
@@ -106,6 +113,14 @@ export default function TabsLayout() {
                 const { color, size } = getIconProps(focused, isDarkMode);
                 return <Ionicons name="wallet-outline" size={size} color={color} />;
               },
+              headerRight: () => {
+                return (
+                  <HeaderIcon
+                    name="add-outline"
+                    onPress={openModal} // Open the modal when the button is pressed
+                  />
+                );
+              },
             }}
           />
           <Tabs.Screen
@@ -119,6 +134,15 @@ export default function TabsLayout() {
             }}
           />
         </Tabs>
+        {/* Modal Component */}
+        <Modal
+          visible={isModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={closeModal}
+        >
+          <AddAssetModal closeModal={closeModal} />
+        </Modal>
       </View>
     </>
   );

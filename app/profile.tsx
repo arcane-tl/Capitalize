@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Text, TextStyle, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
-import { globalStyles, profileStyles, colors } from '../components/css/styles';
+import { globalStyles, colors } from '../components/css/styles';
+import { profileStyles } from '../components/css/customStyles';
 import { useUserPreferences } from '../constants/userPreferences';
 import { getAuth, signOut } from 'firebase/auth';
 import { addAuditLogEntry } from '../components/firebaseAPI';
@@ -14,7 +15,6 @@ const IconButton = ({
   iconName,
   text,
   onPress,
-  isDarkMode,
   style,
 }: {
   iconName: IoniconsName;
@@ -41,7 +41,7 @@ const IconButton = ({
     <Text
       style={[
         profileStyles.buttonText,
-        { color: getStyle('IconOutline', colors) },
+        { color: getStyle('Text', colors) },
       ]}
     >
       {text}
@@ -61,7 +61,9 @@ const CustomModal = ({
   isDarkMode: boolean;
 }) => (
   <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-    <View style={profileStyles.modalContainer}>
+    <View style={[
+      profileStyles.modalContainer,
+    ]}>
       <View
         style={[
           profileStyles.modalContent,
@@ -73,7 +75,7 @@ const CustomModal = ({
           <Text
             style={[
               profileStyles.modalCloseText,
-              { color: getStyle('IconOutline', colors) },
+              getStyle('Text', globalStyles) as TextStyle,
             ]}
           >
             Close
@@ -206,7 +208,7 @@ export default function ProfileScreen() {
               <Text
                 style={[
                   { marginRight: 10 },
-                  { color: getStyle('Text', colors) },
+                  getStyle('Text', globalStyles) as TextStyle,
                 ]}
               >
                 Dark Mode

@@ -1,5 +1,6 @@
 import { useUserPreferences } from '../constants/userPreferences';
 import { TextStyle, ViewStyle } from 'react-native';
+import { globalStyles, colors } from '../components/css/styles';
 
 /**
  * Helper function to dynamically select a style or color based on the theme.
@@ -21,4 +22,18 @@ export const getStyle = <T extends ViewStyle | TextStyle | string>(
   }
 
   return source[fullStyleName];
+};
+
+export const useThemeStyles = () => {
+  const { theme } = useUserPreferences();
+  const isDarkMode = theme === 'dark';
+
+  return {
+    backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground,
+    textStyle: isDarkMode ? globalStyles.darkText : globalStyles.lightText,
+    inputStyle: isDarkMode ? globalStyles.darkInput : globalStyles.lightInput,
+    placeholderTextColor: isDarkMode ? colors.darkPlaceholderText : colors.lightPlaceholderText,
+    buttonOutlineColor: isDarkMode ? colors.darkButtonOutline : colors.lightButtonOutline,
+    // Add more styles as needed based on your app's requirements
+  };
 };

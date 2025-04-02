@@ -124,4 +124,13 @@ export const assetModalStyles = StyleSheet.create({
     justifyContent: 'center', // Center the text
     backgroundColor: 'transparent', // Optional: Transparent background
   } as ViewStyle,
+  uploadButton: {
+    borderWidth: 2, // Outline thickness
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 5, // Vertical padding for the button
+    paddingHorizontal: 10, // Horizontal padding for the button
+    alignItems: 'center', // Center the text
+    justifyContent: 'center', // Center the text
+    backgroundColor: 'transparent', // Optional: Transparent background
+  } as ViewStyle,
 });

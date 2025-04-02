@@ -1,8 +1,8 @@
-// filepath: /Users/ttl/Projects/Capitalize/components/database/firebaseConfig.js
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getDatabase } from 'firebase/database'; // Import getDatabase
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorage } from 'firebase/storage';
 
 // Firebase configuration using environment variables
 export const firebaseConfig = {
@@ -26,3 +26,4 @@ export const auth = initializeAuth(app, {
 
 // Initialize Realtime Database
 export const database = getDatabase(app); // Add this line to initialize and export the database
+export const storage = getStorage(app);

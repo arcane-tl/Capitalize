@@ -1,13 +1,19 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
 import { database } from './database/firebaseConfig';
-import storage from 'firebase/storage';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { setLogLevel } from 'firebase/app';
+import * as FileSystem from 'expo-file-system';
+import { getAuth } from 'firebase/auth';
+
+// Enable Firebase debug logging
+setLogLevel('debug');
 
 // Initialize the Realtime Database instance
 const db = database;
 
-/**
- * User-related functions
- */
+// Initialize Firebase Storage
+const storage = getStorage();
+storage.maxUploadRetryTime = 600000;
 
 /**
  * Fetch user data from the Realtime Database
@@ -25,6 +31,75 @@ export const fetchUserData = async (uid: string): Promise<any> => {
     }
   } catch (error) {
     console.error('Error fetching user data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Upload a file from the user's device to Firebase Storage
+ * @param fileUri - The URI of the file to upload
+ * @param fileName - The name of the file
+ * @param uid - The user's unique ID
+ * @returns The download URL of the uploaded file
+ */
+export const uploadFile = async (fileUri: string, fileName: string, uid: string) => {
+  try {
+    // Verify the file exists
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (!fileInfo.exists) {
+      throw new Error(`File does not exist at ${fileUri}`);
+    }
+
+    // Create a reference to the file in Firebase Storage (for download URL later)
+    const fileRef = storageRef(storage, `uploads/${uid}/${fileName}`);
+
+    // Read the file as Base64
+    const fileData = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    // Convert Base64 to Uint8Array for binary upload
+    const binaryData = Uint8Array.from(atob(fileData), (char) => char.charCodeAt(0));
+
+    // Get the current user's ID token for authentication
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('User is not authenticated');
+    }
+    const idToken = await user.getIdToken();
+
+    // Construct the upload URL with uploadType and name parameters
+    const bucket = fileRef.bucket;
+    const objectPath = `uploads/${uid}/${fileName}`;
+    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+
+    // Upload the file using fetch with POST
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'image/jpeg', // MIME type for JPEG images
+        'Content-Length': binaryData.byteLength.toString(), // Size of the binary data
+      },
+      body: binaryData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Upload failed: ${response.status} ${errorText}`);
+    }
+
+    // Get the download URL
+    const downloadURL = await getDownloadURL(fileRef);
+
+    return downloadURL;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error fetching user data:', error.message);
+    } else {
+      console.error('Unknown error:', error);
+    }
     throw error;
   }
 };

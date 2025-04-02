@@ -92,7 +92,7 @@ export const assetModalStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    marginLeft: 18,
+    marginLeft: 20,
   } as ViewStyle,
   headerCenter: {
     flex: 1,
@@ -116,7 +116,7 @@ export const assetModalStyles = StyleSheet.create({
     backgroundColor: 'rgba(66, 133, 244, 1)', // Optional: Transparent background
   } as ViewStyle,
   cancelButton: {
-    borderWidth: 2, // Outline thickness
+    borderWidth: 1, // Outline thickness
     borderRadius: 20, // Rounded corners
     paddingVertical: 5, // Vertical padding for the button
     paddingHorizontal: 10, // Horizontal padding for the button
@@ -125,7 +125,7 @@ export const assetModalStyles = StyleSheet.create({
     backgroundColor: 'transparent', // Optional: Transparent background
   } as ViewStyle,
   uploadButton: {
-    borderWidth: 2, // Outline thickness
+    borderWidth: 1, // Outline thickness
     borderRadius: 20, // Rounded corners
     paddingVertical: 5, // Vertical padding for the button
     paddingHorizontal: 10, // Horizontal padding for the button

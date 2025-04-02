@@ -34,6 +34,13 @@ export const useThemeStyles = () => {
     inputStyle: isDarkMode ? globalStyles.darkInput : globalStyles.lightInput,
     placeholderTextColor: isDarkMode ? colors.darkPlaceholderText : colors.lightPlaceholderText,
     buttonOutlineColor: isDarkMode ? colors.darkButtonOutline : colors.lightButtonOutline,
-    // Add more styles as needed based on your app's requirements
+    contentViewStyle: isDarkMode ? globalStyles.darkContent : globalStyles.lightContent,
+    // New styles for AssetsScreen
+    listItemBackground: isDarkMode ? colors.darkListItemBackground : colors.lightListItemBackground,
+    secondaryTextColor: isDarkMode ? colors.darkSecondaryText : colors.lightSecondaryText,
+    deleteBackgroundColor: isDarkMode ? colors.darkDeleteBackground : colors.lightDeleteBackground,
+    deleteTextColor: isDarkMode ? colors.darkDeleteText : colors.lightDeleteText,
+    borderColor: isDarkMode ? colors.darkBorder : colors.lightBorder,
+    assetNameTextColor: isDarkMode ? colors.darkAssetNameTextColor : colors.lightAssetNameTextColor,
   };
 };

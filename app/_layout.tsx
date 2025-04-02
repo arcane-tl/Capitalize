@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, StatusBar, ViewStyle, TextStyle, StatusBarStyle } from 'react-native';
 import { globalStyles, colors, customBarStyles } from '../components/css/styles';
 import { getStyle } from '@/components/themeUtils';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -54,21 +55,23 @@ export default function RootLayout() {
   }
 
   return (
-    <View
-      style={[
-        globalStyles.safeArea as ViewStyle,
-        containerStyle as ViewStyle,
-      ]}
-    >
-      <StatusBar barStyle={customBarStyle as StatusBarStyle} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: {
-              backgroundColor: customBackgroundColor,
-            },
-          }}
-        />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View
+        style={[
+          globalStyles.safeArea as ViewStyle,
+          containerStyle as ViewStyle,
+        ]}
+      >
+        <StatusBar barStyle={customBarStyle as StatusBarStyle} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: {
+                backgroundColor: customBackgroundColor,
+              },
+            }}
+          />
+      </View>
+    </GestureHandlerRootView>
   );
 }

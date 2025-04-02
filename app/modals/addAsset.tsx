@@ -3,7 +3,7 @@ import { View, Text, TextStyle, TextInput, TouchableOpacity, Alert, Image } from
 import * as ImagePicker from 'expo-image-picker';
 import { assetModalStyles } from '../../components/css/customStyles';
 import { globalStyles } from '../../components/css/styles';
-import { useThemeStyles } from '../../components/themeUtils'; // Import the custom hook
+import { useThemeStyles } from '../../components/themeUtils';
 import { uploadFile } from '../../components/firebaseAPI';
 import { ref, set, push } from 'firebase/database';
 import { database } from '../../components/database/firebaseConfig';
@@ -17,6 +17,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const userUID = useUserStore((state) => state.user?.uid);
+
+  // Database path for user assets
+  const assetPath = `users/${userUID}/assets`;
+  const userFilePath = `users/${userUID}/assets`;
 
   // Get precomputed styles from the custom hook
   const {
@@ -53,7 +57,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
     }
 
     const db = database;
-    const assetRef = push(ref(db, `users/assets`));
+    const assetRef = push(ref(db, assetPath));
     const assetUid = assetRef.key;
 
     const auth = getAuth();
@@ -65,7 +69,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         const fileName = `${assetName.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
 
         // Upload the file to Firebase Storage
-        imageUrl = await uploadFile(imageUri, fileName, userUID);
+        imageUrl = await uploadFile(imageUri, fileName, userUID, userFilePath);
 
         setUploading(false);
       }
@@ -75,11 +79,11 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         name: assetName,
         description: assetDescription,
         purchasePrice: assetPurchasePrice,
-        downloadURL: imageUrl,
+        assetPictureLink: imageUrl,
       };
 
       // Save asset data to Firebase Realtime Database
-      await set(ref(db, `users/assets/${assetUid}`), assetData);
+      await set(ref(db, `${assetPath}/${assetUid}`), assetData);
 
       Alert.alert('Asset Saved', `Your asset has been successfully saved.\nImage URL: ${imageUrl}`, [
         {
@@ -162,7 +166,11 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           />
 
           {/* Image Picker */}
-          <TouchableOpacity onPress={pickImage} style={assetModalStyles.uploadButton}>
+          <TouchableOpacity onPress={pickImage}
+            style={[
+              assetModalStyles.uploadButton,
+              { borderColor: buttonOutlineColor },
+            ]}>
             <Text style={textStyle}>
               {imageUri ? 'Change Image' : 'Upload Image'}
             </Text>

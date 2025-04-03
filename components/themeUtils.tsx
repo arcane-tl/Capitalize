@@ -35,7 +35,6 @@ export const useThemeStyles = () => {
     placeholderTextColor: isDarkMode ? colors.darkPlaceholderText : colors.lightPlaceholderText,
     buttonOutlineColor: isDarkMode ? colors.darkButtonOutline : colors.lightButtonOutline,
     contentViewStyle: isDarkMode ? globalStyles.darkContent : globalStyles.lightContent,
-    // New styles for AssetsScreen
     listItemBackground: isDarkMode ? colors.darkListItemBackground : colors.lightListItemBackground,
     secondaryTextColor: isDarkMode ? colors.darkSecondaryText : colors.lightSecondaryText,
     deleteBackgroundColor: isDarkMode ? colors.darkDeleteBackground : colors.lightDeleteBackground,

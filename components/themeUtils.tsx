@@ -1,6 +1,7 @@
 import { useUserPreferences } from '../constants/userPreferences';
 import { TextStyle, ViewStyle } from 'react-native';
-import { globalStyles, colors } from '../components/css/styles';
+import { globalStyles, colors } from './css/Styles';
+import { get } from 'firebase/database';
 
 /**
  * Helper function to dynamically select a style or color based on the theme.
@@ -29,17 +30,19 @@ export const useThemeStyles = () => {
   const isDarkMode = theme === 'dark';
 
   return {
-    backgroundColor: isDarkMode ? colors.darkBackground : colors.lightBackground,
-    textStyle: isDarkMode ? globalStyles.darkText : globalStyles.lightText,
-    inputStyle: isDarkMode ? globalStyles.darkInput : globalStyles.lightInput,
-    placeholderTextColor: isDarkMode ? colors.darkPlaceholderText : colors.lightPlaceholderText,
-    buttonOutlineColor: isDarkMode ? colors.darkButtonOutline : colors.lightButtonOutline,
-    contentViewStyle: isDarkMode ? globalStyles.darkContent : globalStyles.lightContent,
-    listItemBackground: isDarkMode ? colors.darkListItemBackground : colors.lightListItemBackground,
-    secondaryTextColor: isDarkMode ? colors.darkSecondaryText : colors.lightSecondaryText,
-    deleteBackgroundColor: isDarkMode ? colors.darkDeleteBackground : colors.lightDeleteBackground,
-    deleteTextColor: isDarkMode ? colors.darkDeleteText : colors.lightDeleteText,
-    borderColor: isDarkMode ? colors.darkBorder : colors.lightBorder,
-    assetNameTextColor: isDarkMode ? colors.darkAssetNameTextColor : colors.lightAssetNameTextColor,
+    backgroundColor: getStyle('Background', colors),
+    textStyle: getStyle('Text', globalStyles),
+    inputStyle: getStyle('Input', globalStyles),
+    placeholderTextColor: getStyle('PlaceholderText', colors),
+    buttonOutlineColor: getStyle('ButtonOutline', colors),
+    contentViewStyle: getStyle('Content', globalStyles),
+    listItemBackgroundColor: getStyle('ListItemBackground', colors),
+    secondaryTextColor: getStyle('SecondaryText', colors),
+    deleteBackgroundColor: getStyle('DeleteBackground', colors),
+    modifyBackgroundColor: getStyle('ModifyBackground', colors),
+    deleteTextColor: getStyle('DeleteText', colors),
+    modifyTextColor: getStyle('ModifyText', colors),
+    borderColor: getStyle('Border', colors),
+    assetNameTextColor: getStyle('AssetNameTextColor', colors),
   };
 };

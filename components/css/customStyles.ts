@@ -1,4 +1,5 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { useThemeStyles } from '@/components/ThemeUtils';
 
 // Define tab screen options as plain objects
 export const lightTabScreenOptions = {
@@ -133,4 +134,81 @@ export const assetModalStyles = StyleSheet.create({
     justifyContent: 'center', // Center the text
     backgroundColor: 'transparent', // Optional: Transparent background
   } as ViewStyle,
+});
+
+export const assetListStyle = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  } as ViewStyle,
+  screenContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    padding: 15,
+  } as ViewStyle,
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+  } as ViewStyle,
+  assetImage: {
+    width: 85,
+    height: 85,
+    borderRadius: 20,
+  },
+  detailsContainer: {
+    marginLeft: 20,
+  } as ViewStyle,
+  assetName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  } as TextStyle,
+  assetDescription: {
+    fontSize: 14,
+  } as TextStyle,
+});
+
+export const swipeMenuStyle = StyleSheet.create({
+  swipeContainer: {
+    position: 'relative',
+  } as ViewStyle,
+  modifyBackground: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 10,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+    borderRadius: 10,
+  },
+  deleteBackground: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 10,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 10,
+    borderRadius: 10,
+  },
+  actionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 20,
+    marginRight: 20,
+  },
+  modifyText: {
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  deleteText: {
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
 });

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, View, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
-import { globalStyles } from '../../components/css/styles';
-import { useUserStore } from '../../constants/userStore';
-import { useUserPreferences } from '../../constants/userPreferences'; // Import theme store
-import { getStyle } from '@/components/themeUtils'; // Import getStyle function
+import { globalStyles } from '@/components/css/Styles';
+import { useUserStore } from '@/constants/userStore';
+import { useUserPreferences } from '@/constants/userPreferences'; // Import theme store
+import { getStyle } from '@/components/ThemeUtils'; // Import getStyle function
 
 export default function HomeScreen() {
   const user = useUserStore((state) => state.user);

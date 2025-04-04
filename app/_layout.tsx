@@ -1,11 +1,11 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../components/database/firebaseConfig';
+import { auth } from '../components/database/FirebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, StatusBar, ViewStyle, TextStyle, StatusBarStyle } from 'react-native';
-import { globalStyles, colors, customBarStyles } from '../components/css/styles';
-import { getStyle } from '@/components/themeUtils';
+import { globalStyles, colors, customBarStyles } from '../components/css/Styles';
+import { getStyle } from '@/components/ThemeUtils';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
@@ -26,7 +26,7 @@ export default function RootLayout() {
       const isInLogin = segments[0]?.toString() === 'login';
 
       if (isAuthenticated && isInLogin) {
-        router.replace('/(tabs)/home');
+        router.replace('/(tabs)/HomeScreen');
       } else if (!isAuthenticated && !isInLogin) {
         router.replace('/');
       }

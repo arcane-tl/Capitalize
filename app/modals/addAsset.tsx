@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextStyle, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { assetModalStyles } from '../../components/css/customStyles';
-import { globalStyles } from '../../components/css/styles';
-import { useThemeStyles } from '../../components/themeUtils';
-import { uploadFile } from '../../components/firebaseAPI';
+import { assetModalStyles } from '@/components/css/CustomStyles';
+import { globalStyles } from '@/components/css/Styles';
+import { useThemeStyles } from '@/components/ThemeUtils';
+import { uploadFile } from '@/components/FirebaseAPI';
 import { ref, set, push } from 'firebase/database';
-import { database } from '../../components/database/firebaseConfig';
-import { useUserStore } from '../../constants/userStore';
+import { database } from '@/components/database/FirebaseConfig';
+import { useUserStore } from '@/constants/userStore';
 import { getAuth } from 'firebase/auth';
 
 export default function AddAssetModal({ closeModal }: { closeModal: () => void }) {
@@ -104,7 +104,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         {/* Header Container */}
         <View style={assetModalStyles.headerContainer}>
           <View style={assetModalStyles.headerLeft}>
-            <TouchableOpacity onPress={closeModal} style={[assetModalStyles.cancelButton, { borderColor: buttonOutlineColor }]}>
+            <TouchableOpacity onPress={closeModal} style={assetModalStyles.cancelButton}>
               <Text style={textStyle}>Cancel</Text>
             </TouchableOpacity>
           </View>

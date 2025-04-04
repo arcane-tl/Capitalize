@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Tabs, useRouter } from 'expo-router';
 import { TouchableOpacity, StatusBar, View, ViewStyle, StatusBarStyle, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { globalStyles, colors, customBarStyles } from '../../components/css/styles';
-import { darkTabScreenOptions, lightTabScreenOptions } from '../../components/css/customStyles';
-import { useUserPreferences } from '../../constants/userPreferences';
-import { getStyle } from '@/components/themeUtils';
-import AddAssetModal from '../modals/addAsset';
+import { globalStyles, colors, customBarStyles } from '@/components/css/Styles';
+import { darkTabScreenOptions, lightTabScreenOptions } from '@/components/css/CustomStyles';
+import { useUserPreferences } from '@/constants/userPreferences';
+import { getStyle } from '@/components/ThemeUtils';
+import AddAssetModal from '@/app/modals/AddAsset';
 
 // Helper function to determine icon properties
 const getIconProps = (focused: boolean, isDarkMode: boolean) => {
@@ -74,7 +74,7 @@ export default function TabsLayout() {
             headerLeft: () => {
               const router = useRouter();
               const handleProfile = () => {
-                router.push('/profile');
+                router.push('/Profile');
               };
               return (
                 <HeaderIcon
@@ -86,7 +86,7 @@ export default function TabsLayout() {
           }}
         >
           <Tabs.Screen
-            name="home"
+            name="HomeScreen"
             options={{
               title: 'Home',
               tabBarIcon: ({ focused }) => {
@@ -96,7 +96,7 @@ export default function TabsLayout() {
             }}
           />
           <Tabs.Screen
-            name="dashboard"
+            name="DashboardScreen"
             options={{
               title: 'Dashboard',
               tabBarIcon: ({ focused }) => {
@@ -106,7 +106,7 @@ export default function TabsLayout() {
             }}
           />
           <Tabs.Screen
-            name="assets"
+            name="AssetsScreen"
             options={{
               title: 'Assets',
               tabBarIcon: ({ focused }) => {
@@ -124,7 +124,7 @@ export default function TabsLayout() {
             }}
           />
           <Tabs.Screen
-            name="events"
+            name="EventsScreen"
             options={{
               title: 'Events',
               tabBarIcon: ({ focused }) => {

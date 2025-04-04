@@ -1,10 +1,10 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
-import { database } from './database/firebaseConfig';
+import { database } from './database/FirebaseConfig';
 import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
 //import { setLogLevel } from 'firebase/app';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
-import { firebaseConfig } from './database/firebaseConfig';
+import { firebaseConfig } from './database/FirebaseConfig';
 
 // Enable Firebase debug logging
 //setLogLevel('debug');

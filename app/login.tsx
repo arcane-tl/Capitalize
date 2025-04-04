@@ -9,15 +9,15 @@ import {
   ActivityIndicator,
   View,
 } from 'react-native';
-import { auth } from '../components/database/firebaseConfig';
+import { auth } from '@/components/database/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { globalStyles } from '../components/css/styles';
+import { globalStyles } from '@/components/css/Styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import RegisterUser from '../components/RegisterUser';
-import { useUserStore } from '../constants/userStore';
-import { fetchUserData, addAuditLogEntry } from '../components/firebaseAPI';
-import { useThemeStyles } from '@/components/themeUtils';
+import RegisterUser from '@/components/RegisterUser';
+import { useUserStore } from '@/constants/userStore';
+import { fetchUserData, addAuditLogEntry } from '@/components/FirebaseAPI';
+import { useThemeStyles } from '@/components/ThemeUtils';
 import { useFonts } from 'expo-font';
 
 export default function LoginScreen() {
@@ -75,7 +75,7 @@ export default function LoginScreen() {
       loginLogEntry.status = 'success';
       await addAuditLogEntry(uid, loginLogEntry);
 
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/HomeScreen');
     } catch (error: any) {
       loginLogEntry.status = 'failure';
       if (auth.currentUser) {

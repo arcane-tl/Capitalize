@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, ViewStyle, TextStyle } from 'react-native';
-import { globalStyles } from '../../components/css/styles';
-import { getStyle } from '@/components/themeUtils';
+import { globalStyles } from '@/components/css/Styles';
+import { getStyle } from '@/components/ThemeUtils';
 
 export default function DashboardScreen() {
   return (

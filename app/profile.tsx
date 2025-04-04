@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Text, TextStyle, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
-import { globalStyles, colors } from '../components/css/styles';
-import { profileStyles } from '../components/css/customStyles';
-import { useUserPreferences } from '../constants/userPreferences';
+import { globalStyles, colors } from '@/components/css/Styles';
+import { profileStyles } from '@/components/css/CustomStyles';
+import { useUserPreferences } from '@/constants/userPreferences';
 import { getAuth, signOut } from 'firebase/auth';
-import { addAuditLogEntry } from '../components/firebaseAPI';
-import { getStyle } from '@/components/themeUtils';
+import { addAuditLogEntry } from '@/components/FirebaseAPI';
+import { getStyle } from '@/components/ThemeUtils';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -94,7 +94,7 @@ export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
-  const goBack = () => router.replace('/home');
+  const goBack = () => router.replace('/HomeScreen');
   const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
 
   const handleLogout = async () => {

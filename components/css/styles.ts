@@ -3,7 +3,7 @@ import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 // Define a centralized color palette
 export const colors = {
   // Existing colors
-  lightBackground: 'rgba(255, 255, 255, 1)',
+  lightBackground: 'rgba(249, 249, 249, 1)',
   darkBackground: 'rgba(0, 0, 0, 1)',
   lightText: 'rgba(0, 0, 0, 1)',
   darkText: 'rgba(255, 255, 255, 1)',
@@ -21,20 +21,22 @@ export const colors = {
   lightButtonBackground: 'rgba(66, 133, 244, 1)',
   darkButtonOutline: 'rgba(255, 255, 255, 1)',
   lightButtonOutline: 'rgba(0, 0, 0, 1)',
-
-  // New colors for AssetsScreen
-  darkListItemBackground: 'rgba(26, 26, 26, 1)',     // Dark gray for dark mode list items
-  lightListItemBackground: 'rgba(245, 245, 245, 1)', // Light gray for light mode list items
-  darkSecondaryText: 'rgba(255, 255, 255, 0.84)',    // Dimmed white for dark mode secondary text
-  lightSecondaryText: 'rgba(0, 0, 0, 0.84)',         // Dimmed black for light mode secondary text
-  darkDeleteBackground: 'rgba(255, 68, 68, 1)',      // Red for dark mode delete background
-  lightDeleteBackground: 'rgba(255, 102, 102, 1)',   // Lighter red for light mode delete background
-  darkDeleteText: 'rgba(255, 255, 255, 1)',          // White for dark mode delete text
-  lightDeleteText: 'rgba(255, 255, 255, 1)',         // White for light mode delete text
-  darkBorder: 'rgba(255, 255, 255, 0.2)',            // Subtle border for dark mode
-  lightBorder: 'rgba(0, 0, 0, 0.2)',                 // Subtle border for light mode
-  darkAssetNameTextColor: 'rgba(255, 255, 255, 1)',  // White for dark mode asset name text
-  lightAssetNameTextColor: 'rgba(0, 0, 0, 1)',       // Black for light mode asset name text
+  darkListItemBackground: 'rgba(26, 26, 26, 1)',      // Dark gray for dark mode list items
+  lightListItemBackground: 'rgba(255, 255, 255, 1)',  // White for light mode list items
+  darkSecondaryText: 'rgba(255, 255, 255, 0.84)',     // Dimmed white for dark mode secondary text
+  lightSecondaryText: 'rgba(0, 0, 0, 0.84)',          // Dimmed black for light mode secondary text
+  darkDeleteBackground: 'rgba(255, 68, 68, 1)',       // Red for dark mode delete background
+  lightDeleteBackground: 'rgba(255, 102, 102, 1)',    // Lighter red for light mode delete background
+  darkModifyBackground: 'rgba(66, 133, 244, 1)',      // Blue for dark mode modify background
+  lightModifyBackground: 'rgba(66, 133, 244, 1)',     // Blue for light mode modify background
+  darkDeleteText: 'rgba(255, 255, 255, 1)',           // White for dark mode delete text
+  lightDeleteText: 'rgba(255, 255, 255, 1)',          // White for light mode delete text
+  darkModifyText: 'rgba(255, 255, 255, 1)',           // White for dark mode modify text
+  lightModifyText: 'rgba(255, 255, 255, 1)',          // White for light mode modify text
+  darkBorder: 'rgba(255, 255, 255, 0.2)',             // Subtle border for dark mode
+  lightBorder: 'rgba(0, 0, 0, 0.2)',                  // Subtle border for light mode
+  darkAssetNameTextColor: 'rgba(255, 255, 255, 1)',   // White for dark mode asset name text
+  lightAssetNameTextColor: 'rgba(0, 0, 0, 1)',        // Black for light mode asset name text
 };
 
 // Custom bar styles (unchanged)

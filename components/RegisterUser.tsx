@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './database/firebaseConfig';
+import { auth } from './database/FirebaseConfig';
 import { useRouter } from 'expo-router';
-import { addUser } from './firebaseAPI';
+import { addUser } from './FirebaseAPI';
 
 interface RegisterUserProps {
   visible: boolean;

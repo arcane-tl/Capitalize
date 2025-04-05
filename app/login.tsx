@@ -4,21 +4,19 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  ViewStyle,
-  TextStyle,
   ActivityIndicator,
   View,
 } from 'react-native';
 import { auth } from '@/components/database/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { globalStyles } from '@/components/css/Styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RegisterUser from '@/components/RegisterUser';
 import { useUserStore } from '@/constants/userStore';
 import { fetchUserData, addAuditLogEntry } from '@/components/FirebaseAPI';
 import { useThemeStyles } from '@/components/ThemeUtils';
 import { useFonts } from 'expo-font';
+import { globalStyles } from '@/components/css/Styles'; // For font-specific styles
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -30,17 +28,25 @@ export default function LoginScreen() {
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
 
-  // Load fonts using useFonts
+  // Load fonts
   const [fontsLoaded] = useFonts({
     Lobster: require('../assets/fonts/Lobster-Regular.ttf'),
   });
 
-  // Get precomputed styles from the custom hook
+  // Get styles from useThemeStyles
   const {
-    backgroundColor,
+    containerStyle,
     textStyle,
     inputStyle,
     placeholderTextColor,
+    buttonTextStyle,
+    signInButtonStyle,
+    buttonDisabledStyle,
+    registerButtonStyle,
+    registerButtonTextStyle,
+    statusStyle,
+    successStyle,
+    errorStyle,
   } = useThemeStyles();
 
   if (!fontsLoaded) {
@@ -89,59 +95,53 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={[globalStyles.loginContainer, { backgroundColor }]}>
-      <Text style={[globalStyles.title, textStyle]}>Capitalize</Text>
+    <SafeAreaView style={containerStyle}>
+      <Text style={[globalStyles.base.title, textStyle]}>Capitalize</Text>
+      <View style={{ width: '87%', alignSelf: 'center' }}>
+        <TextInput
+          style={[inputStyle, { marginTop: 40 }]}
+          placeholder="Email"
+          placeholderTextColor={placeholderTextColor}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          editable={!isLoading}
+        />
+        <TextInput
+          style={inputStyle}
+          placeholder="Password"
+          placeholderTextColor={placeholderTextColor}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+          editable={!isLoading}
+        />
 
-      <TextInput
-        style={[globalStyles.input, inputStyle, { marginTop: 40 }]}
-        placeholder="Email"
-        placeholderTextColor={placeholderTextColor}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        editable={!isLoading}
-      />
-      <TextInput
-        style={[globalStyles.input, inputStyle]}
-        placeholder="Password"
-        placeholderTextColor={placeholderTextColor}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-        editable={!isLoading}
-      />
+        <TouchableOpacity
+          style={[signInButtonStyle, isLoading && buttonDisabledStyle]}
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          <Text style={buttonTextStyle}>
+            {isLoading ? 'Processing...' : 'Sign In'}
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[
-          globalStyles.signInButton as ViewStyle,
-          isLoading && (globalStyles.buttonDisabled as ViewStyle),
-        ]}
-        onPress={handleLogin}
-        disabled={isLoading}
-      >
-        <Text style={globalStyles.buttonText as TextStyle}>
-          {isLoading ? 'Processing...' : 'Sign In'}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[globalStyles.registerButton as ViewStyle, { marginTop: 10 }]}
-        onPress={() => setRegisterModalVisible(true)}
-      >
-        <Text style={globalStyles.registerButtonText as TextStyle}>
-          Create account
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[registerButtonStyle, { marginTop: 20, }]}
+          onPress={() => setRegisterModalVisible(true)}
+        >
+          <Text style={registerButtonTextStyle}>Create an account</Text>
+        </TouchableOpacity>
+      </View>
 
       {statusMessage ? (
         <Text
           style={[
-            globalStyles.status as TextStyle,
-            statusMessage.includes('successful')
-              ? (globalStyles.success as TextStyle)
-              : (globalStyles.error as TextStyle),
+            statusStyle,
+            statusMessage.includes('successful') ? successStyle : errorStyle,
           ]}
         >
           {statusMessage}

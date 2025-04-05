@@ -1,192 +1,225 @@
-import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+// Styles.ts
+import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
-// Define a centralized color palette
 export const colors = {
-  // Existing colors
-  lightBackground: 'rgba(249, 249, 249, 1)',
-  darkBackground: 'rgba(0, 0, 0, 1)',
-  lightText: 'rgba(0, 0, 0, 1)',
-  darkText: 'rgba(255, 255, 255, 1)',
+  light: {
+    background: 'rgba(249, 249, 249, 1)',
+    text: 'rgba(0, 0, 0, 1)',
+    placeholderText: 'rgba(136, 136, 136, 1)',
+    buttonOutline: 'rgba(0, 0, 0, 1)',
+    border: 'rgba(204, 204, 204, 1)',
+    listItemBackground: 'rgba(255, 255, 255, 1)',
+    secondaryText: 'rgba(0, 0, 0, 0.84)',
+    deleteBackground: 'rgba(255, 102, 102, 1)',
+    modifyBackground: 'rgba(66, 133, 244, 1)',
+    deleteText: 'rgba(255, 255, 255, 1)',
+    modifyText: 'rgba(255, 255, 255, 1)',
+    assetNameTextColor: 'rgba(0, 0, 0, 1)',
+    signInButtonBackground: 'rgba(255, 255, 255, 1)', // White for light mode
+    registerButtonBackground: 'rgba(66, 133, 244, 1)', // Blue for register button
+    registerButtonText: 'rgba(255, 255, 255, 1)',
+    successText: 'rgba(46, 204, 113, 1)', // Green for success
+    errorText: 'rgba(231, 76, 60, 1)', // Red for error
+    iconOutline: 'rgba(0, 0, 0, 1)',
+    tabBarActiveTint: 'rgba(66, 133, 244, 1)', // Matches tabBarActiveTintColor
+    tabBarInactiveTint: 'rgba(102, 102, 102, 1)', // Matches tabBarInactiveTintColor
+    tabBarBackground: 'rgba(255, 255, 255, 1)',
+  },
+  dark: {
+    background: 'rgba(0, 0, 0, 1)',
+    text: 'rgba(255, 255, 255, 1)',
+    placeholderText: 'rgba(170, 170, 170, 1)',
+    buttonOutline: 'rgba(255, 255, 255, 1)',
+    border: 'rgba(85, 85, 85, 1)',
+    listItemBackground: 'rgba(26, 26, 26, 1)',
+    secondaryText: 'rgba(255, 255, 255, 0.84)',
+    deleteBackground: 'rgba(255, 68, 68, 1)',
+    modifyBackground: 'rgba(66, 133, 244, 1)',
+    deleteText: 'rgba(255, 255, 255, 1)',
+    modifyText: 'rgba(255, 255, 255, 1)',
+    assetNameTextColor: 'rgba(255, 255, 255, 1)',
+    signInButtonBackground: 'rgba(255, 255, 255, 1)', // Darker gray for dark mode
+    registerButtonBackground: 'rgba(66, 133, 244, 1)', // Blue for register button
+    registerButtonText: 'rgba(255, 255, 255, 1)', // White for register button
+    successText: 'rgba(46, 204, 113, 1)', // Green for success
+    errorText: 'rgba(231, 76, 60, 1)', // Red for error
+    iconOutline: 'rgba(255, 255, 255, 1)',
+    tabBarActiveTint: 'rgba(66, 133, 244, 1)', // Matches tabBarActiveTintColor
+    tabBarInactiveTint: 'rgba(136, 136, 136, 1)', // Matches tabBarInactiveTintColor
+    tabBarBackground: 'rgba(0, 0, 0, 1)',
+  },
+  // Theme-agnostic colors
   primary: 'rgba(66, 133, 244, 1)',
   secondary: 'rgba(52, 168, 83, 1)',
-  lightBorderColor: 'rgba(204, 204, 204, 1)',
-  darkBorderColor: 'rgba(85, 85, 85, 1)',
-  lightIconOutline: 'rgba(0, 0, 0, 1)',
-  darkIconOutline: 'rgba(255, 255, 255, 1)',
-  lightPlaceholderText: 'rgba(136, 136, 136, 1)',
-  darkPlaceholderText: 'rgba(170, 170, 170, 1)',
   modalBackground: 'rgba(55, 55, 55, 0.2)',
   alert: 'rgba(184, 6, 6, 1)',
-  darkButtonBackground: 'rgba(66, 133, 244, 1)',
-  lightButtonBackground: 'rgba(66, 133, 244, 1)',
-  darkButtonOutline: 'rgba(255, 255, 255, 1)',
-  lightButtonOutline: 'rgba(0, 0, 0, 1)',
-  darkListItemBackground: 'rgba(26, 26, 26, 1)',      // Dark gray for dark mode list items
-  lightListItemBackground: 'rgba(255, 255, 255, 1)',  // White for light mode list items
-  darkSecondaryText: 'rgba(255, 255, 255, 0.84)',     // Dimmed white for dark mode secondary text
-  lightSecondaryText: 'rgba(0, 0, 0, 0.84)',          // Dimmed black for light mode secondary text
-  darkDeleteBackground: 'rgba(255, 68, 68, 1)',       // Red for dark mode delete background
-  lightDeleteBackground: 'rgba(255, 102, 102, 1)',    // Lighter red for light mode delete background
-  darkModifyBackground: 'rgba(66, 133, 244, 1)',      // Blue for dark mode modify background
-  lightModifyBackground: 'rgba(66, 133, 244, 1)',     // Blue for light mode modify background
-  darkDeleteText: 'rgba(255, 255, 255, 1)',           // White for dark mode delete text
-  lightDeleteText: 'rgba(255, 255, 255, 1)',          // White for light mode delete text
-  darkModifyText: 'rgba(255, 255, 255, 1)',           // White for dark mode modify text
-  lightModifyText: 'rgba(255, 255, 255, 1)',          // White for light mode modify text
-  darkBorder: 'rgba(255, 255, 255, 0.2)',             // Subtle border for dark mode
-  lightBorder: 'rgba(0, 0, 0, 0.2)',                  // Subtle border for light mode
-  darkAssetNameTextColor: 'rgba(255, 255, 255, 1)',   // White for dark mode asset name text
-  lightAssetNameTextColor: 'rgba(0, 0, 0, 1)',        // Black for light mode asset name text
 };
 
-// Custom bar styles (unchanged)
-export const customBarStyles = {
-  lightStatusBar: 'dark-content',
-  darkStatusBar: 'light-content',
+export const globalStyles = {
+  // ==============================================================
+  // Base Mode Styles, these are common across light and dark modes
+  // ==============================================================
+  base: StyleSheet.create({
+    title: {
+      fontFamily: 'Lobster',
+      fontSize: 80,
+      alignSelf: 'center',
+    } as TextStyle,
+    input: {
+      width: '100%',
+      padding: 10,
+      borderWidth: 1,
+      borderRadius: 5,
+      marginBottom: 20,
+      fontSize: 16,
+    } as TextStyle,
+    buttonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    } as TextStyle,
+  }),
+
+  // =========================
+  // Light Mode Styles
+  // =========================
+  light: StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.light.background,
+    } as ViewStyle,
+    input: {
+      borderColor: colors.light.border,
+      backgroundColor: colors.light.listItemBackground,
+      color: colors.light.text,
+    } as TextStyle,
+    content: {
+      flex: 1,
+      backgroundColor: colors.light.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+    } as ViewStyle,
+    signInButton: {
+      backgroundColor: colors.light.signInButtonBackground,
+      padding: 10,
+      borderRadius: 20,
+      marginTop: 40,
+      width: '100%',
+      alignItems: 'center',
+    } as ViewStyle,
+    registerButton: {
+      backgroundColor: colors.light.registerButtonBackground,
+      padding: 10,
+      borderRadius: 20,
+      width: '100%',
+      alignItems: 'center',
+    } as ViewStyle,
+    registerButtonText: {
+      color: colors.light.registerButtonText,
+      fontSize: 16,
+      fontWeight: 'bold',
+    } as TextStyle,
+    status: {
+      marginTop: 20,
+      fontSize: 16,
+      textAlign: 'center',
+    } as TextStyle,
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color: colors.light.text
+    } as TextStyle,
+    tabScreenStyle: {
+      headerStyle: {
+        backgroundColor: colors.light.background,
+      } as ViewStyle,
+      headerTintColor: colors.light.text,
+      tabBarStyle: {
+        backgroundColor: colors.light.tabBarBackground,
+        borderTopColor: colors.light.border,
+      } as ViewStyle,
+      tabBarActiveTintColor: colors.light.tabBarActiveTint,
+      tabBarInactiveTintColor: colors.light.tabBarInactiveTint,
+    } as ViewStyle,
+    text: {color: colors.light.text,} as TextStyle,
+    buttonDisabled: {opacity: 0.6,},
+    success: {color: colors.light.successText,} as TextStyle,
+    error: {color: colors.light.errorText,} as TextStyle,
+  }),
+
+  // =========================
+  // Dark Mode Styles
+  // =========================
+  dark: StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.dark.background,
+      justifyContent: 'center',
+    } as ViewStyle,
+    input: {
+      borderColor: colors.dark.border,
+      backgroundColor: 'rgba(34, 34, 34, 1)', // Slightly lighter than pure black
+      color: colors.dark.text,
+    } as TextStyle,
+    content: {
+      flex: 1,
+      backgroundColor: colors.dark.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+    } as ViewStyle,
+    signInButton: {
+      backgroundColor: colors.dark.signInButtonBackground,
+      padding: 10,
+      borderRadius: 20,
+      marginTop: 40,
+      width: '100%',
+      alignItems: 'center',
+    } as ViewStyle,
+    registerButton: {
+      backgroundColor: colors.dark.registerButtonBackground,
+      padding: 10,
+      borderRadius: 20,
+      width: '100%',
+      alignItems: 'center',
+    } as ViewStyle,
+    registerButtonText: {
+      color: colors.dark.registerButtonText,
+      fontSize: 16,
+      fontWeight: 'bold',
+    } as TextStyle,
+    status: {
+      marginTop: 20,
+      fontSize: 16,
+      textAlign: 'center',
+    } as TextStyle,
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color: colors.dark.text,
+    } as TextStyle,
+    tabScreenStyle: {
+      headerStyle: {
+        backgroundColor: colors.dark.background,
+        height: 110,
+        borderBottomWidth: 0,
+      },
+      tabBarShowLabel: false,
+      headerTintColor: colors.dark.text,
+      tabBarStyle: {
+        backgroundColor: colors.dark.tabBarBackground,
+        borderTopColor: colors.dark.border,
+        marginTop: 10,
+        height: 85,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderTopWidth: 0,
+      },
+      tabBarActiveTintColor: colors.dark.tabBarActiveTint,
+      tabBarInactiveTintColor: colors.dark.tabBarInactiveTint,
+    } as ViewStyle,
+    text: {color: colors.dark.text,} as TextStyle,
+    buttonDisabled: {opacity: 0.6,} as ViewStyle,
+    success: {color: colors.dark.successText,} as TextStyle,
+    error: {color: colors.dark.errorText,} as TextStyle,
+  }),
 };
-
-// Define global styles (unchanged)
-export const globalStyles = StyleSheet.create({
-  // View-specific styles
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-  } as ViewStyle,
-  screenContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  } as ViewStyle,
-  loginContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  } as ViewStyle,
-  profileContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  } as ViewStyle,
-  darkContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-  } as ViewStyle,
-  lightContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-  } as ViewStyle,
-  darkContent: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  } as ViewStyle,
-  lightContent: {
-    flex: 1,
-    backgroundColor: 'rgba(249, 249, 249, 1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  } as ViewStyle,
-  tabBar: {
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(204, 204, 204, 1)',
-  } as ViewStyle,
-
-  // Input styles
-  input: {
-    width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    fontSize: 16,
-  } as TextStyle,
-  lightInput: {
-    borderColor: 'rgba(204, 204, 204, 1)',
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    color: 'rgba(0, 0, 0, 1)',
-  } as TextStyle,
-  darkInput: {
-    borderColor: 'rgba(85, 85, 85, 1)',
-    backgroundColor: 'rgba(34, 34, 34, 1)',
-    color: 'rgba(255, 255, 255, 1)',
-  } as TextStyle,
-
-  // Button styles
-  signInButton: {
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    padding: 10,
-    borderRadius: 20,
-    marginTop: 40,
-    marginBottom: 20,
-    width: '100%',
-    alignItems: 'center',
-  } as ViewStyle,
-  buttonDisabled: {
-    backgroundColor: 'rgba(161, 194, 250, 1)',
-    opacity: 0.7,
-  } as ViewStyle,
-  registerButton: {
-    backgroundColor: 'rgba(66, 133, 244, 1)',
-    padding: 10,
-    borderRadius: 20,
-    width: '100%',
-    alignItems: 'center',
-  } as ViewStyle,
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'rgba(0, 0, 0, 1)',
-    textAlign: 'center',
-  } as TextStyle,
-  registerButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 1)',
-    textAlign: 'center',
-  } as TextStyle,
-
-  // Status message styles
-  status: {
-    marginTop: 20,
-    fontSize: 16,
-    textAlign: 'center',
-  } as TextStyle,
-  success: {
-    color: 'rgba(46, 204, 113, 1)',
-  } as TextStyle,
-  error: {
-    color: 'rgba(231, 76, 60, 1)',
-  } as TextStyle,
-
-  // Text-specific styles
-  title: {
-    fontSize: 75,
-    fontWeight: 'bold',
-    fontFamily: 'Lobster',
-    marginBottom: 20,
-    color: 'rgba(51, 51, 51, 1)',
-  } as TextStyle,
-  text: {
-    fontSize: 16,
-    color: 'rgba(102, 102, 102, 1)',
-  } as TextStyle,
-  darkText: {
-    color: 'rgba(255, 255, 255, 1)',
-  } as TextStyle,
-  lightText: {
-    color: 'rgba(0, 0, 0, 1)',
-  } as TextStyle,
-  darkAssetNameStyle: {
-    color: 'rgba(255, 255, 255, 1)',
-    fontSize: 16,
-    fontWeight: 'bold',
-  } as TextStyle,
-  lightAssetNameStyle: {
-    color: 'rgba(0, 0, 0, 1)',
-    fontSize: 16,
-    fontWeight: 'bold',
-  } as TextStyle,
-});

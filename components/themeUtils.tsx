@@ -1,48 +1,52 @@
+// ThemeUtils.ts
+import { ViewStyle, TextStyle } from 'react-native';
 import { useUserPreferences } from '../constants/userPreferences';
-import { TextStyle, ViewStyle } from 'react-native';
-import { globalStyles, colors } from './css/Styles';
-import { get } from 'firebase/database';
+import { colors, globalStyles } from './css/Styles';
 
-/**
- * Helper function to dynamically select a style or color based on the theme.
- * @param styleName - The base name of the style or color (e.g., "Container", "Text", "PlaceholderText").
- * @param source - The source object containing the styles or colors (e.g., globalStyles or colors).
- * @returns The appropriate style (ViewStyle/TextStyle) or color (string) based on the theme.
- */
-export const getStyle = <T extends ViewStyle | TextStyle | string>(
-  styleName: string,
-  source: Record<string, T>
-): T => {
-  const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
-  const prefix = isDarkMode ? 'dark' : 'light';
-  const fullStyleName = `${prefix}${styleName}`;
-
-  if (!source[fullStyleName]) {
-    throw new Error(`Style or color "${fullStyleName}" not found in source.`);
-  }
-
-  return source[fullStyleName];
-};
+interface TabScreenStyleConfig {
+  headerStyle?: ViewStyle;
+  tabBarStyle?: ViewStyle;
+  headerTintColor?: string;
+  tabBarActiveTintColor?: string;
+  tabBarInactiveTintColor?: string;
+  tabBarShowLabel?: boolean;
+}
 
 export const useThemeStyles = () => {
   const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
+  const themeColors = colors[theme];
+  const themeStyles = globalStyles[theme];
+
+  // Dynamically determine the statusBarStyle based on the theme
+  const statusBarStyle: 'light-content' | 'dark-content' =
+    theme === 'dark' ? 'light-content' : 'dark-content';
 
   return {
-    backgroundColor: getStyle('Background', colors),
-    textStyle: getStyle('Text', globalStyles),
-    inputStyle: getStyle('Input', globalStyles),
-    placeholderTextColor: getStyle('PlaceholderText', colors),
-    buttonOutlineColor: getStyle('ButtonOutline', colors),
-    contentViewStyle: getStyle('Content', globalStyles),
-    listItemBackgroundColor: getStyle('ListItemBackground', colors),
-    secondaryTextColor: getStyle('SecondaryText', colors),
-    deleteBackgroundColor: getStyle('DeleteBackground', colors),
-    modifyBackgroundColor: getStyle('ModifyBackground', colors),
-    deleteTextColor: getStyle('DeleteText', colors),
-    modifyTextColor: getStyle('ModifyText', colors),
-    borderColor: getStyle('Border', colors),
-    assetNameTextColor: getStyle('AssetNameTextColor', colors),
-  };
+    containerStyle: themeStyles.container as ViewStyle,
+    contentStyle: themeStyles.content as ViewStyle,
+    textStyle: themeStyles.text as TextStyle,
+    inputStyle: { ...globalStyles.base.input, ...themeStyles.input },
+    buttonTextStyle: globalStyles.base.buttonText,
+    placeholderTextColor: themeColors.placeholderText,
+    buttonOutlineColor: themeColors.buttonOutline,
+    listItemBackgroundColor: themeColors.listItemBackground,
+    secondaryTextColor: themeColors.secondaryText,
+    deleteBackgroundColor: themeColors.deleteBackground,
+    modifyBackgroundColor: themeColors.modifyBackground,
+    deleteTextColor: themeColors.deleteText,
+    modifyTextColor: themeColors.modifyText,
+    borderColor: themeColors.border,
+    assetNameTextColor: themeColors.assetNameTextColor,
+    backgroundColor: themeColors.background,
+    statusBarStyle, 
+    signInButtonStyle: themeStyles.signInButton,
+    buttonDisabledStyle: themeStyles.buttonDisabled,
+    registerButtonStyle: themeStyles.registerButton,
+    registerButtonTextStyle: themeStyles.registerButtonText,
+    statusStyle: themeStyles.status,
+    successStyle: themeStyles.success,
+    errorStyle: themeStyles.error,
+    iconOutlineColor: themeColors.iconOutline,
+    TabScreenStyle: themeStyles.tabScreenStyle as TabScreenStyleConfig,
+  }
 };

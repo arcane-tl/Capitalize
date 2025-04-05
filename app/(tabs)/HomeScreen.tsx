@@ -1,40 +1,21 @@
 import React from 'react';
-import { Text, View, ViewStyle, TextStyle } from 'react-native'; // Added ViewStyle and TextStyle
-import { globalStyles } from '@/components/css/Styles';
+import { Text, View } from 'react-native';
+import { useThemeStyles } from '@/components/ThemeUtils'; // Import the theme hook
 import { useUserStore } from '@/constants/userStore';
-import { useUserPreferences } from '@/constants/userPreferences'; // Import theme store
-import { getStyle } from '@/components/ThemeUtils'; // Import getStyle function
 
 export default function HomeScreen() {
   const user = useUserStore((state) => state.user);
-  const { theme } = useUserPreferences(); // Access the theme preference
-  
+  const themeStyles = useThemeStyles(); // Access theme-based styles
+
   return (
-    <View
-      style={[
-        globalStyles.screenContainer as ViewStyle,
-        getStyle('Content', globalStyles) as ViewStyle,
-      ]}
-    >
-      <Text
-        style={
-          getStyle('Text', globalStyles) as TextStyle
-        }
-      >
+    <View style={themeStyles.contentStyle}>
+      <Text style={themeStyles.textStyle}>
         Welcome, {user?.firstName} {user?.lastName}!
       </Text>
-      <Text
-        style={
-          getStyle('Text', globalStyles) as TextStyle
-        }
-      >
+      <Text style={themeStyles.textStyle}>
         Email: {user?.email}
       </Text>
-      <Text
-        style={
-          getStyle('Text', globalStyles) as TextStyle
-        }
-      >
+      <Text style={themeStyles.textStyle}>
         Mobile: {user?.mobile}
       </Text>
     </View>

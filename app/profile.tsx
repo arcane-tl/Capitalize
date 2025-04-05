@@ -2,25 +2,29 @@ import React, { useState } from 'react';
 import { Text, TextStyle, View, TouchableOpacity, Modal, Switch, ViewStyle, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
-import { globalStyles, colors } from '@/components/css/Styles';
+import { useThemeStyles } from '@/components/ThemeUtils';
 import { profileStyles } from '@/components/css/CustomStyles';
 import { useUserPreferences } from '@/constants/userPreferences';
 import { getAuth, signOut } from 'firebase/auth';
 import { addAuditLogEntry } from '@/components/FirebaseAPI';
-import { getStyle } from '@/components/ThemeUtils';
+import { colors } from '@/components/css/Styles';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
+// IconButton component with theme-aware props
 const IconButton = ({
   iconName,
   text,
   onPress,
+  backgroundColor,
+  textColor,
   style,
 }: {
   iconName: IoniconsName;
   text: string;
   onPress: () => void;
-  isDarkMode: boolean;
+  backgroundColor: string;
+  textColor?: string;
   style?: ViewStyle;
 }) => (
   <TouchableOpacity
@@ -28,71 +32,51 @@ const IconButton = ({
     style={[
       profileStyles.buttonContainer,
       style,
-      {
-        backgroundColor: getStyle('Background', colors),
-      },
+      { backgroundColor },
     ]}
   >
-    <Ionicons
-      name={iconName}
-      size={24}
-      color={getStyle('IconOutline', colors)}
-    />
-    <Text
-      style={[
-        profileStyles.buttonText,
-        { color: getStyle('Text', colors) },
-      ]}
-    >
-      {text}
-    </Text>
+    <Ionicons name={iconName} size={24} color={textColor} />
+    <Text style={[profileStyles.buttonText, { color: textColor }]}>{text}</Text>
   </TouchableOpacity>
 );
 
+// CustomModal component with theme-aware props
 const CustomModal = ({
   visible,
   onClose,
   children,
-  isDarkMode,
+  backgroundColor,
+  textStyle,
 }: {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  isDarkMode: boolean;
+  backgroundColor: string;
+  textStyle: TextStyle;
 }) => (
   <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-    <View style={[
-      profileStyles.modalContainer,
-    ]}>
-      <View
-        style={[
-          profileStyles.modalContent,
-          { backgroundColor: getStyle('Background', colors) },
-        ]}
-      >
+    <View style={profileStyles.modalContainer}>
+      <View style={[profileStyles.modalContent, { backgroundColor }]}>
         {children}
         <TouchableOpacity onPress={onClose}>
-          <Text
-            style={[
-              profileStyles.modalCloseText,
-              getStyle('Text', globalStyles) as TextStyle,
-            ]}
-          >
-            Close
-          </Text>
+          <Text style={[profileStyles.modalCloseText, textStyle]}>Close</Text>
         </TouchableOpacity>
       </View>
     </View>
   </Modal>
 );
 
-export default function ProfileScreen() {
+export default function ProfilesScreen() {
   const router = useRouter();
   const { theme, setTheme } = useUserPreferences();
   const isDarkMode = theme === 'dark';
-
   const [modalVisible, setModalVisible] = useState(false);
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
+
+  console.log('Current theme:', theme);
+
+  // Use the new theme styles hook
+  const { containerStyle, textStyle, backgroundColor, iconOutlineColor, borderColor } = useThemeStyles();
 
   const goBack = () => router.replace('/HomeScreen');
   const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
@@ -100,80 +84,71 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
-  
+
     if (!user) {
       console.error('No user is currently logged in.');
       return;
     }
-  
+
     const uid = user.uid;
     const logoutLogEntry = {
       name: 'Logout',
       time: Date.now(),
       status: '',
     };
-  
+
     try {
-      // Attempt to log the logout event with a "success" status
       logoutLogEntry.status = 'success';
       await addAuditLogEntry(uid, logoutLogEntry);
-  
-      // Sign out the user
       await signOut(auth);
-  
-      // Redirect to the login screen
       router.replace('/');
     } catch (error: any) {
-      // Log the logout event with a "failure" status
       logoutLogEntry.status = 'failure';
-
       await addAuditLogEntry(uid, logoutLogEntry);
-  
       console.error('Error during logout:', error);
       Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
     }
   };
-  
-  const iconColor = getStyle('IconOutline', colors);
-  
+
   // Button configuration array
   const buttons = [
     {
       iconName: 'settings-outline' as IoniconsName,
       text: 'Profile Settings',
       onPress: () => setSettingsModalVisible(true),
-      style: { alignSelf: 'flex-start', marginTop: 40, marginBottom: 40, } as ViewStyle,
+      style: { alignSelf: 'flex-start', marginTop: 40, marginBottom: 40 } as ViewStyle,
     },
     {
       iconName: 'moon-outline' as IoniconsName,
       text: 'Theme',
       onPress: () => setModalVisible(true),
-      style: { alignSelf: 'flex-start', marginTop: 0, } as ViewStyle,
+      style: { alignSelf: 'flex-start', marginTop: 0 } as ViewStyle,
     },
     {
       iconName: 'log-out-outline' as IoniconsName,
       text: 'Logout',
       onPress: handleLogout,
-      style: { alignSelf: 'center', marginTop: 'auto', marginBottom: 80, } as ViewStyle,
+      style: { alignSelf: 'center', marginTop: 'auto', marginBottom: 80 } as ViewStyle,
     },
   ];
 
   return (
     <>
       <Stack.Screen
+        name = 'Profile'
         options={{
           headerShown: true,
           headerBackVisible: false,
           headerTitle: '',
           headerStyle: {
-            backgroundColor: getStyle('Background', colors),
+            backgroundColor,
           },
           headerRight: () => (
             <TouchableOpacity onPress={goBack} style={{ marginRight: 20 }}>
               <Ionicons
                 name="chevron-forward-outline"
                 size={24}
-                color={iconColor}
+                color={iconOutlineColor}
               />
             </TouchableOpacity>
           ),
@@ -181,7 +156,7 @@ export default function ProfileScreen() {
       />
       <View
         style={[
-          getStyle('Container', globalStyles) as ViewStyle,
+          containerStyle,
           {
             flex: 1,
             flexDirection: 'column',
@@ -190,53 +165,59 @@ export default function ProfileScreen() {
           },
         ]}
       >
-        <View style={globalStyles.profileContainer}>
-          {buttons.map((button, index) => (
-            <IconButton
-              key={index}
-              iconName={button.iconName}
-              text={button.text}
-              onPress={button.onPress}
-              isDarkMode={isDarkMode}
-              style={button.style}
-            />
-          ))}
+        {buttons.map((button, index) => (
+          <IconButton
+            key={index}
+            iconName={button.iconName}
+            text={button.text}
+            onPress={button.onPress}
+            backgroundColor={backgroundColor}
+            textColor={textStyle.color as string | undefined}
+            style={button.style}
+          />
+        ))}
 
-          {/* Modals */}
-          <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} isDarkMode={isDarkMode}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text
-                style={[
-                  { marginRight: 10 },
-                  getStyle('Text', globalStyles) as TextStyle,
-                ]}
-              >
-                Dark Mode
-              </Text>
-              <Switch
-                value={isDarkMode}
-                onValueChange={toggleDarkMode}
-                thumbColor={getStyle('IconOutline', colors)}
-                trackColor={{ false: colors.lightBorderColor, true: colors.darkBorderColor }}
-              />
-            </View>
-          </CustomModal>
-
-          <CustomModal
-            visible={settingsModalVisible}
-            onClose={() => setSettingsModalVisible(false)}
-            isDarkMode={isDarkMode}
-          >
+        {/* Theme Modal */}
+        <CustomModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          backgroundColor={backgroundColor}
+          textStyle={textStyle}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={[
-                { marginBottom: 20 },
-                getStyle('Text', globalStyles) as TextStyle,
+                { marginRight: 10 },
+                textStyle,
               ]}
             >
-              Settings Modal Content
+              Dark Mode
             </Text>
-          </CustomModal>
-        </View>
+            <Switch
+              value={isDarkMode}
+              onValueChange={toggleDarkMode}
+              thumbColor={iconOutlineColor}
+              trackColor={{ false: borderColor, true: colors.primary }}
+            />
+          </View>
+        </CustomModal>
+
+        {/* Settings Modal */}
+        <CustomModal
+          visible={settingsModalVisible}
+          onClose={() => setSettingsModalVisible(false)}
+          backgroundColor={backgroundColor}
+          textStyle={textStyle}
+        >
+          <Text
+            style={[
+              { marginBottom: 20 },
+              textStyle,
+            ]}
+          >
+            Settings Modal Content
+          </Text>
+        </CustomModal>
       </View>
     </>
   );

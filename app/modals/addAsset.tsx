@@ -122,7 +122,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         <View style={assetModalStyles.innerContentContainer}>
           <TextInput
             style={[
-              globalStyles.input as TextStyle,
+              globalStyles.base.input as TextStyle,
               inputStyle,
               { width: '90%', height: 50, borderRadius: 10 },
             ]}
@@ -136,7 +136,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           />
           <TextInput
             style={[
-              globalStyles.input as TextStyle,
+              globalStyles.base.input as TextStyle,
               inputStyle,
               { width: '90%', height: 150, borderRadius: 10, textAlignVertical: 'top' },
             ]}
@@ -152,7 +152,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           />
           <TextInput
             style={[
-              globalStyles.input as TextStyle,
+              globalStyles.base.input as TextStyle,
               inputStyle,
               { width: '90%', height: 50, borderRadius: 10 },
             ]}

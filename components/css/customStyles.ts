@@ -1,32 +1,6 @@
+// CustomStyles.ts
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useThemeStyles } from '@/components/ThemeUtils';
-
-// Define tab screen options as plain objects
-export const lightTabScreenOptions = {
-  headerStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-  },
-  headerTintColor: 'rgba(0, 0, 0, 1)',
-  tabBarStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    borderTopColor: 'rgba(204, 204, 204, 1)',
-  },
-  tabBarActiveTintColor: 'rgba(66, 133, 244, 1)',
-  tabBarInactiveTintColor: 'rgba(102, 102, 102, 1)',
-};
-
-export const darkTabScreenOptions = {
-  headerStyle: {
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-  },
-  headerTintColor: 'rgba(255, 255, 255, 1)',
-  tabBarStyle: {
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-    borderTopColor: 'rgba(51, 51, 51, 1)',
-  },
-  tabBarActiveTintColor: 'rgba(66, 133, 244, 1)',
-  tabBarInactiveTintColor: 'rgba(136, 136, 136, 1)',
-};
+import { colors } from './Styles';
 
 export const profileStyles = StyleSheet.create({
   buttonContainer: {
@@ -40,13 +14,12 @@ export const profileStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(55, 55, 55, 0.6)',
+    backgroundColor: colors.modalBackground, // Theme-agnostic
   } as ViewStyle,
   modalContent: {
     width: 300,
     borderRadius: 10,
     padding: 20,
-    opacity: 1,
     justifyContent: 'center',
     alignItems: 'center',
   } as ViewStyle,
@@ -61,8 +34,7 @@ export const assetModalStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: 'rgba(55, 55, 55, 0.7)',
+    backgroundColor: colors.modalBackground, // Theme-agnostic
   } as ViewStyle,
   contentContainer: {
     width: '90%',
@@ -107,32 +79,30 @@ export const assetModalStyles = StyleSheet.create({
     marginRight: 20,
   } as ViewStyle,
   addButton: {
-    borderWidth: 2, // Outline thickness
-    borderColor: 'rgba(66, 133, 244, 1)', // Outline color
-    borderRadius: 20, // Rounded corners
-    paddingVertical: 5, // Vertical padding for the button
-    paddingHorizontal: 10, // Horizontal padding for the button
-    alignItems: 'center', // Center the text
-    justifyContent: 'center', // Center the text
-    backgroundColor: 'rgba(66, 133, 244, 1)', // Optional: Transparent background
+    borderWidth: 2,
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   } as ViewStyle,
   cancelButton: {
-    borderWidth: 1, // Outline thickness
-    borderRadius: 20, // Rounded corners
-    paddingVertical: 5, // Vertical padding for the button
-    paddingHorizontal: 10, // Horizontal padding for the button
-    alignItems: 'center', // Center the text
-    justifyContent: 'center', // Center the text
-    backgroundColor: 'transparent', // Optional: Transparent background
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   } as ViewStyle,
   uploadButton: {
-    borderWidth: 1, // Outline thickness
-    borderRadius: 20, // Rounded corners
-    paddingVertical: 5, // Vertical padding for the button
-    paddingHorizontal: 10, // Horizontal padding for the button
-    alignItems: 'center', // Center the text
-    justifyContent: 'center', // Center the text
-    backgroundColor: 'transparent', // Optional: Transparent background
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   } as ViewStyle,
 });
 
@@ -185,7 +155,7 @@ export const swipeMenuStyle = StyleSheet.create({
     alignItems: 'flex-start',
     paddingLeft: 10,
     borderRadius: 10,
-  },
+  } as ViewStyle,
   deleteBackground: {
     position: 'absolute',
     left: 0,
@@ -196,19 +166,19 @@ export const swipeMenuStyle = StyleSheet.create({
     alignItems: 'flex-end',
     paddingRight: 10,
     borderRadius: 10,
-  },
+  } as ViewStyle,
   actionContent: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
-  },
+  } as ViewStyle,
   modifyText: {
     fontWeight: 'bold',
     marginLeft: 5,
-  },
+  } as TextStyle,
   deleteText: {
     fontWeight: 'bold',
     marginLeft: 5,
-  },
+  } as TextStyle,
 });

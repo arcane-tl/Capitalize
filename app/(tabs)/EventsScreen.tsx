@@ -1,21 +1,14 @@
 import React from 'react';
-import { Text, View, ViewStyle, TextStyle } from 'react-native';
-import { globalStyles } from '@/components/css/Styles';
-import { getStyle } from '@/components/ThemeUtils';
+import { View, Text } from 'react-native';
+import { useThemeStyles } from '@/components/ThemeUtils';
 
 export default function EventsScreen() {
+  const themeStyles = useThemeStyles();
+
   return (
-    <View
-      style={
-        getStyle('Content', globalStyles) as ViewStyle
-      }
-    >
-      <Text
-        style={
-          getStyle('Text', globalStyles) as TextStyle
-        }
-      >
-        Your events content goes here.
+    <View style={themeStyles.contentStyle}>
+      <Text style={themeStyles.textStyle}>
+        The events list comes here.
       </Text>
     </View>
   );

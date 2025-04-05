@@ -1,76 +1,45 @@
 import React, { useState } from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity, StatusBar, View, ViewStyle, StatusBarStyle, Modal } from 'react-native';
+import { TouchableOpacity, StatusBar, View, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { globalStyles, colors, customBarStyles } from '@/components/css/Styles';
-import { darkTabScreenOptions, lightTabScreenOptions } from '@/components/css/CustomStyles';
+import { useThemeStyles } from '@/components/ThemeUtils';
 import { useUserPreferences } from '@/constants/userPreferences';
-import { getStyle } from '@/components/ThemeUtils';
 import AddAssetModal from '@/app/modals/AddAsset';
-
-// Helper function to determine icon properties
-const getIconProps = (focused: boolean, isDarkMode: boolean) => {
-  return {
-    color: focused
-      ? (isDarkMode ? '#4285f4' : '#4285f4') // Active color
-      : (isDarkMode ? '#fff' : '#88888'), // Inactive color
-    size: 24, // Icon size
-  };
-};
 
 // Reusable Header Icon Component
 const HeaderIcon = ({
   name,
   onPress,
+  color,
 }: {
   name: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
+  color: string;
 }) => (
   <TouchableOpacity onPress={onPress} style={{ marginHorizontal: 15 }}>
-    <Ionicons name={name} size={24} color={getStyle('IconOutline', colors)} />
+    <Ionicons name={name} size={24} color={color} />
   </TouchableOpacity>
 );
 
 export default function TabsLayout() {
   const { theme } = useUserPreferences();
-  const isDarkMode = theme === 'dark';
-  const customBarStyle = getStyle('StatusBar', customBarStyles);
-
+  const themeStyles = useThemeStyles();
   const [isModalVisible, setModalVisible] = useState(false);
-
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
 
   return (
     <>
-      <StatusBar barStyle={customBarStyle as StatusBarStyle} />
-      <View
-        style={[
-          getStyle('Container', globalStyles) as ViewStyle,
-          { flex: 1 },
-        ]}
-      >
+      <StatusBar barStyle={themeStyles.statusBarStyle} />
+      <View style={[themeStyles.containerStyle, { flex: 1 }]}>
         <Tabs
           screenOptions={{
-            ...(isDarkMode ? darkTabScreenOptions : lightTabScreenOptions),
-            tabBarShowLabel: false,
-            tabBarStyle: {
-              marginTop: 10,
-              height: 85,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: isDarkMode
-                ? globalStyles.darkContainer.backgroundColor
-                : globalStyles.lightContainer.backgroundColor,
-              borderTopWidth: 0,
-            },
-            headerStyle: {
-              height: 110,
-              backgroundColor: isDarkMode
-                ? globalStyles.darkContainer.backgroundColor
-                : globalStyles.lightContainer.backgroundColor,
-              borderBottomWidth: 0,
-            },
+            tabBarStyle: themeStyles.TabScreenStyle.tabBarStyle,
+            headerStyle: themeStyles.TabScreenStyle.headerStyle,
+            headerTintColor: themeStyles.TabScreenStyle.headerTintColor,
+            tabBarActiveTintColor: themeStyles.TabScreenStyle.tabBarActiveTintColor,
+            tabBarInactiveTintColor: themeStyles.TabScreenStyle.tabBarInactiveTintColor,
+            tabBarShowLabel: themeStyles.TabScreenStyle.tabBarShowLabel,
             headerLeft: () => {
               const router = useRouter();
               const handleProfile = () => {
@@ -80,6 +49,7 @@ export default function TabsLayout() {
                 <HeaderIcon
                   name="person-outline"
                   onPress={handleProfile}
+                  color={themeStyles.iconOutlineColor}
                 />
               );
             },
@@ -89,48 +59,43 @@ export default function TabsLayout() {
             name="HomeScreen"
             options={{
               title: 'Home',
-              tabBarIcon: ({ focused }) => {
-                const { color, size } = getIconProps(focused, isDarkMode);
-                return <Ionicons name="home-outline" size={size} color={color} />;
-              },
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="home-outline" size={size} color={color} />
+              ),
             }}
           />
           <Tabs.Screen
             name="DashboardScreen"
             options={{
               title: 'Dashboard',
-              tabBarIcon: ({ focused }) => {
-                const { color, size } = getIconProps(focused, isDarkMode);
-                return <Ionicons name="stats-chart-outline" size={size} color={color} />;
-              },
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="stats-chart-outline" size={size} color={color} />
+              ),
             }}
           />
           <Tabs.Screen
             name="AssetsScreen"
             options={{
               title: 'Assets',
-              tabBarIcon: ({ focused }) => {
-                const { color, size } = getIconProps(focused, isDarkMode);
-                return <Ionicons name="wallet-outline" size={size} color={color} />;
-              },
-              headerRight: () => {
-                return (
-                  <HeaderIcon
-                    name="add-outline"
-                    onPress={openModal} // Open the modal when the button is pressed
-                  />
-                );
-              },
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="wallet-outline" size={size} color={color} />
+              ),
+              headerRight: () => (
+                <HeaderIcon
+                  name="add-outline"
+                  onPress={openModal}
+                  color={themeStyles.iconOutlineColor}
+                />
+              ),
             }}
           />
           <Tabs.Screen
             name="EventsScreen"
             options={{
               title: 'Events',
-              tabBarIcon: ({ focused }) => {
-                const { color, size } = getIconProps(focused, isDarkMode);
-                return <Ionicons name="calendar-outline" size={size} color={color} />;
-              },
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="calendar-outline" size={size} color={color} />
+              ),
             }}
           />
         </Tabs>

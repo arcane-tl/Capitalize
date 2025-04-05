@@ -6,6 +6,7 @@ import { useUserStore } from '@/constants/userStore';
 import { useThemeStyles } from '@/components/ThemeUtils';
 import SwipeableItem from '@/components/SwipeableItems';
 import { assetListStyle } from '@/components/css/CustomStyles';
+import { useAssetStore } from '@/app/modals/AddAsset';
 
 interface Asset {
   id: string;
@@ -19,6 +20,7 @@ export default function AssetsScreen() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const userUID = useUserStore((state) => state.user?.uid);
+  const refreshAssets = useAssetStore((state) => state.refreshAssets);
 
   // Extract theme styles
   const {
@@ -64,7 +66,7 @@ export default function AssetsScreen() {
     };
 
     fetchAssets();
-  }, [userUID]);
+  }, [userUID, refreshAssets]);
 
   // Handler for deleting an asset
   const deleteAsset = (item: Asset) => {

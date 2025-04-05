@@ -86,7 +86,6 @@ export const globalStyles = {
   light: StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: colors.light.background,
     } as ViewStyle,

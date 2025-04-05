@@ -11,7 +11,6 @@ import { colors } from '@/components/css/Styles';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
-// IconButton component with theme-aware props
 const IconButton = ({
   iconName,
   text,
@@ -40,7 +39,6 @@ const IconButton = ({
   </TouchableOpacity>
 );
 
-// CustomModal component with theme-aware props
 const CustomModal = ({
   visible,
   onClose,
@@ -75,11 +73,12 @@ export default function ProfilesScreen() {
 
   console.log('Current theme:', theme);
 
-  // Use the new theme styles hook
   const { containerStyle, textStyle, backgroundColor, iconOutlineColor, borderColor } = useThemeStyles();
-
   const goBack = () => router.replace('/HomeScreen');
   const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
+
+  console.log('textStyle:', textStyle);
+  console.log('containerStyle:', containerStyle);
 
   const handleLogout = async () => {
     const auth = getAuth();
@@ -110,19 +109,18 @@ export default function ProfilesScreen() {
     }
   };
 
-  // Button configuration array
   const buttons = [
     {
       iconName: 'settings-outline' as IoniconsName,
       text: 'Profile Settings',
       onPress: () => setSettingsModalVisible(true),
-      style: { alignSelf: 'flex-start', marginTop: 40, marginBottom: 40 } as ViewStyle,
+      style: { alignSelf: 'flex-start', marginTop: 40, marginBottom: 40, marginLeft: 20, } as ViewStyle,
     },
     {
       iconName: 'moon-outline' as IoniconsName,
       text: 'Theme',
       onPress: () => setModalVisible(true),
-      style: { alignSelf: 'flex-start', marginTop: 0 } as ViewStyle,
+      style: { alignSelf: 'flex-start', marginTop: 0, marginLeft: 20, } as ViewStyle,
     },
     {
       iconName: 'log-out-outline' as IoniconsName,

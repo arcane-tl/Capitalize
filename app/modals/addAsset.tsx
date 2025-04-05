@@ -9,6 +9,17 @@ import { ref, set, push } from 'firebase/database';
 import { database } from '@/components/database/FirebaseConfig';
 import { useUserStore } from '@/constants/userStore';
 import { getAuth } from 'firebase/auth';
+import { create } from 'zustand';
+
+interface AssetStore {
+  refreshAssets: boolean;
+  toggleRefreshAssets: () => void;
+}
+
+export const useAssetStore = create<AssetStore>((set) => ({
+  refreshAssets: false,
+  toggleRefreshAssets: () => set((state) => ({ refreshAssets: !state.refreshAssets })),
+}));
 
 export default function AddAssetModal({ closeModal }: { closeModal: () => void }) {
   const [assetName, setAssetName] = useState<string>('');
@@ -17,6 +28,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const userUID = useUserStore((state) => state.user?.uid);
+  const toggleRefreshAssets = useAssetStore((state) => state.toggleRefreshAssets);
 
   // Database path for user assets
   const assetPath = `users/${userUID}/assets`;
@@ -88,7 +100,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       Alert.alert('Asset Saved', `Your asset has been successfully saved.\nImage URL: ${imageUrl}`, [
         {
           text: 'OK',
-          onPress: () => closeModal(),
+          onPress: () => {
+            toggleRefreshAssets(); // Trigger refresh
+            closeModal();
+          },
         },
       ]);
     } catch (error) {

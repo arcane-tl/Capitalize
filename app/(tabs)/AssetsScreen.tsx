@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, FlatList, ActivityIndicator, StyleSheet, Image } from 'react-native';
-import { ref, get, remove } from 'firebase/database';
+import { Text, View, FlatList, ActivityIndicator, Image, Alert } from 'react-native';
+import { ref, get } from 'firebase/database';
 import { database } from '@/components/database/FirebaseConfig';
 import { useUserStore } from '@/constants/userStore';
 import { useThemeStyles } from '@/components/ThemeUtils';
 import SwipeableItem from '@/components/SwipeableItems';
 import { assetListStyle } from '@/components/css/CustomStyles';
 import { useAssetStore } from '@/app/modals/AddAsset';
+import { deleteItem } from '@/components/FirebaseAPI';
 
 interface Asset {
   id: string;
   name: string;
   description: string;
   purchasePrice: string;
-  assetPictureLink: string;
+  assetPictureUri: string | null;
+  assetPictureLocal: any;
 }
 
 export default function AssetsScreen() {
@@ -54,7 +56,8 @@ export default function AssetsScreen() {
             name: data[key].name || 'Unknown',
             description: data[key].description || '',
             purchasePrice: data[key].purchasePrice ? String(data[key].purchasePrice) : '0',
-            assetPictureLink: data[key].assetPictureLink || require('../../assets/nofileIcon.png'),
+            assetPictureUri: data[key].assetPictureLink || null,
+            assetPictureLocal: data[key].assetPictureLink ? null : require('../../assets/nofileIcon.png'),
           }));
           setAssets(assetsArray);
         }
@@ -70,9 +73,32 @@ export default function AssetsScreen() {
 
   // Handler for deleting an asset
   const deleteAsset = (item: Asset) => {
-    setAssets((prevAssets) => prevAssets.filter((asset) => asset.id !== item.id));
-    const assetRef = ref(database, `users/${userUID}/assets/${item.id}`);
-    remove(assetRef).catch((error) => console.error('Error deleting asset:', error));
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this asset? This will permanently delete the asset and its associated file.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              console.log('Deleting asset:', item.id, 'User UID:', userUID);
+              // Call the modular deleteItem function
+              await deleteItem(userUID!, 'asset', item.id);
+              // Update the local state to remove the deleted asset
+              setAssets((prevAssets) => prevAssets.filter((asset) => asset.id !== item.id));
+            } catch (error) {
+              console.error('Error deleting asset:', error);
+              Alert.alert('Error', 'Failed to delete asset. Please try again.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   // Handler for modifying an asset (placeholder)
@@ -101,7 +127,10 @@ export default function AssetsScreen() {
             item={item}
             renderItem={(asset) => (
               <View style={assetListStyle.itemContent}>
-                <Image source={{ uri: asset.assetPictureLink }} style={assetListStyle.assetImage} />
+                <Image
+                  source={asset.assetPictureUri ? { uri: asset.assetPictureUri } : asset.assetPictureLocal}
+                  style={assetListStyle.assetImage}
+                />
                 <View style={assetListStyle.detailsContainer}>
                   <Text style={[assetListStyle.assetName, { color: assetNameTextColor }]}>
                     {asset.name}, {asset.purchasePrice}€

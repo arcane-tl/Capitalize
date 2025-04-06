@@ -1,6 +1,6 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
 import { database } from './database/FirebaseConfig';
-import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from 'firebase/storage';
 //import { setLogLevel } from 'firebase/app';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
@@ -31,6 +31,27 @@ export const fetchUserData = async (uid: string): Promise<any> => {
     }
   } catch (error) {
     console.error('Error fetching user data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete an item from the database and, if applicable, its associated file from storage.
+ * @param userUID - The user's unique ID
+ * @param itemType - The type of item to delete (e.g., 'asset', 'event')
+ * @param itemId - The ID of the item to delete
+ * @param filePath - The path to the file in storage (optional, for assets)
+ */
+export const deleteItem = async (userUID: string, itemType: string, itemId: string) => {
+  try {
+    // Construct the database reference based on itemType
+    const itemRef = ref(db, `users/${userUID}/${itemType}/${itemId}`);
+    await remove(itemRef);
+
+    const fileRef = storageRef(storage, `users/${userUID}/${itemType}/${itemId}`); 
+    await deleteObject(fileRef);
+  } catch (error) {
+    console.error(`Error deleting ${itemType}:`, error);
     throw error;
   }
 };

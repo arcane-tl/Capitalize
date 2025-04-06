@@ -37,10 +37,10 @@ const SwipeableItem = <T,>({
       translateX.value = event.translationX;
     })
     .onEnd((event) => {
-      if (event.translationX > THRESHOLD) {
+      if (event.translationX < -THRESHOLD) { // Swiping left
         onDelete(item);
         translateX.value = withTiming(0);
-      } else if (event.translationX < -THRESHOLD) {
+      } else if (event.translationX > THRESHOLD) { // Swiping right
         onModify(item);
         translateX.value = withTiming(0);
       } else {
@@ -53,7 +53,7 @@ const SwipeableItem = <T,>({
     transform: [{ translateX: translateX.value }],
   }));
 
-  // Opacity for delete background (right swipe)
+  // Opacity for delete background (shown when swiping left)
   const deleteOpacity = useDerivedValue(() => {
     const swipeDistance = -translateX.value;
     if (swipeDistance > 0) {
@@ -62,7 +62,7 @@ const SwipeableItem = <T,>({
     return 0;
   });
 
-  // Opacity for modify background (left swipe)
+  // Opacity for modify background (shown when swiping right)
   const modifyOpacity = useDerivedValue(() => {
     const swipeDistance = translateX.value;
     if (swipeDistance > 0) {
@@ -81,14 +81,14 @@ const SwipeableItem = <T,>({
 
   return (
     <View style={swipeMenuStyle.swipeContainer}>
-      {/* Delete background (revealed on right swipe) */}
+      {/* Delete background (revealed on left swipe) */}
       <Animated.View style={[swipeMenuStyle.deleteBackground, { backgroundColor: deleteBackgroundColor }, deleteStyle]}>
         <View style={swipeMenuStyle.actionContent}>
           <Ionicons name="trash-outline" size={20} color={deleteTextColor} />
         </View>
       </Animated.View>
 
-      {/* Modify background (revealed on left swipe) */}
+      {/* Modify background (revealed on right swipe) */}
       <Animated.View style={[swipeMenuStyle.modifyBackground, { backgroundColor: modifyBackgroundColor }, modifyStyle]}>
         <View style={swipeMenuStyle.actionContent}>
           <Ionicons name="pencil-outline" size={20} color={modifyTextColor} />

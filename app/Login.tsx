@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -6,6 +6,10 @@ import {
   Alert,
   ActivityIndicator,
   View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { auth } from '@/components/database/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -24,16 +28,15 @@ export default function LoginScreen() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegisterModalVisible, setRegisterModalVisible] = useState<boolean>(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
 
-  // Load fonts
   const [fontsLoaded] = useFonts({
     Lobster: require('../assets/fonts/Lobster-Regular.ttf'),
   });
 
-  // Get styles from useThemeStyles
   const {
     containerStyle,
     textStyle,
@@ -49,6 +52,22 @@ export default function LoginScreen() {
     errorStyle,
   } = useThemeStyles();
 
+  // Detect keyboard visibility
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Show loading indicator if fonts aren't loaded
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -95,59 +114,70 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={containerStyle}>
-      <Text style={[globalStyles.base.title, textStyle]}>Capitalize</Text>
-      <View style={{ width: '87%', alignSelf: 'center' }}>
-        <TextInput
-          style={[inputStyle, { marginTop: 40 }]}
-          placeholder="Email"
-          placeholderTextColor={placeholderTextColor}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          editable={!isLoading}
-        />
-        <TextInput
-          style={inputStyle}
-          placeholder="Password"
-          placeholderTextColor={placeholderTextColor}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          editable={!isLoading}
-        />
-
-        <TouchableOpacity
-          style={[signInButtonStyle, isLoading && buttonDisabledStyle]}
-          onPress={handleLogin}
-          disabled={isLoading}
+    <SafeAreaView style={[containerStyle, { flex: 1 }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: isKeyboardVisible ? 'flex-start' : 'center', // Center when keyboard is hidden, top when visible
+            alignItems: 'center',
+            paddingVertical: 20, // Add padding to avoid content being too close to edges
+          }}
+          keyboardShouldPersistTaps="handled" // Ensures taps work even when keyboard is up
         >
-          <Text style={buttonTextStyle}>
-            {isLoading ? 'Processing...' : 'Sign In'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[registerButtonStyle, { marginTop: 20, }]}
-          onPress={() => setRegisterModalVisible(true)}
-        >
-          <Text style={registerButtonTextStyle}>Create an account</Text>
-        </TouchableOpacity>
-      </View>
-
-      {statusMessage ? (
-        <Text
-          style={[
-            statusStyle,
-            statusMessage.includes('successful') ? successStyle : errorStyle,
-          ]}
-        >
-          {statusMessage}
-        </Text>
-      ) : null}
-
+          <Text style={[globalStyles.base.title, textStyle]}>Capitalize</Text>
+          <View style={{ width: '87%', alignSelf: 'center', marginTop: 40 }}>
+            <TextInput
+              style={[inputStyle]}
+              placeholder="Email"
+              placeholderTextColor={placeholderTextColor}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!isLoading}
+            />
+            <TextInput
+              style={[inputStyle]}
+              placeholder="Password"
+              placeholderTextColor={placeholderTextColor}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              editable={!isLoading}
+            />
+            <TouchableOpacity
+              style={[signInButtonStyle, isLoading && buttonDisabledStyle]}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              <Text style={buttonTextStyle}>
+                {isLoading ? 'Processing...' : 'Sign In'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[registerButtonStyle, { marginTop: 20 }]}
+              onPress={() => setRegisterModalVisible(true)}
+            >
+              <Text style={registerButtonTextStyle}>Create an account</Text>
+            </TouchableOpacity>
+          </View>
+          {statusMessage ? (
+            <Text
+              style={[
+                statusStyle,
+                statusMessage.includes('successful') ? successStyle : errorStyle,
+              ]}
+            >
+              {statusMessage}
+            </Text>
+          ) : null}
+        </ScrollView>
+      </KeyboardAvoidingView>
       <RegisterUser
         visible={isRegisterModalVisible}
         onClose={() => setRegisterModalVisible(false)}

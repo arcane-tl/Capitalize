@@ -24,7 +24,6 @@ export default function AssetsScreen() {
   const userUID = useUserStore((state) => state.user?.uid);
   const refreshAssets = useAssetStore((state) => state.refreshAssets);
 
-  // Extract theme styles
   const {
     backgroundColor,
     listItemBackgroundColor,
@@ -37,7 +36,6 @@ export default function AssetsScreen() {
     assetNameTextColor,
   } = useThemeStyles();
 
-  // Fetch assets from Firebase when userUID changes
   useEffect(() => {
     if (!userUID) {
       console.log('No user UID found, skipping fetch.');
@@ -71,25 +69,18 @@ export default function AssetsScreen() {
     fetchAssets();
   }, [userUID, refreshAssets]);
 
-  // Handler for deleting an asset
   const deleteAsset = (item: Asset) => {
     Alert.alert(
       'Confirm Deletion',
       'Are you sure you want to delete this asset? This will permanently delete the asset and its associated file.',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
             try {
-              console.log('Deleting asset:', item.id, 'User UID:', userUID);
-              // Call the modular deleteItem function
-              await deleteItem(userUID!, 'asset', item.id);
-              // Update the local state to remove the deleted asset
+              await deleteItem(userUID!, 'assets', item.id);
               setAssets((prevAssets) => prevAssets.filter((asset) => asset.id !== item.id));
             } catch (error) {
               console.error('Error deleting asset:', error);
@@ -101,13 +92,10 @@ export default function AssetsScreen() {
     );
   };
 
-  // Handler for modifying an asset (placeholder)
   const modifyAsset = (item: Asset) => {
-    console.log('Modify asset:', item.id);
     // TODO: Implement modify logic (e.g., open a modal or navigate to an edit screen)
   };
 
-  // Show loading indicator while fetching data
   if (loading) {
     return (
       <View style={[assetListStyle.loadingContainer, { backgroundColor }]}>
@@ -116,7 +104,6 @@ export default function AssetsScreen() {
     );
   }
 
-  // Render the assets list with swipeable items
   return (
     <View style={[assetListStyle.screenContainer, { backgroundColor }]}>
       <FlatList

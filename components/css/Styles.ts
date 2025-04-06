@@ -102,6 +102,8 @@ export const globalStyles = {
     } as ViewStyle,
     signInButton: {
       backgroundColor: colors.light.signInButtonBackground,
+      borderColor: colors.light.buttonOutline,
+      borderWidth: 1,
       padding: 10,
       borderRadius: 20,
       marginTop: 40,

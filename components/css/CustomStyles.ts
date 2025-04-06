@@ -79,7 +79,7 @@ export const assetModalStyles = StyleSheet.create({
     marginRight: 20,
   } as ViewStyle,
   addButton: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,

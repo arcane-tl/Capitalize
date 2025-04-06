@@ -142,7 +142,7 @@ export default function ProfilesScreen() {
             backgroundColor,
           },
           headerRight: () => (
-            <TouchableOpacity onPress={goBack} style={{ marginRight: 20 }}>
+            <TouchableOpacity onPress={goBack} style={{ marginRight: 0 }}>
               <Ionicons
                 name="chevron-forward-outline"
                 size={24}

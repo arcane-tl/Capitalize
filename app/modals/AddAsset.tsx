@@ -70,7 +70,8 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
 
     const db = database;
     const assetRef = push(ref(db, assetPath));
-    const assetUid = assetRef.key;
+    const assetUID = assetRef.key;
+    const saveFilePath = `${userFilePath}/${assetUID}`;
 
     const auth = getAuth();
 
@@ -81,7 +82,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         const fileName = `${assetName.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
 
         // Upload the file to Firebase Storage
-        imageUrl = await uploadFile(imageUri, fileName, userUID, userFilePath);
+        imageUrl = await uploadFile(imageUri, fileName, userUID, saveFilePath);
 
         setUploading(false);
       }
@@ -95,7 +96,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       };
 
       // Save asset data to Firebase Realtime Database
-      await set(ref(db, `${assetPath}/${assetUid}`), assetData);
+      await set(ref(db, `${assetPath}/${assetUID}`), assetData);
 
       Alert.alert('Asset Saved', `Your asset has been successfully saved.\nImage URL: ${imageUrl}`, [
         {
@@ -119,7 +120,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         {/* Header Container */}
         <View style={assetModalStyles.headerContainer}>
           <View style={assetModalStyles.headerLeft}>
-            <TouchableOpacity onPress={closeModal} style={assetModalStyles.cancelButton}>
+            <TouchableOpacity onPress={closeModal}
+              style={[
+                assetModalStyles.cancelButton,
+                { borderColor: buttonOutlineColor },]}>
               <Text style={textStyle}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -127,7 +131,12 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             <Text style={[assetModalStyles.modalTitleText, textStyle]}>New Asset</Text>
           </View>
           <View style={assetModalStyles.headerRight}>
-            <TouchableOpacity onPress={saveAsset} style={assetModalStyles.addButton} disabled={uploading}>
+            <TouchableOpacity onPress={saveAsset} 
+              style={[
+                assetModalStyles.cancelButton,
+                { borderColor: buttonOutlineColor },]}
+              disabled={uploading}
+            >
               <Text style={textStyle}>{uploading ? 'Saving...' : 'Add'}</Text>
             </TouchableOpacity>
           </View>

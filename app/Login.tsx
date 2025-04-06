@@ -16,7 +16,7 @@ import { useUserStore } from '@/constants/userStore';
 import { fetchUserData, addAuditLogEntry } from '@/components/FirebaseAPI';
 import { useThemeStyles } from '@/components/ThemeUtils';
 import { useFonts } from 'expo-font';
-import { globalStyles } from '@/components/css/Styles'; // For font-specific styles
+import { globalStyles } from '@/components/css/Styles';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');

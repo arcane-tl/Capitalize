@@ -49,7 +49,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: false,
-        quality: 0.2, // Adjust the image quality as needed 0 (lowest) to 1 (highest)
+        quality: 0.2,
       });
 
       if (!result.canceled) {
@@ -73,32 +73,38 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
     const assetUID = assetRef.key;
     const saveFilePath = `${userFilePath}/${assetUID}`;
 
-    const auth = getAuth();
-
     try {
+      let filePath = '';
       let imageUrl = '';
       if (imageUri) {
         setUploading(true);
         const fileName = `${assetName.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
-
-        // Upload the file to Firebase Storage
+        filePath = `${saveFilePath}/${fileName}`;
         imageUrl = await uploadFile(imageUri, fileName, userUID, saveFilePath);
-
         setUploading(false);
       }
 
-      // Prepare asset data
+      // Prepare asset data with a "files" array
       const assetData = {
         name: assetName,
         description: assetDescription,
         purchasePrice: assetPurchasePrice,
-        assetPictureLink: imageUrl,
+        files: imageUri
+          ? [
+              {
+                path: filePath,
+                url: imageUrl,
+                type: 'picture',
+                isMain: true,
+              },
+            ]
+          : [],
       };
 
       // Save asset data to Firebase Realtime Database
       await set(ref(db, `${assetPath}/${assetUID}`), assetData);
 
-      Alert.alert('Asset Saved', `Your asset has been successfully saved.\nImage URL: ${imageUrl}`, [
+      Alert.alert('Asset Saved', 'Your asset has been successfully saved.', [
         {
           text: 'OK',
           onPress: () => {
@@ -120,10 +126,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         {/* Header Container */}
         <View style={assetModalStyles.headerContainer}>
           <View style={assetModalStyles.headerLeft}>
-            <TouchableOpacity onPress={closeModal}
-              style={[
-                assetModalStyles.cancelButton,
-                { borderColor: buttonOutlineColor },]}>
+            <TouchableOpacity
+              onPress={closeModal}
+              style={[assetModalStyles.cancelButton, { borderColor: buttonOutlineColor }]}
+            >
               <Text style={textStyle}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -131,10 +137,9 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             <Text style={[assetModalStyles.modalTitleText, textStyle]}>New Asset</Text>
           </View>
           <View style={assetModalStyles.headerRight}>
-            <TouchableOpacity onPress={saveAsset} 
-              style={[
-                assetModalStyles.cancelButton,
-                { borderColor: buttonOutlineColor },]}
+            <TouchableOpacity
+              onPress={saveAsset}
+              style={[assetModalStyles.cancelButton, { borderColor: buttonOutlineColor }]}
               disabled={uploading}
             >
               <Text style={textStyle}>{uploading ? 'Saving...' : 'Add'}</Text>
@@ -190,14 +195,11 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           />
 
           {/* Image Picker */}
-          <TouchableOpacity onPress={pickImage}
-            style={[
-              assetModalStyles.uploadButton,
-              { borderColor: buttonOutlineColor },
-            ]}>
-            <Text style={textStyle}>
-              {imageUri ? 'Change Image' : 'Upload Image'}
-            </Text>
+          <TouchableOpacity
+            onPress={pickImage}
+            style={[assetModalStyles.uploadButton, { borderColor: buttonOutlineColor }]}
+          >
+            <Text style={textStyle}>{imageUri ? 'Change Image' : 'Upload Image'}</Text>
           </TouchableOpacity>
           {imageUri && (
             <Text style={[textStyle, { marginTop: 10 }]}>
@@ -209,10 +211,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             <Image
               source={{ uri: imageUri }}
               style={{
-                width: 150, // Adjust the width as needed
-                height: 150, // Adjust the height as needed
+                width: 150,
+                height: 150,
                 marginTop: 10,
-                borderRadius: 10, // Optional: Add rounded corners
+                borderRadius: 10,
               }}
             />
           )}

@@ -49,14 +49,25 @@ export default function AssetsScreen() {
         const snapshot = await get(assetsRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const assetsArray = Object.keys(data).map((key) => ({
-            id: key,
-            name: data[key].name || 'Unknown',
-            description: data[key].description || '',
-            purchasePrice: data[key].purchasePrice ? String(data[key].purchasePrice) : '0',
-            assetPictureUri: data[key].assetPictureLink || null,
-            assetPictureLocal: data[key].assetPictureLink ? null : require('../../assets/nofileIcon.png'),
-          }));
+          const assetsArray = Object.keys(data).map((key) => {
+            const files = data[key].files;
+            let assetPictureUri = null;
+            if (Array.isArray(files)) {
+              const mainFile = files.find((file) => file.isMain);
+              if (mainFile) {
+                assetPictureUri = mainFile.url;
+              }
+            }
+            const assetPictureLocal = assetPictureUri ? null : require('../../assets/nofileIcon.png');
+            return {
+              id: key,
+              name: data[key].name || 'Unknown',
+              description: data[key].description || '',
+              purchasePrice: data[key].purchasePrice ? String(data[key].purchasePrice) : '0',
+              assetPictureUri,
+              assetPictureLocal,
+            };
+          });
           setAssets(assetsArray);
         }
       } catch (error) {

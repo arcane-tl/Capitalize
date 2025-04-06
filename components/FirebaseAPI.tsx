@@ -1,13 +1,9 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
 import { database } from './database/FirebaseConfig';
 import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from 'firebase/storage';
-//import { setLogLevel } from 'firebase/app';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
 import { firebaseConfig } from './database/FirebaseConfig';
-
-// Enable Firebase debug logging
-//setLogLevel('debug');
 
 // Initialize the Realtime Database instance
 const db = database;
@@ -36,20 +32,30 @@ export const fetchUserData = async (uid: string): Promise<any> => {
 };
 
 /**
- * Delete an item from the database and, if applicable, its associated file from storage.
+ * Delete an item from the database and, if applicable, its associated files from storage.
  * @param userUID - The user's unique ID
- * @param itemType - The type of item to delete (e.g., 'asset', 'event')
+ * @param itemType - The type of item to delete (e.g., 'assets', 'events')
  * @param itemId - The ID of the item to delete
- * @param filePath - The path to the file in storage (optional, for assets)
  */
 export const deleteItem = async (userUID: string, itemType: string, itemId: string) => {
   try {
-    // Construct the database reference based on itemType
     const itemRef = ref(db, `users/${userUID}/${itemType}/${itemId}`);
-    await remove(itemRef);
 
-    const fileRef = storageRef(storage, `users/${userUID}/${itemType}/${itemId}`); 
-    await deleteObject(fileRef);
+    if (itemType === 'assets') {
+      // Fetch the asset data to get the files array
+      const snapshot = await get(itemRef);
+      if (snapshot.exists()) {
+        const assetData = snapshot.val();
+        const files = assetData.files || [];
+        for (const file of files) {
+          const fileRef = storageRef(storage, file.path);
+          await deleteObject(fileRef);
+        }
+      }
+    }
+
+    // Remove the item from the database
+    await remove(itemRef);
   } catch (error) {
     console.error(`Error deleting ${itemType}:`, error);
     throw error;
@@ -61,6 +67,7 @@ export const deleteItem = async (userUID: string, itemType: string, itemId: stri
  * @param fileUri - The URI of the file to upload
  * @param fileName - The name of the file
  * @param uid - The user's unique ID
+ * @param objectPath - The path where the file will be stored
  * @returns The download URL of the uploaded file
  */
 export const uploadFile = async (fileUri: string, fileName: string, uid: string, objectPath: string) => {
@@ -74,7 +81,7 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
     console.log(`File Name: ${fileName}`);
     objectPath = objectPath + '/' + fileName;
 
-    // Create a reference to the file in Firebase Storage (for download URL later)
+    // Create a reference to the file in Firebase Storage
     const fileRef = storageRef(storage, `${objectPath}`);
 
     // Read the file as Base64
@@ -95,16 +102,18 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
     }
     const idToken = await user.getIdToken();
     console.log(`original filepath: ${fileUri} encoded uri: ${encodeURIComponent(objectPath)}`);
-    
+
     // Construct the upload URL with uploadType and name parameters
     const bucket = firebaseConfig.storageBucket;
-    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(
+      objectPath
+    )}`;
 
     // Upload the file using fetch with POST
     const response = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${idToken}`,
+        Authorization: `Bearer ${idToken}`,
         'Content-Type': 'image/jpeg',
         'Content-Length': binaryData.byteLength.toString(),
       },
@@ -122,7 +131,7 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
     return downloadURL;
   } catch (error) {
     if (error instanceof Error) {
-      console.error('Error fetching user data:', error.message);
+      console.error('Error uploading file:', error.message);
     } else {
       console.error('Unknown error:', error);
     }
@@ -166,7 +175,7 @@ export const addUserEvent = async (uid: string, eventData: any) => {
     const eventRef = ref(db, `users/${uid}/events`);
     const newEventRef = push(eventRef);
     await set(newEventRef, eventData);
-    return newEventRef.key; // Return the Firebase-generated key
+    return newEventRef.key;
   } catch (error) {
     console.error('Error adding user event:', error);
     throw error;
@@ -219,7 +228,6 @@ export const removeUserCompletely = async (uid: string) => {
  * Asset-related functions
  */
 
-// Add a new asset with the provided ID and data
 export const addAsset = async (assetId: string, assetData: any) => {
   try {
     await set(ref(db, `assets/${assetId}`), assetData);
@@ -229,7 +237,6 @@ export const addAsset = async (assetId: string, assetData: any) => {
   }
 };
 
-// Update asset data for the specified ID
 export const updateAsset = async (assetId: string, assetData: any) => {
   try {
     await update(ref(db, `assets/${assetId}`), assetData);
@@ -239,7 +246,6 @@ export const updateAsset = async (assetId: string, assetData: any) => {
   }
 };
 
-// Remove an asset by ID (basic removal)
 export const removeAsset = async (assetId: string) => {
   try {
     await remove(ref(db, `assets/${assetId}`));
@@ -249,7 +255,6 @@ export const removeAsset = async (assetId: string) => {
   }
 };
 
-// Add an event under an asset, returning the generated event ID
 export const addAssetEvent = async (assetId: string, eventData: any) => {
   try {
     const eventRef = ref(db, `assets/${assetId}/events`);
@@ -262,7 +267,6 @@ export const addAssetEvent = async (assetId: string, eventData: any) => {
   }
 };
 
-// Update a specific asset event
 export const updateAssetEvent = async (assetId: string, eventId: string, eventData: any) => {
   try {
     await update(ref(db, `assets/${assetId}/events/${eventId}`), eventData);
@@ -272,7 +276,6 @@ export const updateAssetEvent = async (assetId: string, eventId: string, eventDa
   }
 };
 
-// Remove a specific asset event
 export const removeAssetEvent = async (assetId: string, eventId: string) => {
   try {
     await remove(ref(db, `assets/${assetId}/events/${eventId}`));
@@ -282,7 +285,6 @@ export const removeAssetEvent = async (assetId: string, eventId: string) => {
   }
 };
 
-// Add a file under an asset, returning the generated file ID
 export const addAssetFile = async (assetId: string, fileData: any) => {
   try {
     const fileRef = ref(db, `assets/${assetId}/files`);
@@ -295,7 +297,6 @@ export const addAssetFile = async (assetId: string, fileData: any) => {
   }
 };
 
-// Update a specific asset file
 export const updateAssetFile = async (assetId: string, fileId: string, fileData: any) => {
   try {
     await update(ref(db, `assets/${assetId}/files/${fileId}`), fileData);
@@ -305,7 +306,6 @@ export const updateAssetFile = async (assetId: string, fileId: string, fileData:
   }
 };
 
-// Remove a specific asset file
 export const removeAssetFile = async (assetId: string, fileId: string) => {
   try {
     await remove(ref(db, `assets/${assetId}/files/${fileId}`));
@@ -315,15 +315,12 @@ export const removeAssetFile = async (assetId: string, fileId: string) => {
   }
 };
 
-// Remove an asset completely, including shares and user access
 export const removeAssetCompletely = async (assetId: string) => {
   try {
-    // Fetch UIDs from assetShares
     const assetSharesRef = ref(db, `assetShares/${assetId}`);
     const snapshot = await get(assetSharesRef);
     const uids = snapshot.exists() ? Object.keys(snapshot.val()) : [];
 
-    // Prepare multi-path updates
     const updates: { [key: string]: null } = {};
     updates[`assets/${assetId}`] = null;
     updates[`assetShares/${assetId}`] = null;
@@ -341,7 +338,6 @@ export const removeAssetCompletely = async (assetId: string) => {
  * Service Provider-related functions
  */
 
-// Add a new service provider with the provided ID and data
 export const addServiceProvider = async (spId: string, spData: any) => {
   try {
     await set(ref(db, `serviceProviders/${spId}`), spData);
@@ -351,7 +347,6 @@ export const addServiceProvider = async (spId: string, spData: any) => {
   }
 };
 
-// Update service provider data for the specified ID
 export const updateServiceProvider = async (spId: string, spData: any) => {
   try {
     await update(ref(db, `serviceProviders/${spId}`), spData);
@@ -361,7 +356,6 @@ export const updateServiceProvider = async (spId: string, spData: any) => {
   }
 };
 
-// Remove a service provider by ID
 export const removeServiceProvider = async (spId: string) => {
   try {
     await remove(ref(db, `serviceProviders/${spId}`));
@@ -375,7 +369,6 @@ export const removeServiceProvider = async (spId: string) => {
  * Service-related functions
  */
 
-// Add a new service with the provided ID and data
 export const addService = async (serviceId: string, serviceData: any) => {
   try {
     await set(ref(db, `services/${serviceId}`), serviceData);
@@ -385,7 +378,6 @@ export const addService = async (serviceId: string, serviceData: any) => {
   }
 };
 
-// Update service data for the specified ID
 export const updateService = async (serviceId: string, serviceData: any) => {
   try {
     await update(ref(db, `services/${serviceId}`), serviceData);
@@ -395,7 +387,6 @@ export const updateService = async (serviceId: string, serviceData: any) => {
   }
 };
 
-// Remove a service by ID
 export const removeService = async (serviceId: string) => {
   try {
     await remove(ref(db, `services/${serviceId}`));
@@ -409,7 +400,6 @@ export const removeService = async (serviceId: string) => {
  * Asset Access-related functions
  */
 
-// Grant access to an asset for a user
 export const grantAssetAccess = async (uid: string, assetId: string, permission: string) => {
   try {
     const updates: { [key: string]: string } = {};
@@ -422,7 +412,6 @@ export const grantAssetAccess = async (uid: string, assetId: string, permission:
   }
 };
 
-// Update access permission for a user's asset
 export const updateAssetAccess = async (uid: string, assetId: string, permission: string) => {
   try {
     const updates: { [key: string]: string } = {};
@@ -435,7 +424,6 @@ export const updateAssetAccess = async (uid: string, assetId: string, permission
   }
 };
 
-// Revoke access to an asset for a user
 export const revokeAssetAccess = async (uid: string, assetId: string) => {
   try {
     const updates: { [key: string]: null } = {};
@@ -451,15 +439,15 @@ export const revokeAssetAccess = async (uid: string, assetId: string) => {
 /**
  * Add an entry to the audit log under the user's data
  * @param uid - The user's unique ID
- * @param logEntry - The log entry data (e.g., { name: 'Logout', time: 'timestamp', status: 'success' })
+ * @param logEntry - The log entry data
  * @returns The Firebase-generated key for the log entry
  */
 export const addAuditLogEntry = async (uid: string, logEntry: any): Promise<string | null> => {
   try {
     const auditLogRef = ref(db, `users/${uid}/auditLog`);
-    const newLogRef = push(auditLogRef); // Create a new entry in the audit log
-    await set(newLogRef, logEntry); // Save the log entry data
-    return newLogRef.key; // Return the Firebase-generated key
+    const newLogRef = push(auditLogRef);
+    await set(newLogRef, logEntry);
+    return newLogRef.key;
   } catch (error) {
     console.error('Error adding audit log entry:', error);
     throw error;

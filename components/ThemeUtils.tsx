@@ -48,5 +48,11 @@ export const useThemeStyles = () => {
     errorStyle: themeStyles.error,
     iconOutlineColor: themeColors.iconOutline,
     TabScreenStyle: themeStyles.tabScreenStyle as TabScreenStyleConfig,
+    graphBarBackgroundColor: themeColors.graphBarBackground,
+    graphBarLayoutColor: themeColors.graphBarLayout,
+    graphBarLabelColor: themeColors.graphBarLabel,
+    graphBackgroundGradientFromColor: themeColors.graphBackgroundGradientFrom,
+    graphBackgroundGradientToColor: themeColors.graphBackgroundGradientTo,
+    graphBackgroundColor: themeColors.graphBackgroundColor,
   }
 };

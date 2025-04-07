@@ -24,6 +24,12 @@ export const colors = {
     tabBarActiveTint: 'rgba(66, 133, 244, 1)', // Matches tabBarActiveTintColor
     tabBarInactiveTint: 'rgba(102, 102, 102, 1)', // Matches tabBarInactiveTintColor
     tabBarBackground: 'rgba(255, 255, 255, 1)',
+    graphBarBackground: 'rgba(48, 91, 192, 0.85)', // Blue for graph bar background
+    graphBarLayout: 'rgba(0, 0, 0, 0.1)', // Light gray for graph bar layout
+    graphBackgroundGradientFrom: 'rgba(255, 255, 255, 1)', // Blue for graph bar gradient from
+    graphBackgroundGradientTo: 'rgba(255, 255, 255, 1)', // Blue for graph bar gradient to
+    graphBarLabel: 'rgba(0, 0, 0, 1)', // Black for graph bar label
+    graphBackgroundColor: 'rgba(235, 157, 255, 0.94)', // Lighter background for graph
   },
   dark: {
     background: 'rgba(0, 0, 0, 1)',
@@ -47,6 +53,12 @@ export const colors = {
     tabBarActiveTint: 'rgba(66, 133, 244, 1)', // Matches tabBarActiveTintColor
     tabBarInactiveTint: 'rgba(136, 136, 136, 1)', // Matches tabBarInactiveTintColor
     tabBarBackground: 'rgba(0, 0, 0, 1)',
+    graphBarBackground: 'rgba(0, 76, 255, 1)', // Blue for graph bar background
+    graphBarLayout: 'rgba(255, 255, 255, 1)', // Light gray for graph bar layout
+    graphBackgroundGradientFrom: 'rgb(255, 214, 214)', // Blue for graph bar gradient from
+    graphBackgroundGradientTo: 'rgba(255, 57, 57, 0.9)', // Blue for graph bar gradient to
+    graphBarLabel: 'rgba(255, 255, 255, 1)', // White for graph bar label
+    graphBackgroundColor: 'rgba(135, 219, 255, 0.92)', // Darker background for graph
   },
   // Theme-agnostic colors
   primary: 'rgba(66, 133, 244, 1)',

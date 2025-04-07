@@ -86,6 +86,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
 
       // Prepare asset data with a "files" array
       const assetData = {
+        created: Date.now(),
         name: assetName,
         description: assetDescription,
         purchasePrice: parseFloat(assetPurchasePrice) || 0,

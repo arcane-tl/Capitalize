@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ScrollView, Text, View, Dimensions, ActivityIndicator } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
-import { useThemeStyles } from '@/components/ThemeUtils';
+import { BarChart } from 'react-native-gifted-charts';
 import { useUserStore } from '@/constants/userStore';
 import { database } from '@/components/database/FirebaseConfig';
 import { ref, get } from 'firebase/database';
@@ -16,14 +15,17 @@ interface Asset {
   created: number;
 }
 
+const Divider = ({ color = 'rgba(255, 255, 255, 0', thickness = 1 }) => {
+  return (
+    <View style={{ width: '100%', height: 1, backgroundColor: color }} />
+  );
+};
+
 export default function DashboardScreen() {
-  // Access theme styles and user UID
-  const themeStyles = useThemeStyles();
   const userUID = useUserStore((state) => state.user?.uid);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch assets from Firebase when the component mounts or userUID changes
   useEffect(() => {
     if (!userUID) {
       console.log('No user UID found, skipping fetch.');
@@ -57,137 +59,154 @@ export default function DashboardScreen() {
     fetchAssets();
   }, [userUID]);
 
-  // Get screen width for chart sizing
-  const screenWidth = Dimensions.get('window').width;
+  // Get screen width for chart width
+  const screenWidth = Dimensions.get('window').width; // Adjusted for padding
 
-  // Chart configuration using theme styles
-  const chartConfig = {
-    backgroundGradientFrom: themeStyles.graphBackgroundGradientFromColor,
-    backgroundGradientFromOpacity: 1,
-    backgroundGradientTo: themeStyles.graphBackgroundGradientToColor,
-    backgroundGradientToOpacity: 0.5,
-    decimalPlaces: 0, // No decimal places for whole euro values
-    color: () => themeStyles.graphBarBackgroundColor, // Dark background
-    labelColor: () => themeStyles.graphBarLabelColor, // White labels
-    useShadowColorFromDataset: false, // Avoid shadow color from dataset
-    propsForBackgroundLines: {
-      strokeWidth: 1,
-      stroke: 'rgba(255, 255, 255, 0.3)', // Light gray lines
+  // Calculate totals using useMemo
+  const totalPurchasePrice = useMemo(() => {
+    return assets.reduce((sum, asset) => sum + asset.purchasePrice, 0);
+  }, [assets]);
+
+  const totalCurrentValue = useMemo(() => {
+    return assets.reduce((sum, asset) => sum + asset.currentValue, 0);
+  }, [assets]);
+
+  // Bar chart data with static colors
+  const chartData = [
+    {
+      value: totalPurchasePrice,
+      labelComponent: () => (
+        // This changes the BarChart1 bottom label container style
+        <View style={{ marginLeft: 0 }}>
+          <Text 
+            // This changes the BarChart1 bottom label style
+            style={[
+              { fontSize: 12,
+                fontWeight: 'bold',
+                color: 'rgb(255, 255, 255)',
+                marginLeft: '14%',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+              },
+            ]}
+          >
+            {String('Purchase Value')}
+          </Text>
+        </View>
+      ),
+      frontColor: 'rgba(113, 232, 39, 0.7)', // Bar1 background color
+      barBorderTopLeftRadius: 10, // This changes the BarChart2 top left corner radius
+      barBorderTopRightRadius: 10, // This changes the BarChart2 top right corner radius
+      topLabelComponent: () => (
+        // This changes the BarChart1 top label container style
+        <View style={{ marginBottom: 10 }}>
+          <Text 
+            // This changes the BarChart1 top label style
+            style={[
+              { fontSize: 16, fontWeight: 'bold', color: 'rgb(255, 255, 255)' },
+            ]}
+          >
+            €{totalCurrentValue.toFixed(0)}
+          </Text>
+        </View>
+      ),
     },
-  };
+    {
+      value: totalCurrentValue,
+      labelComponent: () => (
+        // This changes the BarChart2 label container style
+        <View style={{ marginBottom: 0 }}>
+          <Text 
+            // This changes the BarChart2 label style
+            style={[
+              { fontSize: 12,
+                fontWeight: 'bold',
+                color: 'rgb(255, 255, 255)',
+                marginLeft: '18%',
+                backgroundColor: 'rgba(0, 0, 0, 0)'
+              },
+            ]}
+          >
+            Current Value
+          </Text>
+        </View>
+      ),
+      frontColor: 'rgba(210, 42, 202,0.7)', // Bar2 background color
+      barBorderTopLeftRadius: 10, // This changes the BarChart2 top left corner radius
+      barBorderTopRightRadius: 10, // This changes the BarChart2 top right corner radius
+      topLabelComponent: () => (
+        // This changes the BarChart2 label container style
+        <View style={{ marginBottom: 10 }}>
+          <Text 
+            // This changes the BarChart2 label style
+            style={[
+              { fontSize: 16, fontWeight: 'bold', color: 'rgb(255, 255, 255)' },
+            ]}
+          >
+            €{totalCurrentValue.toFixed(0)}
+          </Text>
+        </View>
+      ),
+    },
+  ];
 
-  // Handle loading state
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+  // Configure y-axis labels
+  const maxValue = Math.max(totalPurchasePrice, totalCurrentValue, 1) + 10000; // Y-axis max value
+  const noOfSections = 4; // Number of sections on the y-axis
+  const stepValue = maxValue / noOfSections;
+  const yAxisLabelTexts = Array.from(
+    { length: noOfSections + 1 },
+    (_, i) => `${Math.round(i * stepValue / 1000)} k€`
+  );
 
-  console.log('graphBarBackgroundColor:', themeStyles.graphBarBackgroundColor);
-  console.log('graphBackgroundGradientFromColor:', themeStyles.graphBackgroundGradientFromColor);
-  console.log('graphBackgroundGradientToColor:', themeStyles.graphBackgroundGradientToColor);
-  console.log('graphBarLayoutColor:', themeStyles.graphBarLayoutColor);
-  console.log('graphBarLabelColor:', themeStyles.graphBarLabelColor);
-  
-  // Handle no assets case
-  if (assets.length === 0) {
-    return (
-      <ScrollView
-        style={{
-          flex: 1,
-          backgroundColor: themeStyles.containerStyle.backgroundColor,
-        }}
-        contentContainerStyle={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20,
-        }}
-      >
-        <Text style={themeStyles.textStyle}>No assets found.</Text>
-      </ScrollView>
-    );
-  }
-
-  // Process data for monthly sums chart
-  const monthlySums = assets.reduce((acc, asset) => {
-    if (asset.created) {
-      const date = new Date(asset.created);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1; // getMonth() returns 0-11
-      const key = `${year}-${month.toString().padStart(2, '0')}`; // e.g., "2023-01"
-      acc[key] = (acc[key] || 0) + asset.currentValue;
-    }
-    return acc;
-  }, {} as { [key: string]: number });
-
-  const sortedMonths = Object.keys(monthlySums).sort(); // Sort chronologically
-  const monthlyData = {
-    labels: sortedMonths, // e.g., ["2023-01", "2023-02"]
-    datasets: [
-      {
-        data: sortedMonths.map((key) => monthlySums[key]),
-      },
-    ],
-  };
-
-  // Process data for individual assets chart
-  const assetNames = assets.map((asset) => asset.name);
-  const assetValues = assets.map((asset) => asset.currentValue);
-  const assetData = {
-    labels: assetNames,
-    datasets: [
-      {
-        data: assetValues,
-      },
-    ],
-  };
-
-  // Render the dashboard with two charts
   return (
     <ScrollView
-      style={{
-        flex: 1,
-        backgroundColor: themeStyles.containerStyle.backgroundColor,
-      }}
+      // This changes the background color of the screen content container
+      style={[
+        { flex: 1, backgroundColor: 'rgba(1,1,1,1)' },
+      ]}
+      // This changes the background color of the chart container
       contentContainerStyle={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-start', // This aligns the chart Title
         padding: 20,
+        backgroundColor: 'rgb(0, 0, 0, 0)', // Transparent background
       }}
     >
-      {/* Monthly Sum Chart */}
-      <Text style={[themeStyles.textStyle, { fontSize: 18, marginBottom: 10 }]}>
-        Monthly Sum of Asset Values
-      </Text>
-      <BarChart
-        data={monthlyData}
-        width={screenWidth - 40} // Adjust for padding
-        height={220}
-        yAxisLabel="€" // Prepend euro symbol
-        yAxisSuffix="" // Optional suffix
-        fromZero={true} // Start y-axis at 0
-        chartConfig={chartConfig}
-        showBarTops={false} // Show values on top of bars
-        showValuesOnTopOfBars={true} // Show values on top of bars
-      />
-
-      {/* Individual Assets Chart */}
-      <Text style={[themeStyles.textStyle, { fontSize: 18, marginTop: 20, marginBottom: 10 }]}>
-        Individual Asset Values
-      </Text>
-      <ScrollView horizontal={true}>
-        <BarChart
-          data={assetData}
-          width={Math.max(screenWidth - 40, assetNames.length * 50)} // Dynamic width based on number of assets
-          height={220}
-          yAxisLabel="€"
-          yAxisSuffix=""
-          fromZero={true}
-          chartConfig={chartConfig}
-          showBarTops={false} // Show values on top of bars
-          showValuesOnTopOfBars={true} // Show values on top of bars
-        />
-      </ScrollView>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" /> // Static blue
+      ) : assets.length === 0 ? (
+        <Text style={{ color: 'rgba(0, 0, 0, 1)', fontSize: 16 }}>No assets found.</Text>
+      ) : (
+        <>
+          <View style={{ flex: 1, marginBottom: 10, alignItems: 'flex-start' }}>
+            <View style={{ marginBottom: 10, alignItems: 'flex-start', backgroundColor: 'rgba(106, 106, 106, 0)' }}>
+              <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 18, fontWeight: 'bold' }}> 
+                Total Asset Values
+              </Text>
+            </View>
+            // This changes the style between the chart and the chart title
+            <View style={{ marginTop: 20, alignItems: 'center' }}>
+              <BarChart
+                data={chartData}
+                width={screenWidth - 110}
+                height={200}
+                yAxisLabelTexts={yAxisLabelTexts}
+                noOfSections={noOfSections}
+                maxValue={maxValue}
+                xAxisColor='rgba(255, 255, 255, 1)' // X-axis color
+                yAxisColor='rgba(255, 255, 255, 1)' // Y-axis color
+                yAxisTextStyle={{ color: 'rgba(255, 255, 255, 1)' }} // Y-axis text color
+                yAxisLabelWidth={50}
+                rulesColor='rgba(255, 255, 255, 1)' // Color of the grid lines
+                barWidth={140} // Width of the bars
+                spacing={20} // Spacing between bars
+                backgroundColor={'rgba(0, 0, 0, 0)'} // Chart area background color
+              />
+            </View>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }

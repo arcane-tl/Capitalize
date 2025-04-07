@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, FlatList, ActivityIndicator, Image, Alert } from 'react-native';
+import { Text, View, ActivityIndicator, Image, Alert } from 'react-native';
 import { ref, get } from 'firebase/database';
 import { database } from '@/components/database/FirebaseConfig';
 import { useUserStore } from '@/constants/userStore';
@@ -8,12 +8,14 @@ import SwipeableItem from '@/components/SwipeableItems';
 import { assetListStyle } from '@/components/css/CustomStyles';
 import { useAssetStore } from '@/app/modals/AddAsset';
 import { deleteItem } from '@/components/FirebaseAPI';
+import { FlashList } from '@shopify/flash-list';
 
 interface Asset {
   id: string;
   name: string;
   description: string;
-  purchasePrice: string;
+  purchasePrice: number;
+  currentValue: number;
   assetPictureUri: string | null;
   assetPictureLocal: any;
 }
@@ -63,7 +65,8 @@ export default function AssetsScreen() {
               id: key,
               name: data[key].name || 'Unknown',
               description: data[key].description || '',
-              purchasePrice: data[key].purchasePrice ? String(data[key].purchasePrice) : '0',
+              purchasePrice: data[key].purchasePrice ?? 0,
+              currentValue: data[key].currentValue ?? 0,
               assetPictureUri,
               assetPictureLocal,
             };
@@ -117,7 +120,7 @@ export default function AssetsScreen() {
 
   return (
     <View style={[assetListStyle.screenContainer, { backgroundColor }]}>
-      <FlatList
+      <FlashList
         data={assets}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -131,10 +134,13 @@ export default function AssetsScreen() {
                 />
                 <View style={assetListStyle.detailsContainer}>
                   <Text style={[assetListStyle.assetName, { color: assetNameTextColor }]}>
-                    {asset.name}, {asset.purchasePrice}€
+                    {asset.name}
                   </Text>
                   <Text style={[assetListStyle.assetDescription, { color: secondaryTextColor }]}>
                     {asset.description}
+                  </Text>
+                  <Text style={[assetListStyle.assetDetails, { color: secondaryTextColor }]}>
+                    Price: {asset.purchasePrice}€ Value: {asset.currentValue}€
                   </Text>
                 </View>
               </View>
@@ -155,6 +161,7 @@ export default function AssetsScreen() {
             modifyTextColor={modifyTextColor}
           />
         )}
+        estimatedItemSize={100}
       />
     </View>
   );

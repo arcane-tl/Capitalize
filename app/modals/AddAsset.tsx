@@ -8,7 +8,6 @@ import { uploadFile } from '@/components/FirebaseAPI';
 import { ref, set, push } from 'firebase/database';
 import { database } from '@/components/database/FirebaseConfig';
 import { useUserStore } from '@/constants/userStore';
-import { getAuth } from 'firebase/auth';
 import { create } from 'zustand';
 
 interface AssetStore {
@@ -25,6 +24,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
   const [assetName, setAssetName] = useState<string>('');
   const [assetDescription, setDescription] = useState<string>('');
   const [assetPurchasePrice, setAssetPurchasePrice] = useState<string>('');
+  const [assetCurrentValue, setAssetCurrentValue] = useState<string>('');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const userUID = useUserStore((state) => state.user?.uid);
@@ -88,7 +88,8 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       const assetData = {
         name: assetName,
         description: assetDescription,
-        purchasePrice: assetPurchasePrice,
+        purchasePrice: parseFloat(assetPurchasePrice) || 0,
+        currentValue: parseFloat(assetCurrentValue) || 0,
         files: imageUri
           ? [
               {
@@ -189,6 +190,20 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             placeholderTextColor={placeholderTextColor}
             value={assetPurchasePrice}
             onChangeText={setAssetPurchasePrice}
+            keyboardType="decimal-pad"
+            autoCapitalize="none"
+            editable={true}
+          />
+                    <TextInput
+            style={[
+              globalStyles.base.input as TextStyle,
+              inputStyle,
+              { width: '90%', height: 50, borderRadius: 10 },
+            ]}
+            placeholder="Current Value"
+            placeholderTextColor={placeholderTextColor}
+            value={assetCurrentValue}
+            onChangeText={setAssetCurrentValue}
             keyboardType="decimal-pad"
             autoCapitalize="none"
             editable={true}

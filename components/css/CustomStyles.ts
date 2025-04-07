@@ -131,6 +131,7 @@ export const assetListStyle = StyleSheet.create({
   },
   detailsContainer: {
     marginLeft: 20,
+    flex: 1,
   } as ViewStyle,
   assetName: {
     fontSize: 16,
@@ -138,6 +139,11 @@ export const assetListStyle = StyleSheet.create({
   } as TextStyle,
   assetDescription: {
     fontSize: 14,
+  } as TextStyle,
+  assetDetails: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginTop: 10,
   } as TextStyle,
 });
 

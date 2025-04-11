@@ -9,6 +9,7 @@ import { assetListStyle } from '@/components/css/CustomStyles';
 import { useAssetStore } from '@/app/modals/AddAsset';
 import { deleteItem } from '@/components/FirebaseAPI';
 import { FlashList } from '@shopify/flash-list';
+import { router } from 'expo-router';
 
 interface Asset {
   id: string;
@@ -107,7 +108,11 @@ export default function AssetsScreen() {
   };
 
   const modifyAsset = (item: Asset) => {
-    // TODO: Implement modify logic (e.g., open a modal or navigate to an edit screen)
+    console.log('Modifying asset:', item.name, 'ID:', item.id);
+    router.push({
+      pathname: '/ModifyAssetScreen',
+      params: { assetId: item.id, assetName: item.name },
+    });
   };
 
   if (loading) {

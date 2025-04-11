@@ -15,12 +15,6 @@ interface Asset {
   created: number;
 }
 
-const Divider = ({ color = 'rgba(255, 255, 255, 0', thickness = 1 }) => {
-  return (
-    <View style={{ width: '100%', height: 1, backgroundColor: color }} />
-  );
-};
-
 export default function DashboardScreen() {
   const userUID = useUserStore((state) => state.user?.uid);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -82,33 +76,18 @@ export default function DashboardScreen() {
             // This changes the BarChart1 bottom label style
             style={[
               { fontSize: 12,
-                fontWeight: 'bold',
                 color: 'rgb(255, 255, 255)',
                 marginLeft: '14%',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
               },
             ]}
           >
-            {String('Purchase Value')}
+            Purchase Value
           </Text>
         </View>
       ),
       frontColor: 'rgba(113, 232, 39, 0.7)', // Bar1 background color
       barBorderTopLeftRadius: 10, // This changes the BarChart2 top left corner radius
       barBorderTopRightRadius: 10, // This changes the BarChart2 top right corner radius
-      topLabelComponent: () => (
-        // This changes the BarChart1 top label container style
-        <View style={{ marginBottom: 10 }}>
-          <Text 
-            // This changes the BarChart1 top label style
-            style={[
-              { fontSize: 16, fontWeight: 'bold', color: 'rgb(255, 255, 255)' },
-            ]}
-          >
-            €{totalCurrentValue.toFixed(0)}
-          </Text>
-        </View>
-      ),
     },
     {
       value: totalCurrentValue,
@@ -119,10 +98,8 @@ export default function DashboardScreen() {
             // This changes the BarChart2 label style
             style={[
               { fontSize: 12,
-                fontWeight: 'bold',
                 color: 'rgb(255, 255, 255)',
                 marginLeft: '18%',
-                backgroundColor: 'rgba(0, 0, 0, 0)'
               },
             ]}
           >
@@ -133,19 +110,6 @@ export default function DashboardScreen() {
       frontColor: 'rgba(210, 42, 202,0.7)', // Bar2 background color
       barBorderTopLeftRadius: 10, // This changes the BarChart2 top left corner radius
       barBorderTopRightRadius: 10, // This changes the BarChart2 top right corner radius
-      topLabelComponent: () => (
-        // This changes the BarChart2 label container style
-        <View style={{ marginBottom: 10 }}>
-          <Text 
-            // This changes the BarChart2 label style
-            style={[
-              { fontSize: 16, fontWeight: 'bold', color: 'rgb(255, 255, 255)' },
-            ]}
-          >
-            €{totalCurrentValue.toFixed(0)}
-          </Text>
-        </View>
-      ),
     },
   ];
 
@@ -162,31 +126,30 @@ export default function DashboardScreen() {
     <ScrollView
       // This changes the background color of the screen content container
       style={[
-        { flex: 1, backgroundColor: 'rgba(1,1,1,1)' },
+        { flex: 1, backgroundColor: 'rgba(0, 0, 0, 1)' },
       ]}
       // This changes the background color of the chart container
       contentContainerStyle={{
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        padding: 10,
         alignItems: 'flex-start', // This aligns the chart Title
-        padding: 20,
-        backgroundColor: 'rgb(0, 0, 0, 0)', // Transparent background
+        backgroundColor: 'rgba(56, 103, 221, 0)', // Background color of the chart container
       }}
     >
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" /> // Static blue
       ) : assets.length === 0 ? (
-        <Text style={{ color: 'rgba(0, 0, 0, 1)', fontSize: 16 }}>No assets found.</Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 16 }}>No assets found.</Text>
       ) : (
         <>
-          <View style={{ flex: 1, marginBottom: 10, alignItems: 'flex-start' }}>
-            <View style={{ marginBottom: 10, alignItems: 'flex-start', backgroundColor: 'rgba(106, 106, 106, 0)' }}>
-              <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 18, fontWeight: 'bold' }}> 
+          <View style={{ borderRadius: 20, alignItems: 'flex-start', justifyContent: 'center', width: '100%', height: '42%', padding:10, backgroundColor: 'rgba(46, 50, 61, 0.8)' }}>
+            <View style={{ alignItems: 'flex-start' }}>
+              <Text style={{ color: 'rgba(255,255,255,1)', fontSize: 18, fontWeight: 'bold' }}> 
                 Total Asset Values
               </Text>
             </View>
-            // This changes the style between the chart and the chart title
-            <View style={{ marginTop: 20, alignItems: 'center' }}>
+            <View style={{ marginTop: 20 }}>
               <BarChart
                 data={chartData}
                 width={screenWidth - 110}
@@ -196,7 +159,32 @@ export default function DashboardScreen() {
                 maxValue={maxValue}
                 xAxisColor='rgba(255, 255, 255, 1)' // X-axis color
                 yAxisColor='rgba(255, 255, 255, 1)' // Y-axis color
-                yAxisTextStyle={{ color: 'rgba(255, 255, 255, 1)' }} // Y-axis text color
+                yAxisTextStyle={{ color: 'rgba(255, 255, 255, 1)', fontSize: 12 }} // Y-axis text color
+                yAxisLabelWidth={50}
+                rulesColor='rgba(255, 255, 255, 1)' // Color of the grid lines
+                barWidth={140} // Width of the bars
+                spacing={20} // Spacing between bars
+                backgroundColor={'rgba(0, 0, 0, 0)'} // Chart area background color
+              />
+            </View>
+          </View>
+          <View style={{ marginTop: 20, borderRadius: 20, alignItems: 'flex-start', justifyContent: 'center', width: '100%', height: '42%', padding:10, backgroundColor: 'rgba(46, 50, 61, 0.8)' }}>
+            <View style={{ alignItems: 'flex-start' }}>
+              <Text style={{ color: 'rgba(255,255,255,1)', fontSize: 18, fontWeight: 'bold' }}> 
+                Individual Asset Values
+              </Text>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <BarChart
+                data={chartData}
+                width={screenWidth - 110}
+                height={200}
+                yAxisLabelTexts={yAxisLabelTexts}
+                noOfSections={noOfSections}
+                maxValue={maxValue}
+                xAxisColor='rgba(255, 255, 255, 1)' // X-axis color
+                yAxisColor='rgba(255, 255, 255, 1)' // Y-axis color
+                yAxisTextStyle={{ color: 'rgba(255, 255, 255, 1)', fontSize: 12 }} // Y-axis text color
                 yAxisLabelWidth={50}
                 rulesColor='rgba(255, 255, 255, 1)' // Color of the grid lines
                 barWidth={140} // Width of the bars

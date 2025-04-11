@@ -26,8 +26,6 @@ export const colors = {
     tabBarBackground: 'rgba(255, 255, 255, 1)',
     graphBarBackground: 'rgba(48, 91, 192, 0.85)', // Blue for graph bar background
     graphBarLayout: 'rgba(0, 0, 0, 0.1)', // Light gray for graph bar layout
-    graphBackgroundGradientFrom: 'rgba(255, 255, 255, 1)', // Blue for graph bar gradient from
-    graphBackgroundGradientTo: 'rgba(255, 255, 255, 1)', // Blue for graph bar gradient to
     graphBarLabel: 'rgba(0, 0, 0, 1)', // Black for graph bar label
     graphBackgroundColor: 'rgba(235, 157, 255, 0.94)', // Lighter background for graph
   },
@@ -141,7 +139,8 @@ export const globalStyles = {
     } as TextStyle,
     headerTitleStyle: {
       fontWeight: 'bold',
-      color: colors.light.text
+      color: colors.light.text,
+      fontSize: 20,
     } as TextStyle,
     tabScreenStyle: {
       headerStyle: {
@@ -209,6 +208,7 @@ export const globalStyles = {
     headerTitleStyle: {
       fontWeight: 'bold',
       color: colors.dark.text,
+      fontSize: 20,
     } as TextStyle,
     tabScreenStyle: {
       headerStyle: {

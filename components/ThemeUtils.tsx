@@ -51,8 +51,7 @@ export const useThemeStyles = () => {
     graphBarBackgroundColor: themeColors.graphBarBackground,
     graphBarLayoutColor: themeColors.graphBarLayout,
     graphBarLabelColor: themeColors.graphBarLabel,
-    graphBackgroundGradientFromColor: themeColors.graphBackgroundGradientFrom,
-    graphBackgroundGradientToColor: themeColors.graphBackgroundGradientTo,
     graphBackgroundColor: themeColors.graphBackgroundColor,
+    headerTitleStyle: globalStyles[theme].headerTitleStyle,
   }
 };

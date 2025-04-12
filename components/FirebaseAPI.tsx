@@ -1,15 +1,54 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
-import { database } from './database/FirebaseConfig';
-import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from 'firebase/storage';
+import { getStorage, ref as storageRef, getDownloadURL, deleteObject, uploadBytes } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
-import { firebaseConfig } from './database/FirebaseConfig';
+import { firebaseConfig, database } from '@/components/database/FirebaseConfig';
 
 // Initialize the Realtime Database instance
 const db = database;
 
 // Initialize Firebase Storage
 const storage = getStorage();
+
+/**
+ * Fetch a specific asset from the Realtime Database
+ * @param uid - The user's unique ID
+ * @param assetId - The asset's unique ID
+ * @returns The asset data as an object
+ */
+export const fetchAssetData = async (uid: string, assetId: string): Promise<any> => {
+  try {
+    const assetRef = ref(db, `users/${uid}/assets/${assetId}`);
+    const snapshot = await get(assetRef);
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      throw new Error('Asset not found');
+    }
+  } catch (error) {
+    console.error('Error fetching asset data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch the list of asset categories from the Realtime Database
+ * @returns An array of category names
+ */
+export const fetchAssetCategories = async (): Promise<string[]> => {
+  try {
+    const categoriesRef = ref(db, 'assetCategories');
+    const snapshot = await get(categoriesRef);
+    if (snapshot.exists()) {
+      return Object.values(snapshot.val());
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching asset categories:', error);
+    throw error;
+  }
+};
 
 /**
  * Fetch user data from the Realtime Database
@@ -63,14 +102,28 @@ export const deleteItem = async (userUID: string, itemType: string, itemId: stri
 };
 
 /**
- * Upload a file from the user's device to Firebase Storage
+ * Upload a file from the user's device to Firebase Storage and optionally add its metadata to the asset's files in the database.
  * @param fileUri - The URI of the file to upload
  * @param fileName - The name of the file
  * @param uid - The user's unique ID
  * @param objectPath - The path where the file will be stored
- * @returns The download URL of the uploaded file
+ * @param assetId - (Optional) The asset's unique ID to add the file metadata to
+ * @param addToDatabase - (Optional) Whether to add the file metadata to the database
+ * @returns An object containing the download URL and, if added to the database, the file ID
  */
-export const uploadFile = async (fileUri: string, fileName: string, uid: string, objectPath: string) => {
+export const uploadFile = async (
+  fileUri: string,
+  fileName: string,
+  uid: string,
+  objectPath: string,
+  fileType: string | null = null,
+  assetId?: string,
+  addToDatabase: boolean = false
+): Promise<{
+  downloadURL: string;
+  fileId?: string;
+  fileData?: any
+}> => {
   try {
     // Verify the file exists
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
@@ -79,10 +132,10 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
     }
     console.log(`Object Path: ${objectPath}`);
     console.log(`File Name: ${fileName}`);
-    objectPath = objectPath + '/' + fileName;
+    objectPath = `${objectPath}/${fileName}`;
 
     // Create a reference to the file in Firebase Storage
-    const fileRef = storageRef(storage, `${objectPath}`);
+    const fileRef = storageRef(storage, objectPath);
 
     // Read the file as Base64
     const fileData = await FileSystem.readAsStringAsync(fileUri, {
@@ -105,18 +158,18 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
 
     // Construct the upload URL with uploadType and name parameters
     const bucket = firebaseConfig.storageBucket;
-    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(
-      objectPath
-    )}`;
+    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+
+    const headers: HeadersInit = {
+      Authorization: `Bearer ${idToken}`,
+      ...(fileType ? { 'Content-Type': fileType } : {}), // Include only if fileType is not null
+      'Content-Length': binaryData.byteLength.toString(),
+    };
 
     // Upload the file using fetch with POST
     const response = await fetch(uploadUrl, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-        'Content-Type': 'image/jpeg',
-        'Content-Length': binaryData.byteLength.toString(),
-      },
+      headers,
       body: binaryData,
     });
 
@@ -128,7 +181,23 @@ export const uploadFile = async (fileUri: string, fileName: string, uid: string,
     // Get the download URL
     const downloadURL = await getDownloadURL(fileRef);
 
-    return downloadURL;
+    // If assetId and addToDatabase are provided, add the file metadata to the database
+    if (assetId && addToDatabase) {
+      const fileRef = ref(db, `users/${uid}/assets/${assetId}/files`);
+      const newFileRef = push(fileRef); // Generate a unique key for the new file
+      const fileData = {
+        name: fileName,
+        url: downloadURL,
+        path: objectPath,
+        type: fileType || 'application/octet-stream',
+      };
+      await set(newFileRef, fileData);
+      const fileId = newFileRef.key; // Get the generated file ID
+      return { downloadURL, fileId };
+    }
+
+    // Default behavior: return only the download URL
+    return { downloadURL };
   } catch (error) {
     if (error instanceof Error) {
       console.error('Error uploading file:', error.message);
@@ -237,9 +306,9 @@ export const addAsset = async (assetId: string, assetData: any) => {
   }
 };
 
-export const updateAsset = async (assetId: string, assetData: any) => {
+export const updateAsset = async (uid: string, assetId: string, assetData: any) => {
   try {
-    await update(ref(db, `assets/${assetId}`), assetData);
+    await set(ref(db, `users/${uid}/assets/${assetId}`), assetData);
   } catch (error) {
     console.error('Error updating asset:', error);
     throw error;

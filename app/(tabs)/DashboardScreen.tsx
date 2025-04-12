@@ -140,7 +140,7 @@ export default function DashboardScreen() {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" /> // Static blue
       ) : assets.length === 0 ? (
-        <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 16 }}>No assets found.</Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 18 }}>No assets found.</Text>
       ) : (
         <>
           <View style={{ borderRadius: 20, alignItems: 'flex-start', justifyContent: 'center', width: '100%', height: '42%', padding:10, backgroundColor: 'rgba(46, 50, 61, 0.8)' }}>

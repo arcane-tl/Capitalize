@@ -139,7 +139,7 @@ export const globalStyles = {
     } as TextStyle,
     headerTitleStyle: {
       fontWeight: 'bold',
-      color: colors.light.text,
+      color: colors.light.text as string,
       fontSize: 20,
     } as TextStyle,
     tabScreenStyle: {

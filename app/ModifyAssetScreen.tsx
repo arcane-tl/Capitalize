@@ -24,6 +24,8 @@ interface AssetFormData {
   debt: string;
   maintenanceCost: string;
   category: string;
+  purchasePrice: string;
+  currentValue: string;
 }
 
 interface FileMetadata {
@@ -33,7 +35,14 @@ interface FileMetadata {
   type: string | null;
 }
 
-interface AssetData extends AssetFormData {
+interface AssetData {
+  name: string;
+  description: string;
+  debt?: number;
+  maintenanceCost?: number;
+  category: string;
+  purchasePrice?: number;
+  currentValue?: number;
   files: { [key: string]: FileMetadata };
 }
 
@@ -45,45 +54,146 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle }: {
   textStyle: any;
 }) => (
   <>
-    <Text style={textStyle}>Name</Text>
-    <TextInput
-      style={{ color: textStyle.color as string, borderRadius: 10, padding: 5, backgroundColor: 'rgba(184, 184, 184, 0.73)', marginBottom: 15 }}
-      value={formData.name}
-      onChangeText={(text) => handleInputChange('name', text)}
-    />
-    <Text style={textStyle}>Description</Text>
-    <TextInput
-      style={{ color: textStyle.color as string, borderRadius: 10, padding: 5, backgroundColor: 'rgba(184, 184, 184, 0.73)', marginBottom: 15, }}
-      value={formData.description}
-      multiline
-      numberOfLines={4}
-      onChangeText={(text) => handleInputChange('description', text)}
-    />
-    <Text style={textStyle}>Debt</Text>
-    <TextInput
-      style={{ color: textStyle.color as string, borderBottomWidth: 1, marginBottom: 15 }}
-      value={formData.debt}
-      onChangeText={(text) => handleInputChange('debt', text)}
-      keyboardType="numeric"
-    />
-    <Text style={textStyle}>Monthly Maintenance Cost</Text>
-    <TextInput
-      style={{ color: textStyle.color as string, borderBottomWidth: 1, marginBottom: 15 }}
-      value={formData.maintenanceCost}
-      onChangeText={(text) => handleInputChange('maintenanceCost', text)}
-      keyboardType="numeric"
-    />
-    <Text style={textStyle}>Category</Text>
-    <Picker
-      selectedValue={formData.category}
-      onValueChange={(itemValue) => handleInputChange('category', itemValue as string)}
-      style={{ color: textStyle.color as string, marginBottom: 15 }}
-    >
-      <Picker.Item label="Select a category" value="" />
-      {categories.map((cat, index) => (
-        <Picker.Item key={index} label={cat} value={cat} />
-      ))}
-    </Picker>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Name</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderRadius: 10, 
+          padding: 5, 
+          backgroundColor: 'rgba(184, 184, 184, 0.73)', 
+          marginTop: 5 
+        }}
+        value={formData.name}
+        onChangeText={(text) => handleInputChange('name', text)}
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Description</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderRadius: 10, 
+          padding: 5, 
+          backgroundColor: 'rgba(184, 184, 184, 0.73)', 
+          marginTop: 5 
+        }}
+        value={formData.description}
+        multiline
+        numberOfLines={4}
+        onChangeText={(text) => handleInputChange('description', text)}
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Debt</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderBottomWidth: 1, 
+          marginTop: 5 
+        }}
+        value={formData.debt}
+        onChangeText={(text) => handleInputChange('debt', text)}
+        keyboardType="numeric"
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Monthly Maintenance Cost</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderBottomWidth: 1, 
+          marginTop: 5 
+        }}
+        value={formData.maintenanceCost}
+        onChangeText={(text) => handleInputChange('maintenanceCost', text)}
+        keyboardType="numeric"
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Purchase Price</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderBottomWidth: 1, 
+          marginTop: 5 
+        }}
+        value={formData.purchasePrice}
+        onChangeText={(text) => handleInputChange('purchasePrice', text)}
+        keyboardType="numeric"
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Current Value</Text>
+      <TextInput
+        style={{ 
+          color: textStyle.color as string, 
+          borderBottomWidth: 1, 
+          marginTop: 5 
+        }}
+        value={formData.currentValue}
+        onChangeText={(text) => handleInputChange('currentValue', text)}
+        keyboardType="numeric"
+      />
+    </View>
+    <View style={{ 
+      borderWidth: 1, 
+      borderColor: textStyle.color as string, 
+      borderRadius: 10, 
+      padding: 10, 
+      marginBottom: 15 
+    }}>
+      <Text style={textStyle}>Category</Text>
+      <Picker
+        selectedValue={formData.category}
+        onValueChange={(itemValue) => handleInputChange('category', itemValue as string)}
+        style={{ 
+          color: textStyle.color as string, 
+          marginTop: 5 
+        }}
+      >
+        <Picker.Item label="Select a category" value="" />
+        {categories.map((cat, index) => (
+          <Picker.Item key={index} label={cat} value={cat} />
+        ))}
+      </Picker>
+    </View>
   </>
 );
 
@@ -108,6 +218,8 @@ export default function ModifyAssetScreen() {
     debt: '',
     maintenanceCost: '',
     category: '',
+    purchasePrice: '',
+    currentValue: '',
   });
   const [existingFiles, setExistingFiles] = useState<FileType[]>([]);
   const [newFiles, setNewFiles] = useState<FileType[]>([]);
@@ -115,18 +227,20 @@ export default function ModifyAssetScreen() {
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Inside useEffect hook for loading asset data
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         const asset = await fetchAssetData(uid, assetIdString) as AssetData;
+        console.log('Fetched asset data:', asset);
         setFormData({
           name: asset.name || '',
           description: asset.description || '',
-          debt: asset.debt || '',
-          maintenanceCost: asset.maintenanceCost || '',
+          debt: asset.debt !== undefined ? String(asset.debt) : '',
+          maintenanceCost: asset.maintenanceCost !== undefined ? String(asset.maintenanceCost) : '',
           category: asset.category || '',
+          purchasePrice: asset.purchasePrice !== undefined ? String(asset.purchasePrice) : '',
+          currentValue: asset.currentValue !== undefined ? String(asset.currentValue) : '',
         });
         const expectedPrefix = `users/${uid}/assets/${assetIdString}/files/`;
         const filesArray = Object.entries(asset.files || {})
@@ -194,7 +308,6 @@ export default function ModifyAssetScreen() {
 
   const isValidNumber = (value: string) => !isNaN(parseFloat(value)) && isFinite(parseFloat(value));
 
-  // Verify file existence in Firebase Storage
   const verifyStorageFiles = async (files: FileType[]): Promise<FileType[]> => {
     const storage = getStorage();
     const validFiles: FileType[] = [];
@@ -214,10 +327,17 @@ export default function ModifyAssetScreen() {
     return validFiles;
   };
 
-  // Save form data (non-file fields)
   const saveFormData = async () => {
     try {
-      const updatedAssetData = { ...formData };
+      const updatedAssetData: Partial<AssetData> = {
+        name: formData.name,
+        description: formData.description,
+        debt: formData.debt ? parseFloat(formData.debt) : undefined,
+        maintenanceCost: formData.maintenanceCost ? parseFloat(formData.maintenanceCost) : undefined,
+        category: formData.category,
+        purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
+        currentValue: formData.currentValue ? parseFloat(formData.currentValue) : undefined,
+      };
       await updateAsset(uid, assetIdString, updatedAssetData);
     } catch (error) {
       console.error('Error saving form data:', error);
@@ -225,12 +345,10 @@ export default function ModifyAssetScreen() {
     }
   };
 
-  // Handle file deletions and uploads within the specified path
   const saveFileOperations = async () => {
     const storage = getStorage();
     const updatedFiles: { [key: string]: { name: string; url: string; path: string; type: string | null } } = {};
 
-    // Delete marked files from storage
     for (const fileId of filesToDelete) {
       const file = existingFiles.find((f) => f.id === fileId);
       if (file && file.path) {
@@ -242,7 +360,6 @@ export default function ModifyAssetScreen() {
       }
     }
 
-    // Verify existing files (exclude deleted ones)
     const filesToKeep = existingFiles.filter((file) => file.id && !filesToDelete.includes(file.id));
     const verifiedFiles = await verifyStorageFiles(filesToKeep);
     verifiedFiles.forEach((file) => {
@@ -256,7 +373,6 @@ export default function ModifyAssetScreen() {
       }
     });
 
-    // Upload new files to the specified Firebase Storage path
     for (const file of newFiles) {
       try {
         const result = await uploadFile(
@@ -280,7 +396,6 @@ export default function ModifyAssetScreen() {
       }
     }
 
-    // Update asset with new file data
     try {
       await updateAsset(uid, assetIdString, { files: updatedFiles });
     } catch (error) {
@@ -302,6 +417,14 @@ export default function ModifyAssetScreen() {
       Alert.alert('Invalid Input', 'Maintenance Cost must be a valid number.');
       return;
     }
+    if (formData.purchasePrice && !isValidNumber(formData.purchasePrice)) {
+      Alert.alert('Invalid Input', 'Purchase Price must be a valid number.');
+      return;
+    }
+    if (formData.currentValue && !isValidNumber(formData.currentValue)) {
+      Alert.alert('Invalid Input', 'Current Value must be a valid number.');
+      return;
+    }
     if (!formData.category) {
       Alert.alert('Invalid Input', 'Please select a category.');
       return;
@@ -309,14 +432,10 @@ export default function ModifyAssetScreen() {
 
     setIsLoading(true);
     try {
-      // Step 1: Save form data
       await saveFormData();
-      
-      // Step 2: Handle file operations if there are changes
       if (filesToDelete.length > 0 || newFiles.length > 0) {
         await saveFileOperations();
       }
-
       Alert.alert('Success', 'Asset updated successfully');
       router.replace('/(tabs)/AssetsScreen');
     } catch (error) {

@@ -26,15 +26,15 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
   const [assetPurchasePrice, setAssetPurchasePrice] = useState<string>('');
   const [assetCurrentValue, setAssetCurrentValue] = useState<string>('');
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [imageName, setImageName] = useState<string | null>(null); // Store original filename
+  const [imageType, setImageType] = useState<string | null>(null); // Store original filetype
   const [uploading, setUploading] = useState<boolean>(false);
   const userUID = useUserStore((state) => state.user?.uid);
   const toggleRefreshAssets = useAssetStore((state) => state.toggleRefreshAssets);
 
-  // Database path for user assets
   const assetPath = `users/${userUID}/assets`;
   const userFilePath = `users/${userUID}/assets`;
 
-  // Get precomputed styles from the custom hook
   const {
     backgroundColor,
     textStyle,
@@ -53,7 +53,10 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       });
 
       if (!result.canceled) {
-        setImageUri(result.assets[0].uri);
+        const asset = result.assets[0];
+        setImageUri(asset.uri);
+        setImageName(asset.fileName || `image_${Date.now()}`); // Use original filename or fallback
+        setImageType(asset.type || 'image/jpeg'); // Use original type or default to JPEG
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -71,25 +74,24 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
     const db = database;
     const assetRef = push(ref(db, assetPath));
     const assetUID = assetRef.key;
-    const saveFilePath = `${userFilePath}/${assetUID}`;
+    const saveFilePath = `${userFilePath}/${assetUID}/files`;
   
     try {
       let filePath = '';
       let imageUrl = '';
-      if (imageUri) {
+
+      if (imageUri && imageName) {
         setUploading(true);
-        const fileName = `${assetName.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
-        filePath = `${saveFilePath}/${fileName}`;
-        // Get the upload result and extract the downloadURL
-        const uploadResult = await uploadFile(imageUri, fileName, userUID, saveFilePath);
+        // Use the original filename and type
+        filePath = `${saveFilePath}/${imageName}`;
+        const uploadResult = await uploadFile(imageUri, imageName, userUID, saveFilePath, imageType);
         if (!uploadResult.downloadURL || typeof uploadResult.downloadURL !== 'string') {
           throw new Error('Failed to get a valid download URL from upload.');
         }
-        imageUrl = uploadResult.downloadURL; // Extract the string URL
+        imageUrl = uploadResult.downloadURL;
         setUploading(false);
       }
   
-      // Prepare asset data with the correct URL string
       const assetData = {
         created: Date.now(),
         name: assetName,
@@ -97,18 +99,17 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         purchasePrice: parseFloat(assetPurchasePrice) || 0,
         currentValue: parseFloat(assetCurrentValue) || 0,
         files: imageUri
-          ? [
-              {
+          ? {
+              mainPicture: {
                 path: filePath,
-                url: imageUrl, // Use the string URL here
-                type: 'picture',
-                isMain: true,
+                url: imageUrl,
+                type: imageType || 'image/jpeg',
+                name: imageName, // Store original filename
               },
-            ]
-          : [],
+            }
+          : {},
       };
   
-      // Save asset data to Firebase Realtime Database
       await set(ref(db, `${assetPath}/${assetUID}`), assetData);
   
       Alert.alert('Asset Saved', 'Your asset has been successfully saved.', [
@@ -130,7 +131,6 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
   return (
     <View style={assetModalStyles.mainContainer}>
       <View style={[assetModalStyles.contentContainer, { backgroundColor }]}>
-        {/* Header Container */}
         <View style={assetModalStyles.headerContainer}>
           <View style={assetModalStyles.headerLeft}>
             <TouchableOpacity
@@ -154,7 +154,6 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           </View>
         </View>
 
-        {/* Content */}
         <View style={assetModalStyles.innerContentContainer}>
           <TextInput
             style={[
@@ -200,7 +199,7 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             autoCapitalize="none"
             editable={true}
           />
-                    <TextInput
+          <TextInput
             style={[
               globalStyles.base.input as TextStyle,
               inputStyle,
@@ -215,19 +214,17 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
             editable={true}
           />
 
-          {/* Image Picker */}
           <TouchableOpacity
             onPress={pickImage}
             style={[assetModalStyles.uploadButton, { borderColor: buttonOutlineColor }]}
           >
             <Text style={textStyle}>{imageUri ? 'Change Image' : 'Upload Image'}</Text>
           </TouchableOpacity>
-          {imageUri && (
+          {imageUri && imageName && (
             <Text style={[textStyle, { marginTop: 10 }]}>
-              Selected Image: {imageUri.split('/').pop()}
+              Selected Image: {imageName}
             </Text>
           )}
-          {/* Display the selected image */}
           {imageUri && (
             <Image
               source={{ uri: imageUri }}

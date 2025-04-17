@@ -53,14 +53,8 @@ export default function AssetsScreen() {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const assetsArray = Object.keys(data).map((key) => {
-            const files = data[key].files;
-            let assetPictureUri = null;
-            if (Array.isArray(files)) {
-              const mainFile = files.find((file) => file.isMain);
-              if (mainFile) {
-                assetPictureUri = mainFile.url;
-              }
-            }
+            const files = data[key].files || {};
+            let assetPictureUri = files?.mainPicture?.url || null;
             const assetPictureLocal = assetPictureUri ? null : require('../../assets/nofileIcon.png');
             return {
               id: key,

@@ -44,7 +44,7 @@ interface AssetData {
   files: { [key: string]: FileMetadata };
 }
 
-// Separate AssetForm component
+// Separate AssetForm component with modified styles
 const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonOutlineColor }: {
   formData: AssetFormData;
   handleInputChange: (field: keyof AssetFormData, value: string) => void;
@@ -68,14 +68,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
         padding: 10, 
         marginBottom: 15 
       }}>
-        <Text style={textStyle}>Name</Text>
+        <Text style={[textStyle, { fontWeight: 'bold' }]}>Name</Text>
         <TextInput
           style={{ 
             color: textStyle.color as string, 
             borderRadius: 10, 
-            padding: 5, 
-            backgroundColor: 'rgba(184, 184, 184, 0.73)', 
-            marginTop: 5 
+            marginTop: 5,
+            fontStyle: 'italic'
           }}
           value={formData.name}
           onChangeText={(text) => handleInputChange('name', text)}
@@ -88,14 +87,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
         padding: 10, 
         marginBottom: 15 
       }}>
-        <Text style={textStyle}>Description</Text>
+        <Text style={[textStyle, { fontWeight: 'bold' }]}>Description</Text>
         <TextInput
           style={{ 
             color: textStyle.color as string, 
             borderRadius: 10, 
-            padding: 5, 
-            backgroundColor: 'rgba(184, 184, 184, 0.73)', 
-            marginTop: 5 
+            marginTop: 5,
+            fontStyle: 'italic'
           }}
           value={formData.description}
           multiline
@@ -113,12 +111,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
         justifyContent: 'space-between'
       }}>
         <View style={{ flex: 1, marginRight: 10 }}>
-          <Text style={textStyle}>Debt</Text>
+          <Text style={[textStyle, { fontWeight: 'bold' }]}>Debt</Text>
           <TextInput
             style={{ 
               color: textStyle.color as string, 
               borderBottomWidth: 1, 
-              marginTop: 5 
+              marginTop: 5,
+              fontStyle: 'italic'
             }}
             value={formData.debt}
             onChangeText={(text) => handleInputChange('debt', text)}
@@ -126,12 +125,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
           />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={textStyle}>Monthly Cost</Text>
+          <Text style={[textStyle, { fontWeight: 'bold' }]}>Monthly Cost</Text>
           <TextInput
             style={{ 
               color: textStyle.color as string, 
               borderBottomWidth: 1, 
-              marginTop: 5 
+              marginTop: 5,
+              fontStyle: 'italic'
             }}
             value={formData.monthlyCost}
             onChangeText={(text) => handleInputChange('monthlyCost', text)}
@@ -149,12 +149,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
         justifyContent: 'space-between'
       }}>
         <View style={{ flex: 1, marginRight: 10 }}>
-          <Text style={textStyle}>Purchase Price</Text>
+          <Text style={[textStyle, { fontWeight: 'bold' }]}>Purchase Price</Text>
           <TextInput
             style={{ 
               color: textStyle.color as string, 
               borderBottomWidth: 1, 
-              marginTop: 5 
+              marginTop: 5,
+              fontStyle: 'italic'
             }}
             value={formData.purchasePrice}
             onChangeText={(text) => handleInputChange('purchasePrice', text)}
@@ -162,12 +163,13 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
           />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={textStyle}>Current Value</Text>
+          <Text style={[textStyle, { fontWeight: 'bold' }]}>Current Value</Text>
           <TextInput
             style={{ 
               color: textStyle.color as string, 
               borderBottomWidth: 1, 
-              marginTop: 5 
+              marginTop: 5,
+              fontStyle: 'italic'
             }}
             value={formData.currentValue}
             onChangeText={(text) => handleInputChange('currentValue', text)}
@@ -182,7 +184,7 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
         padding: 10, 
         marginBottom: 15 
       }}>
-        <Text style={textStyle}>Category</Text>
+        <Text style={[textStyle, { fontWeight: 'bold' }]}>Category</Text>
         <TouchableOpacity
           style={{
             borderWidth: 1,
@@ -194,7 +196,7 @@ const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonO
           }}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={textStyle}>
+          <Text style={[textStyle, {fontStyle: 'italic'}]}>
             {formData.category || 'Choose Category'}
           </Text>
         </TouchableOpacity>
@@ -293,7 +295,7 @@ export default function ModifyAssetScreen() {
           description: asset.description || '',
           debt: asset.debt !== undefined ? String(asset.debt) : '0',
           monthlyCost: asset.monthlyCost !== undefined ? String(asset.monthlyCost) : '0',
-          category: asset.category || 'Other',
+          category: asset.category || '',
           purchasePrice: asset.purchasePrice !== undefined ? String(asset.purchasePrice) : '0',
           currentValue: asset.currentValue !== undefined ? String(asset.currentValue) : '0',
         });
@@ -482,17 +484,17 @@ export default function ModifyAssetScreen() {
               textStyle={textStyle}
               buttonOutlineColor={buttonOutlineColor}
             />
-            <Text style={textStyle}>Files</Text>
+            <Text style={[textStyle, { fontWeight: 'bold' }]}>Files</Text>
             {existingFiles
-              .filter((file) => file.id && !filesToDelete.includes(file.id))
-              .map((file, index) => (
-                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
-                  <Text style={textStyle}>{file.name}</Text>
-                  <TouchableOpacity onPress={() => file.id && handleDeleteExistingFile(file.id)}>
+              .filter((file) => file.id && file.id !== "mainPicture" && !filesToDelete.includes(file.id))
+              .map((file) => (
+                <View key={file.id} style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
+                  <Text style={[textStyle, { fontStyle: 'italic' }]}>{file.name}</Text>
+                  <TouchableOpacity onPress={() => handleDeleteExistingFile(file.id!)}>
                     <Text style={{ color: 'red' }}>Delete</Text>
                   </TouchableOpacity>
                 </View>
-              ))}
+            ))}
             {newFiles.map((file, index) => (
               <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
                 <Text style={textStyle}>{file.name}</Text>
@@ -501,7 +503,7 @@ export default function ModifyAssetScreen() {
                 </TouchableOpacity>
               </View>
             ))}
-            <TouchableOpacity onPress={handleAddFile} style={{ ...buttonStyle, marginTop: 10 }}>
+            <TouchableOpacity onPress={handleAddFile} style={{ ...buttonStyle, marginTop: 10, alignItems: 'center' }}>
               <Text style={textStyle}>Add File</Text>
             </TouchableOpacity>
           </>

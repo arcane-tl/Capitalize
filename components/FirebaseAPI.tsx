@@ -96,19 +96,18 @@ export const deleteItem = async (userUID: string, itemType: string, itemId: stri
     const itemRef = ref(db, `users/${userUID}/${itemType}/${itemId}`);
 
     if (itemType === 'assets') {
-      // Fetch the asset data to get the files array
       const snapshot = await get(itemRef);
       if (snapshot.exists()) {
         const assetData = snapshot.val();
-        const files = assetData.files || [];
-        for (const file of files) {
+        const files = assetData.files || {};
+        const fileList = Array.isArray(files) ? files : Object.values(files);
+        for (const file of fileList) {
           const fileRef = storageRef(storage, file.path);
           await deleteObject(fileRef);
         }
       }
     }
 
-    // Remove the item from the database
     console.log(`Deleting ${itemType} with ID: ${itemId}`);
     await remove(itemRef);
   } catch (error) {

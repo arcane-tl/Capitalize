@@ -1,5 +1,5 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
-import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from 'firebase/storage';
+import { StorageReference, getStorage, ref as storageRef, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
 import { firebaseConfig, database } from '@/components/database/FirebaseConfig';
@@ -9,6 +9,21 @@ const db = database;
 
 // Initialize Firebase Storage
 const storage = getStorage();
+
+/**
+ * Recursively delete all files and subfolders under a given storage reference.
+ * @param folderRef - The storage reference to the folder to delete.
+ */
+const deleteStorageFolderRecursively = async (folderRef: StorageReference) => {
+  try {
+    const listResult = await listAll(folderRef);
+    await Promise.all(listResult.items.map((itemRef) => deleteObject(itemRef)));
+    await Promise.all(listResult.prefixes.map((prefixRef) => deleteStorageFolderRecursively(prefixRef)));
+  } catch (error) {
+    console.error('Error deleting storage folder:', error);
+    throw error;
+  }
+};
 
 /**
  * Fetch a specific asset from the Realtime Database
@@ -94,9 +109,36 @@ export const deleteItem = async (userUID: string, itemType: string, itemId: stri
     }
 
     // Remove the item from the database
+    console.log(`Deleting ${itemType} with ID: ${itemId}`);
     await remove(itemRef);
   } catch (error) {
     console.error(`Error deleting ${itemType}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Delete an item from the database and recursively delete all associated files and subfolders from storage.
+ * @param userUID - The user's unique ID
+ * @param itemType - The type of item to delete (e.g., 'assets')
+ * @param itemId - The ID of the item to delete
+ */
+export const deleteItemRecursively = async (userUID: string, itemType: string, itemId: string) => {
+  try {
+    const itemRef = ref(db, `users/${userUID}/${itemType}/${itemId}`);
+
+    if (itemType === 'assets') {
+      // Delete the entire storage directory for the asset
+      const assetFolderRef = storageRef(storage, `users/${userUID}/assets/${itemId}/`);
+      console.log(`Deleting storage folder: ${assetFolderRef}`);
+      await deleteStorageFolderRecursively(assetFolderRef);
+    }
+
+    // Remove the item from the database
+    console.log(`Recursively deleting ${itemType} with ID: ${itemId}`);
+    await remove(itemRef);
+  } catch (error) {
+    console.error(`Error deleting ${itemType} recursively:`, error);
     throw error;
   }
 };
@@ -213,6 +255,58 @@ export const uploadFile = async (
     console.error(`Upload error for ${fileName}: ${errorMessage}`);
     throw new Error(`Failed to upload file: ${fileName} - ${errorMessage}`);
   }
+};
+
+/**
+ * Update an asset's files by deleting specified files and uploading new ones.
+ * @param uid - The user's unique ID
+ * @param assetId - The asset's unique ID
+ * @param filesToDelete - Array of file IDs to delete
+ * @param newFiles - Array of new files to upload
+ */
+export const updateAssetFiles = async (
+  uid: string,
+  assetId: string,
+  filesToDelete: string[],
+  newFiles: { uri: string; name: string; type: string | null }[]
+): Promise<void> => {
+  const assetFilesRef = ref(db, `users/${uid}/assets/${assetId}/files`);
+  const snapshot = await get(assetFilesRef);
+  const filesData = snapshot.exists() ? snapshot.val() : {};
+
+  // Delete files
+  await Promise.all(filesToDelete.map(async (fileId) => {
+    const file = filesData[fileId];
+    if (file && file.path) {
+      try {
+        console.log(`Deleting file from storage: ${fileId}`);
+        await deleteObject(storageRef(storage, file.path));
+        console.log(`Deleting file metadata from database: ${fileId}`);
+        await remove(ref(db, `users/${uid}/assets/${assetId}/files/${fileId}`));
+      } catch (error) {
+        console.warn(`Failed to delete file ${fileId}:`, error);
+      }
+    }
+  }));
+
+  // Upload new files
+  await Promise.all(newFiles.map(async (file) => {
+    try {
+      console.log(`Uploading new file: ${file.name}`);
+      await uploadFile(
+        file.uri,
+        file.name,
+        uid,
+        `users/${uid}/assets/${assetId}/files`,
+        file.type,
+        assetId,
+        true // addToDatabase
+      );
+    } catch (error) {
+      console.error(`Error uploading file ${file.name}:`, error);
+      throw error;
+    }
+  }));
 };
 
 // Add a new user with the provided UID and data

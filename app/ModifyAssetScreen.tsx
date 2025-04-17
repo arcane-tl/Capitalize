@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Modal } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
-import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { getAuth } from 'firebase/auth';
-import { getStorage, ref as storageRef, deleteObject, getMetadata } from 'firebase/storage';
-import { fetchAssetData, fetchAssetCategories, uploadFile, updateAsset } from '@/components/FirebaseAPI';
+import { fetchAssetData, fetchAssetCategories, updateAsset, updateAssetFiles } from '@/components/FirebaseAPI';
 import { useThemeStyles } from '@/components/ThemeUtils';
 
 // Define interfaces
@@ -22,7 +20,7 @@ interface AssetFormData {
   name: string;
   description: string;
   debt: string;
-  maintenanceCost: string;
+  monthlyCost: string;
   category: string;
   purchasePrice: string;
   currentValue: string;
@@ -39,7 +37,7 @@ interface AssetData {
   name: string;
   description: string;
   debt?: number;
-  maintenanceCost?: number;
+  monthlyCost?: number;
   category: string;
   purchasePrice?: number;
   currentValue?: number;
@@ -47,155 +45,212 @@ interface AssetData {
 }
 
 // Separate AssetForm component
-const AssetForm = ({ formData, handleInputChange, categories, textStyle }: {
+const AssetForm = ({ formData, handleInputChange, categories, textStyle, buttonOutlineColor }: {
   formData: AssetFormData;
   handleInputChange: (field: keyof AssetFormData, value: string) => void;
   categories: string[];
   textStyle: any;
-}) => (
-  <>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Name</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderRadius: 10, 
-          padding: 5, 
-          backgroundColor: 'rgba(184, 184, 184, 0.73)', 
-          marginTop: 5 
-        }}
-        value={formData.name}
-        onChangeText={(text) => handleInputChange('name', text)}
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Description</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderRadius: 10, 
-          padding: 5, 
-          backgroundColor: 'rgba(184, 184, 184, 0.73)', 
-          marginTop: 5 
-        }}
-        value={formData.description}
-        multiline
-        numberOfLines={4}
-        onChangeText={(text) => handleInputChange('description', text)}
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Debt</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderBottomWidth: 1, 
-          marginTop: 5 
-        }}
-        value={formData.debt}
-        onChangeText={(text) => handleInputChange('debt', text)}
-        keyboardType="numeric"
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Monthly Maintenance Cost</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderBottomWidth: 1, 
-          marginTop: 5 
-        }}
-        value={formData.maintenanceCost}
-        onChangeText={(text) => handleInputChange('maintenanceCost', text)}
-        keyboardType="numeric"
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Purchase Price</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderBottomWidth: 1, 
-          marginTop: 5 
-        }}
-        value={formData.purchasePrice}
-        onChangeText={(text) => handleInputChange('purchasePrice', text)}
-        keyboardType="numeric"
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Current Value</Text>
-      <TextInput
-        style={{ 
-          color: textStyle.color as string, 
-          borderBottomWidth: 1, 
-          marginTop: 5 
-        }}
-        value={formData.currentValue}
-        onChangeText={(text) => handleInputChange('currentValue', text)}
-        keyboardType="numeric"
-      />
-    </View>
-    <View style={{ 
-      borderWidth: 1, 
-      borderColor: textStyle.color as string, 
-      borderRadius: 10, 
-      padding: 10, 
-      marginBottom: 15 
-    }}>
-      <Text style={textStyle}>Category</Text>
-      <Picker
-        selectedValue={formData.category}
-        onValueChange={(itemValue) => handleInputChange('category', itemValue as string)}
-        style={{ 
-          color: textStyle.color as string, 
-          marginTop: 5 
-        }}
+  buttonOutlineColor: string;
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const selectCategory = (category: string) => {
+    handleInputChange('category', category);
+    setModalVisible(false);
+  };
+
+  return (
+    <>
+      <View style={{ 
+        borderWidth: 1, 
+        borderColor: textStyle.color as string, 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 15 
+      }}>
+        <Text style={textStyle}>Name</Text>
+        <TextInput
+          style={{ 
+            color: textStyle.color as string, 
+            borderRadius: 10, 
+            padding: 5, 
+            backgroundColor: 'rgba(184, 184, 184, 0.73)', 
+            marginTop: 5 
+          }}
+          value={formData.name}
+          onChangeText={(text) => handleInputChange('name', text)}
+        />
+      </View>
+      <View style={{ 
+        borderWidth: 1, 
+        borderColor: textStyle.color as string, 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 15 
+      }}>
+        <Text style={textStyle}>Description</Text>
+        <TextInput
+          style={{ 
+            color: textStyle.color as string, 
+            borderRadius: 10, 
+            padding: 5, 
+            backgroundColor: 'rgba(184, 184, 184, 0.73)', 
+            marginTop: 5 
+          }}
+          value={formData.description}
+          multiline
+          numberOfLines={4}
+          onChangeText={(text) => handleInputChange('description', text)}
+        />
+      </View>
+      <View style={{ 
+        borderWidth: 1, 
+        borderColor: textStyle.color as string, 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+      }}>
+        <View style={{ flex: 1, marginRight: 10 }}>
+          <Text style={textStyle}>Debt</Text>
+          <TextInput
+            style={{ 
+              color: textStyle.color as string, 
+              borderBottomWidth: 1, 
+              marginTop: 5 
+            }}
+            value={formData.debt}
+            onChangeText={(text) => handleInputChange('debt', text)}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={textStyle}>Monthly Cost</Text>
+          <TextInput
+            style={{ 
+              color: textStyle.color as string, 
+              borderBottomWidth: 1, 
+              marginTop: 5 
+            }}
+            value={formData.monthlyCost}
+            onChangeText={(text) => handleInputChange('monthlyCost', text)}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+      <View style={{ 
+        borderWidth: 1, 
+        borderColor: textStyle.color as string, 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+      }}>
+        <View style={{ flex: 1, marginRight: 10 }}>
+          <Text style={textStyle}>Purchase Price</Text>
+          <TextInput
+            style={{ 
+              color: textStyle.color as string, 
+              borderBottomWidth: 1, 
+              marginTop: 5 
+            }}
+            value={formData.purchasePrice}
+            onChangeText={(text) => handleInputChange('purchasePrice', text)}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={textStyle}>Current Value</Text>
+          <TextInput
+            style={{ 
+              color: textStyle.color as string, 
+              borderBottomWidth: 1, 
+              marginTop: 5 
+            }}
+            value={formData.currentValue}
+            onChangeText={(text) => handleInputChange('currentValue', text)}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+      <View style={{ 
+        borderWidth: 1, 
+        borderColor: textStyle.color as string, 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 15 
+      }}>
+        <Text style={textStyle}>Category</Text>
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: buttonOutlineColor,
+            borderRadius: 10,
+            padding: 8,
+            marginTop: 5,
+            alignItems: 'center',
+          }}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={textStyle}>
+            {formData.category || 'Choose Category'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
       >
-        <Picker.Item label="Select a category" value="" />
-        {categories.map((cat, index) => (
-          <Picker.Item key={index} label={cat} value={cat} />
-        ))}
-      </Picker>
-    </View>
-  </>
-);
+        <View style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        }}>
+          <View style={{
+            backgroundColor: textStyle.backgroundColor as string,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            padding: 20,
+            maxHeight: '50%',
+          }}>
+            <ScrollView>
+              {categories.map((cat, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={{
+                    paddingVertical: 15,
+                    borderBottomWidth: 1,
+                    borderBottomColor: 'rgba(184, 184, 184, 0.3)',
+                  }}
+                  onPress={() => selectCategory(cat)}
+                >
+                  <Text style={textStyle}>{cat}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: buttonOutlineColor,
+                borderRadius: 10,
+                padding: 10,
+                marginTop: 10,
+                alignItems: 'center',
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={textStyle}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+};
 
 export default function ModifyAssetScreen() {
   const router = useRouter();
@@ -216,7 +271,7 @@ export default function ModifyAssetScreen() {
     name: '',
     description: '',
     debt: '',
-    maintenanceCost: '',
+    monthlyCost: '',
     category: '',
     purchasePrice: '',
     currentValue: '',
@@ -236,13 +291,12 @@ export default function ModifyAssetScreen() {
         setFormData({
           name: asset.name || '',
           description: asset.description || '',
-          debt: asset.debt !== undefined ? String(asset.debt) : '',
-          maintenanceCost: asset.maintenanceCost !== undefined ? String(asset.maintenanceCost) : '',
-          category: asset.category || '',
-          purchasePrice: asset.purchasePrice !== undefined ? String(asset.purchasePrice) : '',
-          currentValue: asset.currentValue !== undefined ? String(asset.currentValue) : '',
+          debt: asset.debt !== undefined ? String(asset.debt) : '0',
+          monthlyCost: asset.monthlyCost !== undefined ? String(asset.monthlyCost) : '0',
+          category: asset.category || 'Other',
+          purchasePrice: asset.purchasePrice !== undefined ? String(asset.purchasePrice) : '0',
+          currentValue: asset.currentValue !== undefined ? String(asset.currentValue) : '0',
         });
-        const expectedPrefix = `users/${uid}/assets/${assetIdString}/files/`;
         const filesArray = Object.entries(asset.files || {})
           .map(([id, file]) => ({
             id,
@@ -250,8 +304,7 @@ export default function ModifyAssetScreen() {
             url: file.url || undefined,
             path: file.path || undefined,
             type: file.type || undefined,
-          }))
-          .filter(file => file.path?.startsWith(expectedPrefix));
+          }));
         setExistingFiles(filesArray);
         const cats = await fetchAssetCategories();
         setCategories(cats);
@@ -308,32 +361,13 @@ export default function ModifyAssetScreen() {
 
   const isValidNumber = (value: string) => !isNaN(parseFloat(value)) && isFinite(parseFloat(value));
 
-  const verifyStorageFiles = async (files: FileType[]): Promise<FileType[]> => {
-    const storage = getStorage();
-    const validFiles: FileType[] = [];
-    const expectedPrefix = `users/${uid}/assets/${assetIdString}/files/`;
-    for (const file of files) {
-      if (file.path && file.id && file.path.startsWith(expectedPrefix)) {
-        try {
-          await getMetadata(storageRef(storage, file.path));
-          validFiles.push(file);
-        } catch (error) {
-          console.warn(`File not found in storage: ${file.path}`);
-        }
-      } else {
-        console.warn(`File path does not match expected prefix: ${file.path}`);
-      }
-    }
-    return validFiles;
-  };
-
   const saveFormData = async () => {
     try {
       const updatedAssetData: Partial<AssetData> = {
         name: formData.name,
         description: formData.description,
         debt: formData.debt ? parseFloat(formData.debt) : undefined,
-        maintenanceCost: formData.maintenanceCost ? parseFloat(formData.maintenanceCost) : undefined,
+        monthlyCost: formData.monthlyCost ? parseFloat(formData.monthlyCost) : undefined,
         category: formData.category,
         purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
         currentValue: formData.currentValue ? parseFloat(formData.currentValue) : undefined,
@@ -342,65 +376,6 @@ export default function ModifyAssetScreen() {
     } catch (error) {
       console.error('Error saving form data:', error);
       throw new Error('Failed to save form data');
-    }
-  };
-
-  const saveFileOperations = async () => {
-    const storage = getStorage();
-    const updatedFiles: { [key: string]: { name: string; url: string; path: string; type: string | null } } = {};
-
-    for (const fileId of filesToDelete) {
-      const file = existingFiles.find((f) => f.id === fileId);
-      if (file && file.path) {
-        try {
-          await deleteObject(storageRef(storage, file.path));
-        } catch (error) {
-          console.warn(`Failed to delete file: ${file.path}`, error);
-        }
-      }
-    }
-
-    const filesToKeep = existingFiles.filter((file) => file.id && !filesToDelete.includes(file.id));
-    const verifiedFiles = await verifyStorageFiles(filesToKeep);
-    verifiedFiles.forEach((file) => {
-      if (file.id && file.url && file.path) {
-        updatedFiles[file.id] = {
-          name: file.name || 'Undefined',
-          url: file.url,
-          path: file.path,
-          type: file.type || null,
-        };
-      }
-    });
-
-    for (const file of newFiles) {
-      try {
-        const result = await uploadFile(
-          file.uri!,
-          file.name!,
-          uid,
-          `users/${uid}/assets/${assetIdString}/files`,
-          file.type,
-          assetIdString,
-          true
-        );
-        const { fileId, fileData } = result;
-        if (fileId && fileData) {
-          updatedFiles[fileId] = fileData;
-        } else {
-          throw new Error(`Failed to upload file: ${file.name}`);
-        }
-      } catch (error) {
-        console.error(`Error uploading file: ${file.name}`, error);
-        throw error;
-      }
-    }
-
-    try {
-      await updateAsset(uid, assetIdString, { files: updatedFiles });
-    } catch (error) {
-      console.error('Error updating file data:', error);
-      throw new Error('Failed to update file data');
     }
   };
 
@@ -413,8 +388,8 @@ export default function ModifyAssetScreen() {
       Alert.alert('Invalid Input', 'Debt must be a valid number.');
       return;
     }
-    if (formData.maintenanceCost && !isValidNumber(formData.maintenanceCost)) {
-      Alert.alert('Invalid Input', 'Maintenance Cost must be a valid number.');
+    if (formData.monthlyCost && !isValidNumber(formData.monthlyCost)) {
+      Alert.alert('Invalid Input', 'Monthly Cost must be a valid number.');
       return;
     }
     if (formData.purchasePrice && !isValidNumber(formData.purchasePrice)) {
@@ -433,8 +408,15 @@ export default function ModifyAssetScreen() {
     setIsLoading(true);
     try {
       await saveFormData();
-      if (filesToDelete.length > 0 || newFiles.length > 0) {
-        await saveFileOperations();
+      const validNewFiles = newFiles
+        .filter(file => file.uri && file.name)
+        .map(file => ({
+          uri: file.uri!,
+          name: file.name!,
+          type: file.type || null,
+        }));
+      if (filesToDelete.length > 0 || validNewFiles.length > 0) {
+        await updateAssetFiles(uid, assetIdString, filesToDelete, validNewFiles);
       }
       Alert.alert('Success', 'Asset updated successfully');
       router.replace('/(tabs)/AssetsScreen');
@@ -498,6 +480,7 @@ export default function ModifyAssetScreen() {
               handleInputChange={handleInputChange}
               categories={categories}
               textStyle={textStyle}
+              buttonOutlineColor={buttonOutlineColor}
             />
             <Text style={textStyle}>Files</Text>
             {existingFiles

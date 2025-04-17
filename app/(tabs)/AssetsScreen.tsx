@@ -7,7 +7,7 @@ import { useThemeStyles } from '@/components/ThemeUtils';
 import SwipeableItem from '@/components/SwipeableItems';
 import { assetListStyle } from '@/components/css/CustomStyles';
 import { useAssetStore } from '@/app/modals/AddAsset';
-import { deleteItem } from '@/components/FirebaseAPI';
+import { deleteItemRecursively } from '@/components/FirebaseAPI';
 import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 
@@ -95,7 +95,7 @@ export default function AssetsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteItem(userUID!, 'assets', item.id);
+              await deleteItemRecursively(userUID!, 'assets', item.id);
               setAssets((prevAssets) => prevAssets.filter((asset) => asset.id !== item.id));
             } catch (error) {
               console.error('Error deleting asset:', error);

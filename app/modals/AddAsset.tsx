@@ -67,12 +67,12 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
       Alert.alert('Error', 'User is not logged in.');
       return;
     }
-
+  
     const db = database;
     const assetRef = push(ref(db, assetPath));
     const assetUID = assetRef.key;
     const saveFilePath = `${userFilePath}/${assetUID}`;
-
+  
     try {
       let filePath = '';
       let imageUrl = '';
@@ -80,11 +80,16 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
         setUploading(true);
         const fileName = `${assetName.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
         filePath = `${saveFilePath}/${fileName}`;
-        imageUrl = await uploadFile(imageUri, fileName, userUID, saveFilePath);
+        // Get the upload result and extract the downloadURL
+        const uploadResult = await uploadFile(imageUri, fileName, userUID, saveFilePath);
+        if (!uploadResult.downloadURL || typeof uploadResult.downloadURL !== 'string') {
+          throw new Error('Failed to get a valid download URL from upload.');
+        }
+        imageUrl = uploadResult.downloadURL; // Extract the string URL
         setUploading(false);
       }
-
-      // Prepare asset data with a "files" array
+  
+      // Prepare asset data with the correct URL string
       const assetData = {
         created: Date.now(),
         name: assetName,
@@ -95,22 +100,22 @@ export default function AddAssetModal({ closeModal }: { closeModal: () => void }
           ? [
               {
                 path: filePath,
-                url: imageUrl,
+                url: imageUrl, // Use the string URL here
                 type: 'picture',
                 isMain: true,
               },
             ]
           : [],
       };
-
+  
       // Save asset data to Firebase Realtime Database
       await set(ref(db, `${assetPath}/${assetUID}`), assetData);
-
+  
       Alert.alert('Asset Saved', 'Your asset has been successfully saved.', [
         {
           text: 'OK',
           onPress: () => {
-            toggleRefreshAssets(); // Trigger refresh
+            toggleRefreshAssets();
             closeModal();
           },
         },

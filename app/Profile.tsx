@@ -73,8 +73,8 @@ export default function ProfilesScreen() {
 
   console.log('Current theme:', theme);
 
-  const { containerStyle, textStyle, backgroundColor, iconOutlineColor, borderColor } = useThemeStyles();
-  const goBack = () => router.replace('/HomeScreen');
+  const { headerTitleStyle, containerStyle, textStyle, backgroundColor, iconOutlineColor, borderColor } = useThemeStyles();
+  const goBack = () => router.back();
   const toggleDarkMode = (value: boolean) => setTheme(value ? 'dark' : 'light');
 
   console.log('textStyle:', textStyle);
@@ -137,10 +137,12 @@ export default function ProfilesScreen() {
         options={{
           headerShown: true,
           headerBackVisible: false,
-          headerTitle: '',
+          headerTitle: 'Account Settings',
+          headerShadowVisible: false,
           headerStyle: {
             backgroundColor,
           },
+          headerTitleStyle: headerTitleStyle,
           headerRight: () => (
             <TouchableOpacity onPress={goBack} style={{ marginRight: 0 }}>
               <Ionicons

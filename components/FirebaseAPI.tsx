@@ -1,5 +1,5 @@
 import { ref, set, update, remove, push, get } from 'firebase/database';
-import { getStorage, ref as storageRef, getDownloadURL, deleteObject, uploadBytes } from 'firebase/storage';
+import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 import { getAuth } from 'firebase/auth';
 import { firebaseConfig, database } from '@/components/database/FirebaseConfig';
@@ -107,9 +107,10 @@ export const deleteItem = async (userUID: string, itemType: string, itemId: stri
  * @param fileName - The name of the file
  * @param uid - The user's unique ID
  * @param objectPath - The path where the file will be stored
+ * @param fileType - (Optional) The MIME type of the file
  * @param assetId - (Optional) The asset's unique ID to add the file metadata to
  * @param addToDatabase - (Optional) Whether to add the file metadata to the database
- * @returns An object containing the download URL and, if added to the database, the file ID
+ * @returns An object containing the download URL and, if added to the database, the file ID and file data
  */
 export const uploadFile = async (
   fileUri: string,
@@ -122,89 +123,95 @@ export const uploadFile = async (
 ): Promise<{
   downloadURL: string;
   fileId?: string;
-  fileData?: any
+  fileData?: any;
 }> => {
   try {
-    // Verify the file exists
+    console.log(`Starting upload for file: ${fileName}`);
+
+    // Check if file exists
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (!fileInfo.exists) {
       throw new Error(`File does not exist at ${fileUri}`);
     }
-    console.log(`Object Path: ${objectPath}`);
-    console.log(`File Name: ${fileName}`);
-    objectPath = `${objectPath}/${fileName}`;
+    console.log(`File confirmed at ${fileUri}`);
 
-    // Create a reference to the file in Firebase Storage
-    const fileRef = storageRef(storage, objectPath);
+    const fullPath = `${objectPath}/${fileName}`;
+    console.log(`Storage path: ${fullPath}`);
 
-    // Read the file as Base64
+    // Reference to Firebase Storage
+    const fileRef = storageRef(storage, fullPath);
+
+    // Read file as Base64
     const fileData = await FileSystem.readAsStringAsync(fileUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
+    console.log(`File read as Base64`);
 
-    // Convert Base64 to Uint8Array for binary upload
+    // Convert Base64 to binary
     const binaryData = Uint8Array.from(atob(fileData), (char) => char.charCodeAt(0));
 
-    // Get the current user's ID token for authentication
+    // Authenticate user
     const auth = getAuth();
     const user = auth.currentUser;
-    if (!user) {
-      throw new Error('User is not authenticated');
-    } else if (user.uid !== uid) {
-      throw new Error('User ID does not match the authenticated user');
+    if (!user || user.uid !== uid) {
+      throw new Error('User authentication failed');
     }
     const idToken = await user.getIdToken();
-    console.log(`original filepath: ${fileUri} encoded uri: ${encodeURIComponent(objectPath)}`);
+    console.log(`User authenticated, ID token obtained`);
 
-    // Construct the upload URL with uploadType and name parameters
+    // Prepare upload URL
     const bucket = firebaseConfig.storageBucket;
-    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(fullPath)}`;
 
-    const headers: HeadersInit = {
-      Authorization: `Bearer ${idToken}`,
-      ...(fileType ? { 'Content-Type': fileType } : {}), // Include only if fileType is not null
-      'Content-Length': binaryData.byteLength.toString(),
-    };
-
-    // Upload the file using fetch with POST
+    // Upload file
     const response = await fetch(uploadUrl, {
       method: 'POST',
-      headers,
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        ...(fileType ? { 'Content-Type': fileType } : {}),
+        'Content-Length': binaryData.byteLength.toString(),
+      },
       body: binaryData,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Upload failed: ${response.status} ${errorText}`);
+      throw new Error(`Storage upload failed: ${response.status} - ${errorText}`);
     }
+    console.log(`File uploaded to Storage`);
 
-    // Get the download URL
+    // Get download URL
     const downloadURL = await getDownloadURL(fileRef);
+    console.log(`Download URL: ${downloadURL}`);
 
-    // If assetId and addToDatabase are provided, add the file metadata to the database
+    // Add to database if required
     if (assetId && addToDatabase) {
-      const fileRef = ref(db, `users/${uid}/assets/${assetId}/files`);
-      const newFileRef = push(fileRef); // Generate a unique key for the new file
+      console.log(`Updating database for asset: ${assetId}`);
+      const dbPath = `users/${uid}/assets/${assetId}/files`;
+      const fileRef = ref(db, dbPath);
+      const newFileRef = push(fileRef);
       const fileData = {
         name: fileName,
         url: downloadURL,
-        path: objectPath,
+        path: fullPath,
         type: fileType || 'application/octet-stream',
       };
-      await set(newFileRef, fileData);
-      const fileId = newFileRef.key; // Get the generated file ID
-      return { downloadURL, fileId };
+
+      try {
+        await set(newFileRef, fileData);
+        console.log(`Database updated, file ID: ${newFileRef.key}`);
+        return { downloadURL, fileId: newFileRef.key, fileData };
+      } catch (dbError) {
+        throw new Error(`Database update failed: ${(dbError as Error).message}`);
+      }
     }
 
-    // Default behavior: return only the download URL
+    console.log(`Upload complete, no database update required`);
     return { downloadURL };
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error uploading file:', error.message);
-    } else {
-      console.error('Unknown error:', error);
-    }
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Upload error for ${fileName}: ${errorMessage}`);
+    throw new Error(`Failed to upload file: ${fileName} - ${errorMessage}`);
   }
 };
 
@@ -308,7 +315,7 @@ export const addAsset = async (assetId: string, assetData: any) => {
 
 export const updateAsset = async (uid: string, assetId: string, assetData: any) => {
   try {
-    await set(ref(db, `users/${uid}/assets/${assetId}`), assetData);
+    await update(ref(db, `users/${uid}/assets/${assetId}`), assetData);
   } catch (error) {
     console.error('Error updating asset:', error);
     throw error;
